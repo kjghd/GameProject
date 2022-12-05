@@ -1,6 +1,8 @@
 #pragma once
 #include "DataTypes.h"
-#include "WorldObject.h"
+#include "Camera.h"
+#include "Player.h"
+#include "Tile.h"
 #include "Input.h"
 
 #include <vector>

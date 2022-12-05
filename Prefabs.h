@@ -1,7 +1,8 @@
 #pragma once
-#include "WorldObject.h"
-#include <vector>
+#include "Tile.h"
 #include "PrefabTags.h"
+
+#include <vector>
 
 class PrefabList
 {
