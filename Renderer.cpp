@@ -39,9 +39,6 @@ void Renderer::Render()
 		);
 	}
 
-	// Hazard
-	
-
 	// Block preview
 	m_pGraphics->DrawBitmap(
 		D2D1::RectF(0, 0, 40, 40),
@@ -60,8 +57,8 @@ void Renderer::Render()
 		D2D1::RectF(playerRect.l,playerRect.t, playerRect.r, playerRect.b),
 		m_pScene->player.m_texture
 	);
-
-	/*game::Float2 playerLoc{
+	// Player Collision Debug
+	game::Float2 playerLoc{
 		m_pCamera->WorldLocToScreenLoc(
 			m_pScene->player.m_location.x,
 			m_pScene->player.m_location.y
@@ -69,8 +66,8 @@ void Renderer::Render()
 	};
 	m_pGraphics->DebugCircle(
 		{playerLoc.x, playerLoc.y},
-		m_pCamera->WU_to_SU(m_pScene->player.m_collisionRadius)
-	);*/
+		m_pCamera->WU_to_SU(m_pScene->player.m_collider.radius)
+	);
 	
 	/*game::Float2 center{ m_pCamera->WorldLocToScreenLoc(0,0) };
 

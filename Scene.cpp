@@ -7,11 +7,11 @@
 Scene::Scene()
 	:
 	camera(Camera()),
-	current_prefab(PREFAB_Block_Brick_01),
+	current_prefab(PREFAB_Block_Dynamic),
 	player(Player()),
 	name("cool level")
 {
-	Load();
+	//Load();
 }
 
 Camera& Scene::GetCamera()
@@ -29,15 +29,10 @@ void Scene::Update(Input* pInput, double deltaTime)
 	}
 
 	// Camera controls.
-	/*if (pInput->CheckHeld(BTN_W)) camera.Move({  0, 1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_S)) camera.Move({  0,-1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_A)) camera.Move({  -1, 0 }, deltaTime);
-	if (pInput->CheckHeld(BTN_D)) camera.Move({ 1, 0 }, deltaTime);*/
-
 	if (pInput->CheckHeld(BTN_Q)) camera.SetZoom(128);
 	if (pInput->CheckHeld(BTN_E)) camera.SetZoom(64);
 
-	// Other controls.
+	// Tile spawn controls.
 	if (pInput->CheckPressed(BTN_LMB))
 	{
 		game::Float2 loc{
@@ -49,22 +44,29 @@ void Scene::Update(Input* pInput, double deltaTime)
 
 		QueueToSpawn(current_prefab, { roundf(loc.x), roundf(loc.y) });
 	}
+	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_Block_Wall;
+	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Block_Floor;
+	if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Block_Dynamic;
 
-	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_Block_Brick_01;
-	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Block_Pavement_01;
-
+	// Levels
 	if (pInput->CheckPressed(BTN_0)) Save();
 	if (pInput->CheckPressed(BTN_9)) Load();
 
-
 	// Player
-	 if (pInput->CheckHeld(BTN_W)) player.Move({ 0, 1 }, deltaTime);
-	 if (pInput->CheckHeld(BTN_S)) player.Move({ 0,-1 }, deltaTime);
-	 if (pInput->CheckHeld(BTN_A)) player.Move({ -1, 0 }, deltaTime);
-	 if (pInput->CheckHeld(BTN_D)) player.Move({ 1, 0 }, deltaTime);
+	if (pInput->CheckHeld(BTN_W)) player.Move({ 0, 1 }, deltaTime);
+	if (pInput->CheckHeld(BTN_S)) player.Move({ 0,-1 }, deltaTime);
+	if (pInput->CheckHeld(BTN_A)) player.Move({ -1, 0 }, deltaTime);
+	if (pInput->CheckHeld(BTN_D)) player.Move({ 1, 0 }, deltaTime);
 
-	 for(auto& tile : vTiles)
-		player.Collide_CircleVsBox(tile);
+	// Collision
+	for (auto& tile : vTiles)
+	{
+		for (auto& tileB : vTiles)
+			tile.m_collider.CheckCollision(&tileB.m_collider);
+
+		tile.m_collider.CheckCollision(&player.m_collider);
+		player.m_collider.CheckCollision(&tile.m_collider);
+	}
 	player.Update(deltaTime);
 
 	camera.MoveTo(player.m_location, deltaTime);
@@ -91,7 +93,7 @@ void Scene::Save()
 		buffer += std::to_string(tile.m_texture);		buffer += ',';
 		buffer += std::to_string(tile.m_location.x);	buffer += ',';
 		buffer += std::to_string(tile.m_location.y);	buffer += ',';
-		buffer += std::to_string(tile.m_block);			buffer += '\n';
+		//buffer += std::to_string(tile.m_block);			buffer += '\n';
 	}
 
 	file.write(buffer.c_str(), buffer.size());
