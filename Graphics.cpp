@@ -31,6 +31,11 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/Shadow.png", T_Shadow);
 	LoadImageFromFile(L"Data/Textures/Bricks_01.png", T_Bricks_01);
 	LoadImageFromFile(L"Data/Textures/Pavement_01.png", T_Pavement_01);
+	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
+	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);
+	LoadImageFromFile(L"Data/Textures/Block_Red.png", T_Red);
+	LoadImageFromFile(L"Data/Textures/Block_Yellow.png", T_Yellow);
+
 
 
 	windowDPI = GetDpiForWindow(hWnd);
