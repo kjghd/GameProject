@@ -1,5 +1,11 @@
 #include "Input.h"
 
+Input::Input()
+	:
+	mouseLoc{ 0,0 }
+{
+}
+
 void Input::ResetMoved()
 {
 	for (size_t i{ 0 }; i < BTN_COUNT; ++i)
