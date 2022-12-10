@@ -98,68 +98,102 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 
 void Scene::Save()
 {
-	//std::string directory{ "Data/Levels/"};
-	//directory += name;
-	//directory += ".csv";
+	std::string directory{ "Data/Levels/"};
+	directory += name;
+	directory += ".csv";
 
-	//std::ofstream file;
-	//file.open(directory, std::ios_base::out);
+	std::ofstream file;
+	file.open(directory, std::ios_base::out);
 
-	//std::string buffer;
-	//for (const auto& tile : vTiles)
-	//{
-	//	buffer += std::to_string(tile.m_texture);		buffer += ',';
-	//	buffer += std::to_string(tile.m_location.x);	buffer += ',';
-	//	buffer += std::to_string(tile.m_location.y);	buffer += ',';
-	//	//buffer += std::to_string(tile.m_block);			buffer += '\n';
-	//}
+	std::string buffer;
+	for (const auto& tile : vTiles)
+	{
+		// Tile
+		buffer += std::to_string(tile.m_location.x);		buffer += ',';
+		buffer += std::to_string(tile.m_location.y);		buffer += ',';
+		// Tile sprite
+		buffer += std::to_string(tile.m_sprite.layer);		buffer += ',';
+		buffer += std::to_string(tile.m_sprite.texture);	buffer += ',';
+		buffer += std::to_string(tile.m_sprite.size.x);		buffer += ',';
+		buffer += std::to_string(tile.m_sprite.size.y);		buffer += ',';
+		buffer += std::to_string(tile.m_sprite.offset.x);	buffer += ',';
+		buffer += std::to_string(tile.m_sprite.offset.y);	buffer += ',';
+		// Tile collider
+		buffer += std::to_string(tile.m_collider.size.x);	buffer += ',';
+		buffer += std::to_string(tile.m_collider.size.y);	buffer += ',';
+		buffer += std::to_string(tile.m_collider.dynamic);	buffer += ',';
+		buffer += std::to_string(tile.m_collider.block);	buffer += '\n';
+	}
 
-	//file.write(buffer.c_str(), buffer.size());
+	file.write(buffer.c_str(), buffer.size());
 
-	//file.close();
+	file.close();
 }
 
 void Scene::Load()
 {
-	//vTiles.clear();
+	vTiles.clear();
+	
+	player.m_location = { 0,0 };
+	
+	std::string directory{ "Data/Levels/" };
+	directory += "example";
+	directory += ".csv";
+	
+	std::ifstream file;
+	file.open(directory, std::ios_base::out);
 
-	//player.m_location = { 0,0 };
+	while (file.peek() != EOF)
+	{
+		// Get line
+		std::string buffer;
+		std::getline(file, buffer);
 
-	//std::string directory{ "Data/Levels/" };
-	//directory += "example";
-	//directory += ".csv";
+		// Seperate values
+		std::vector<std::string> values;
+		values.push_back("");
+		for (const auto& c : buffer)
+		{
+			if (c != ',')
+				values.back() += c;
+			else
+				values.push_back("");
+		}
 
-	//std::ifstream file;
-	//file.open(directory, std::ios_base::out);
+		// Cast
+		// Tile
+		game::Float2 location{
+			std::stoi(values.at(0)),
+			std::stoi(values.at(1))
+		};
+		// Tile sprite
+		int sprite_layer{ std::stoi(values.at(2)) };
+		int sprite_texture{ std::stoi(values.at(3)) };
+		game::Float2 sprite_size{
+			std::stof(values.at(4)),
+			std::stof(values.at(5))
+		};
+		game::Float2 sprite_offset{
+			std::stof(values.at(6)),
+			std::stof(values.at(7))
+		};
+		// Tile collider
+		game::Float2 collider_size{
+			std::stof(values.at(8)),
+			std::stof(values.at(9))
+		};
+		bool collider_dynamic{ std::stoi(values.at(10)) ? true : false };
+		bool collider_block{ std::stoi(values.at(11)) ? true : false };
 
-	//while (file.peek() != EOF)
-	//{
-	//	// Get line
-	//	std::string buffer;
-	//	std::getline(file, buffer);
+		// Add tile
+		vTiles.push_back(
+			Tile(
+				location,
+				sprite_layer, sprite_texture, sprite_size, sprite_offset,
+				collider_size, collider_dynamic, collider_block
+			)
+		);
+	}
 
-	//	// Seperate values
-	//	std::vector<std::string> values;
-	//	values.push_back("");
-	//	for (const auto& c : buffer)
-	//	{
-	//		if (c != ',')
-	//			values.back() += c;
-	//		else
-	//			values.push_back("");
-	//	}
-
-	//	// Cast
-	//	int texture{ std::stoi(values.at(0)) };
-	//	game::Float2 location{
-	//		std::stof(values.at(1)),
-	//		std::stof(values.at(2))
-	//	};
-	//	bool block{ std::stoi(values.at(3)) ? true : false};
-
-	//	// Add block
-	//	vTiles.push_back(Tile(texture, location, block));
-	//}
-
-	//file.close();
+	file.close();
 }
