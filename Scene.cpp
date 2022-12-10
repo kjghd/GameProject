@@ -82,8 +82,8 @@ void Scene::Update(Input* pInput, float deltaTime)
 	player.m_collider.Update();
 
 	game::Float2 playerCenter{
-		player.m_location.x,
-		player.m_location.y + player.m_size.y / 4
+		player.m_location.x + player.m_sprite.offset.x,
+		player.m_location.y + player.m_sprite.offset.y
 	};
 	camera.MoveTo(playerCenter, deltaTime);
 }   
@@ -96,68 +96,68 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 
 void Scene::Save()
 {
-	std::string directory{ "Data/Levels/"};
-	directory += name;
-	directory += ".csv";
+	//std::string directory{ "Data/Levels/"};
+	//directory += name;
+	//directory += ".csv";
 
-	std::ofstream file;
-	file.open(directory, std::ios_base::out);
+	//std::ofstream file;
+	//file.open(directory, std::ios_base::out);
 
-	std::string buffer;
-	for (const auto& tile : vTiles)
-	{
-		buffer += std::to_string(tile.m_texture);		buffer += ',';
-		buffer += std::to_string(tile.m_location.x);	buffer += ',';
-		buffer += std::to_string(tile.m_location.y);	buffer += ',';
-		//buffer += std::to_string(tile.m_block);			buffer += '\n';
-	}
+	//std::string buffer;
+	//for (const auto& tile : vTiles)
+	//{
+	//	buffer += std::to_string(tile.m_texture);		buffer += ',';
+	//	buffer += std::to_string(tile.m_location.x);	buffer += ',';
+	//	buffer += std::to_string(tile.m_location.y);	buffer += ',';
+	//	//buffer += std::to_string(tile.m_block);			buffer += '\n';
+	//}
 
-	file.write(buffer.c_str(), buffer.size());
+	//file.write(buffer.c_str(), buffer.size());
 
-	file.close();
+	//file.close();
 }
 
 void Scene::Load()
 {
-	vTiles.clear();
+	//vTiles.clear();
 
-	player.m_location = { 0,0 };
+	//player.m_location = { 0,0 };
 
-	std::string directory{ "Data/Levels/" };
-	directory += "example";
-	directory += ".csv";
+	//std::string directory{ "Data/Levels/" };
+	//directory += "example";
+	//directory += ".csv";
 
-	std::ifstream file;
-	file.open(directory, std::ios_base::out);
+	//std::ifstream file;
+	//file.open(directory, std::ios_base::out);
 
-	while (file.peek() != EOF)
-	{
-		// Get line
-		std::string buffer;
-		std::getline(file, buffer);
+	//while (file.peek() != EOF)
+	//{
+	//	// Get line
+	//	std::string buffer;
+	//	std::getline(file, buffer);
 
-		// Seperate values
-		std::vector<std::string> values;
-		values.push_back("");
-		for (const auto& c : buffer)
-		{
-			if (c != ',')
-				values.back() += c;
-			else
-				values.push_back("");
-		}
+	//	// Seperate values
+	//	std::vector<std::string> values;
+	//	values.push_back("");
+	//	for (const auto& c : buffer)
+	//	{
+	//		if (c != ',')
+	//			values.back() += c;
+	//		else
+	//			values.push_back("");
+	//	}
 
-		// Cast
-		int texture{ std::stoi(values.at(0)) };
-		game::Float2 location{
-			std::stof(values.at(1)),
-			std::stof(values.at(2))
-		};
-		bool block{ std::stoi(values.at(3)) ? true : false};
+	//	// Cast
+	//	int texture{ std::stoi(values.at(0)) };
+	//	game::Float2 location{
+	//		std::stof(values.at(1)),
+	//		std::stof(values.at(2))
+	//	};
+	//	bool block{ std::stoi(values.at(3)) ? true : false};
 
-		// Add block
-		vTiles.push_back(Tile(texture, location, block));
-	}
+	//	// Add block
+	//	vTiles.push_back(Tile(texture, location, block));
+	//}
 
-	file.close();
+	//file.close();
 }

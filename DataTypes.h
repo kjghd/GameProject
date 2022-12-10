@@ -15,19 +15,21 @@ namespace game
 		{
 			return { x * f, y * f };
 		}
+		
 		Float2 operator /(float f)
 		{
 			return { x / f, y / f };
 		}
+		
 		Float2 operator +(float f)
 		{
 			return { x + f, y + f };
 		}
-
 		Float2 operator +(Float2 ff)
 		{
 			return { x + ff.x, y + ff.y };
 		}
+		
 		Float2 operator -()
 		{
 			return { -x, -y };

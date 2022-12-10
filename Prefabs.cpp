@@ -1,11 +1,10 @@
 #include "Prefabs.h"
 
 PrefabList::PrefabList()
-{
-	prefabs[PREFAB_Block_Dynamic] = Tile(T_Red, { 0,0 }, true, true);
-	prefabs[PREFAB_Block_Wall] = Tile(T_Blue, { 0,0 }, false, true);
-	prefabs[PREFAB_Block_Floor] = Tile(T_Green, { 0,0 }, false, false);
-
+{									//   Loc      Tex      Tex Size Tex Off  Dyn    Block
+	prefabs[PREFAB_Block_Dynamic] = Tile({ 0,0 }, T_Red,   { 1,1 }, { 0,0 }, true,  true );
+	prefabs[PREFAB_Block_Wall]    =	Tile({ 0,0 }, T_Blue,  { 1,1 }, { 0,0 }, false, true );
+	prefabs[PREFAB_Block_Floor]   =	Tile({ 0,0 }, T_Green, { 1,1 }, { 0,0 }, false, false);
 }
 
 const Tile* PrefabList::Get(int prefabTag)

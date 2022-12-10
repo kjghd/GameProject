@@ -1,18 +1,17 @@
 #pragma once
 #include "DataTypes.h"
 #include "Textures.h"
-//#include "Tile.h"
 #include "Collider.h"
+#include "Sprite.h"
 
 class Player
 {
 public:
 	game::Float2 m_location;
-	game::Float2 m_spriteOffset;
-	game::Float2 m_size;
-	int m_texture;
-	float m_speed;
+	Sprite m_sprite;
 	Collider_Circle m_collider;
+
+	float m_speed;
 
 	Player();
 
