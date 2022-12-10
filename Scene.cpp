@@ -29,11 +29,11 @@ void Scene::Update(Input* pInput, double deltaTime)
 	}
 
 	// Camera controls.
-	if (pInput->CheckHeld(BTN_Q)) camera.SetZoom(128);
-	if (pInput->CheckHeld(BTN_E)) camera.SetZoom(64);
+	if (pInput->CheckHeld(BTN_Q)) camera.DecreaseZoom(.1);
+	if (pInput->CheckHeld(BTN_E)) camera.IncreaseZoom(.1);
 
 	// Tile spawn controls.
-	if (pInput->CheckPressed(BTN_LMB))
+	if (pInput->CheckHeld(BTN_LMB))
 	{
 		game::Float2 loc{
 			camera.ScreenLocToWorldLoc(
@@ -41,8 +41,14 @@ void Scene::Update(Input* pInput, double deltaTime)
 					pInput->GetMouseLoc().y
 				)
 		};
+		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
 
-		QueueToSpawn(current_prefab, { roundf(loc.x), roundf(loc.y) });
+		bool canSpawn{ true };
+		for (auto& tile : vTiles)
+			if (tile.m_location == locRounded) canSpawn = false;
+
+		if (canSpawn)
+			QueueToSpawn(current_prefab, locRounded);
 	}
 	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_Block_Wall;
 	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Block_Floor;
@@ -67,9 +73,19 @@ void Scene::Update(Input* pInput, double deltaTime)
 		tile.m_collider.CheckCollision(&player.m_collider);
 		player.m_collider.CheckCollision(&tile.m_collider);
 	}
-	player.Update(deltaTime);
 
-	camera.MoveTo(player.m_location, deltaTime);
+	// Update
+	for (auto& tile : vTiles)
+		tile.m_collider.Update();
+
+	player.Update(deltaTime);
+	player.m_collider.Update();
+
+	game::Float2 playerCenter{
+		player.m_location.x,
+		player.m_location.y + player.m_size.y / 4
+	};
+	camera.MoveTo(playerCenter, deltaTime);
 }   
 
 void Scene::QueueToSpawn(int prefab, game::Float2 location)

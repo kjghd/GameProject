@@ -99,8 +99,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	RegisterClass(&wc);
 
 	// Window Dimensions
-	int width  = 640;
-	int height = 480;
+	int width  = 1280;
+	int height = 720;
 	RECT wndRect{ 0,0, width, height };
 	AdjustWindowRect(&wndRect, WS_CAPTION, FALSE);
 

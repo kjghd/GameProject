@@ -10,6 +10,9 @@ public:
 	void MoveTo(game::Float2 destination, float deltaTime);
 
 	void SetZoom(float amount);
+	void DecreaseZoom(float factor);
+	void IncreaseZoom(float factor);
+
 	float GetZoom();
 
 	game::Float2 ScreenLocToWorldLoc(float screenX, float screenY);

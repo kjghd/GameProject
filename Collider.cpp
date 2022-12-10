@@ -8,15 +8,21 @@ Collider::Collider(game::Float2* pOrigin, bool dyn, bool blck)
 	:
 	origin(*pOrigin),
 	dynamic(dyn),
-	block(blck)
+	block(blck),
+	moveBuffer{ 0,0 }
 {
 }
 
 void Collider::CheckCollision(Collider* pCollider)
 {
-
+	// Empty
 }
 
+void Collider::Update()
+{
+	origin += moveBuffer;
+	moveBuffer = { 0,0 };
+}
 
 // Collider Box
 Collider_Box::Collider_Box(game::Float2* pOrigin, game::Float2 sz, bool dyn, bool blck)
@@ -61,10 +67,9 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 
 		if (overlap >= 0)
 		{
-			if (block && circle->block)
+			if (block && circle->block && dynamic)
 			{
-				if (dynamic) origin -= vec * (overlap / length);
-				if (pCollider->dynamic) pCollider->origin += vec * (overlap / length);
+				moveBuffer -= vec * (overlap / length);
 			}
 		}
 	}
@@ -96,22 +101,12 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 
 		if (shortest >= 0)
 		{
-			if (block && box->block)
+			if (block && box->block && dynamic)
 			{
-				if (dynamic)
-				{
-					if (t == shortest) origin.y -= t;
-					if (b == shortest) origin.y += b;
-					if (l == shortest) origin.x += l;
-					if (r == shortest) origin.x -= r;
-				}
-				if (pCollider->dynamic)
-				{
-					if (t == shortest) pCollider->origin.y += t;
-					if (b == shortest) pCollider->origin.y -= b;
-					if (l == shortest) pCollider->origin.x -= l;
-					if (r == shortest) pCollider->origin.x += r;
-				}
+				if (t == shortest) moveBuffer.y -= t;
+				if (b == shortest) moveBuffer.y += b;
+				if (l == shortest) moveBuffer.x += l;
+				if (r == shortest) moveBuffer.x -= r;
 			}
 		}
 	}
@@ -159,10 +154,9 @@ void Collider_Circle::CheckCollision(Collider* pCollider)
 
 		if (overlap >= 0)
 		{
-			if (block && box->block)
+			if (block && box->block && dynamic)
 			{
-				if (dynamic) origin -= vec * (overlap / length);
-				if (pCollider->dynamic) pCollider->origin += vec * (overlap / length);
+				moveBuffer -= vec * (overlap / length);
 			}
 		}
 	}

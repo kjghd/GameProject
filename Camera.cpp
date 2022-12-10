@@ -25,6 +25,15 @@ void Camera::SetZoom(float amount)
 {
 	m_zoom = amount;
 }
+void Camera::DecreaseZoom(float factor)
+{
+	m_zoom -= m_zoom * factor;
+}
+void Camera::IncreaseZoom(float factor)
+{
+	m_zoom += m_zoom * factor;
+}
+
 float Camera::GetZoom()
 {
 	return m_zoom;

@@ -8,7 +8,11 @@ public:
 	bool dynamic;
 	bool block;
 
+	game::Float2 moveBuffer;
+
 	Collider(game::Float2* pOrigin, bool dyn = true, bool blck = true);
+
+	void Update();
 
 	virtual void CheckCollision(Collider* pCollider);
 };

@@ -8,7 +8,7 @@ Player::Player()
 	m_location({ 0,0 }),
 	m_spriteOffset({ 0,.5 }),
 	m_size({ 1,1.5 }),
-	m_texture(T_Shadow),
+	m_texture(T_Wallace),
 	m_speed(5),
 	m_collider(Collider_Circle(&m_location, .5, true, true))
 {

@@ -12,5 +12,7 @@ enum Textures
 	T_Red,
 	T_Yellow,
 
+	T_Wallace,
+
 	T_COUNT
 };
