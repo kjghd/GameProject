@@ -4,6 +4,7 @@
 #include <fileapi.h>
 #include <fstream>
 #include <string>
+#include <algorithm>
 
 
 Scene::Scene()
@@ -23,6 +24,12 @@ Camera& Scene::GetCamera()
 
 void Scene::Update(Input* pInput, float deltaTime)
 {
+	// Destroy.
+	std::sort(vDestroyQueue.begin(), vDestroyQueue.end(), std::greater<size_t>());
+	for (const auto& destroyIndex : vDestroyQueue)
+		vTiles.erase(vTiles.begin() + destroyIndex);
+	vDestroyQueue.clear();
+
 	// Spawn.
 	while (!vSpawnQueue.empty())
 	{
@@ -33,6 +40,31 @@ void Scene::Update(Input* pInput, float deltaTime)
 	// Camera controls.
 	if (pInput->CheckHeld(BTN_Q)) camera.DecreaseZoom(.1f);
 	if (pInput->CheckHeld(BTN_E)) camera.IncreaseZoom(.1f);
+	
+	// Tile delete controls
+	if (pInput->CheckHeld(BTN_RMB))
+	{
+		game::Float2 loc{
+			camera.ScreenLocToWorldLoc(
+					pInput->GetMouseLoc().x,
+					pInput->GetMouseLoc().y
+				)
+		};
+		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
+
+		size_t i{};
+		for (auto& tile : vTiles)
+		{
+			game::Float2 tileLocRounded{
+				roundf(tile.m_location.x),
+				roundf(tile.m_location.y)
+			};
+			if (tileLocRounded == locRounded)
+				QueueToDestroy(i);
+			++i;
+		}
+
+	}
 
 	// Tile spawn controls.
 	if (pInput->CheckHeld(BTN_LMB))
@@ -47,11 +79,12 @@ void Scene::Update(Input* pInput, float deltaTime)
 
 		bool canSpawn{ true };
 		for (auto& tile : vTiles)
-			if (tile.m_location == locRounded) canSpawn = false;
+			if (tile.m_location == locRounded && tile.m_sprite.layer < SL_Floor) canSpawn = false;
 
 		if (canSpawn)
 			QueueToSpawn(current_prefab, locRounded);
 	}
+
 	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_Block_Wall;
 	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Block_Floor;
 	if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Block_Dynamic;
@@ -94,6 +127,11 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
 	vSpawnQueue.push(*prefabList.Get(prefab));
 	vSpawnQueue.top().m_location = location;
+}
+
+void Scene::QueueToDestroy(size_t tileIndex)
+{
+	vDestroyQueue.push_back(tileIndex);
 }
 
 void Scene::Save()
