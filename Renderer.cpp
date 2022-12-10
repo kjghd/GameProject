@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Prefabs.h"
 
+#include <algorithm>
 
 Renderer::Renderer()
 	:
@@ -24,20 +25,26 @@ void Renderer::Render()
 	m_pCamera = &m_pScene->GetCamera();
 
 	// Blocks
-	for (auto& tile : m_pScene->vTiles)
-	{
-		game::Rect rect{
-			m_pCamera->WorldTransformToScreenRect(
-				tile.m_location + tile.m_sprite.offset,
-				tile.m_sprite.size
-			)
-		};
+	std::sort(m_pScene->vTiles.begin(), m_pScene->vTiles.end(), Tile::CompareRenderLayer);
 
-		m_pGraphics->DrawBitmap(
-			D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-			tile.m_sprite.texture
-		);
-	}
+	for (int i{ SL_COUNT }; i >= 0 ; --i )
+		for (auto& tile : m_pScene->vTiles)
+		{
+			if (tile.m_sprite.layer == i)
+			{
+				game::Rect rect{
+				m_pCamera->WorldTransformToScreenRect(
+					tile.m_location + tile.m_sprite.offset,
+					tile.m_sprite.size
+				)
+				};
+
+				m_pGraphics->DrawBitmap(
+					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+					tile.m_sprite.texture
+				);
+			}
+		}
 
 	// Block preview
 	m_pGraphics->DrawBitmap(
@@ -68,13 +75,6 @@ void Renderer::Render()
 		{playerLoc.x, playerLoc.y},
 		m_pCamera->WU_to_SU(m_pScene->player.m_collider.radius)
 	);
-	
-	/*game::Float2 center{ m_pCamera->WorldLocToScreenLoc(0,0) };
-
-	m_pGraphics->DrawBitmap(
-		D2D1::RectF(center.x - 10, center.y - 10, center.x + 10, center.y + 10),
-		T_Error
-	);*/
 
 	m_pGraphics->EndDraw();
 

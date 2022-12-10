@@ -7,7 +7,7 @@
 Player::Player()
 	:
 	m_location({ 0,0 }),
-	m_sprite(&m_location, T_Wallace, { 1, 1.5 }, { 0, 0.3334 }),
+	m_sprite(&m_location, SL_Player, T_Wallace, { 1, 1.5 }, { 0, 0.3334 }),
 	m_collider(Collider_Circle(&m_location, .5, true, true)),
 	m_speed(5)
 {
