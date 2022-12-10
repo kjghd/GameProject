@@ -19,7 +19,7 @@ Camera& Scene::GetCamera()
 	return camera;
 }
 
-void Scene::Update(Input* pInput, double deltaTime)
+void Scene::Update(Input* pInput, float deltaTime)
 {
 	// Spawn.
 	while (!vSpawnQueue.empty())
@@ -29,8 +29,8 @@ void Scene::Update(Input* pInput, double deltaTime)
 	}
 
 	// Camera controls.
-	if (pInput->CheckHeld(BTN_Q)) camera.DecreaseZoom(.1);
-	if (pInput->CheckHeld(BTN_E)) camera.IncreaseZoom(.1);
+	if (pInput->CheckHeld(BTN_Q)) camera.DecreaseZoom(.1f);
+	if (pInput->CheckHeld(BTN_E)) camera.IncreaseZoom(.1f);
 
 	// Tile spawn controls.
 	if (pInput->CheckHeld(BTN_LMB))

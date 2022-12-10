@@ -24,7 +24,7 @@ public:
 
 	Camera& GetCamera();
 
-	void Update(Input* pInput, double deltaTime);
+	void Update(Input* pInput, float deltaTime);
 
 	void QueueToSpawn(int prefab, game::Float2 location = {0,0});
 

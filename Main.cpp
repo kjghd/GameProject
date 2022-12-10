@@ -139,7 +139,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 
-		g_scene.Update(&g_input, g_timer.deltaTime);
+		g_scene.Update(&g_input, static_cast<float>(g_timer.deltaTime));
 
 		g_renderer.Render();
 	}
