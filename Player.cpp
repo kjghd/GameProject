@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 
+
 Player::Player()
 	:
 	m_location({ 0,0 }),

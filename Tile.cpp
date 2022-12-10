@@ -1,5 +1,6 @@
 #include "Tile.h"
 
+
 Tile::Tile()
 	:
 	m_location{ 0,0 },

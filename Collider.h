@@ -1,5 +1,7 @@
 #pragma once
+
 #include "DataTypes.h"
+
 
 class Collider
 {
@@ -10,7 +12,7 @@ public:
 
 	game::Float2 moveBuffer;
 
-	Collider(game::Float2* pOrigin, bool dyn = true, bool blck = true);
+	Collider(game::Float2* pOrigin, bool dynamic = true, bool block = true);
 
 	void Update();
 
@@ -21,7 +23,7 @@ class Collider_Box : public Collider
 public:
 	game::Float2 size;
 
-	Collider_Box(game::Float2* pOrigin, game::Float2 sz = { 1,1 }, bool dyn = true, bool blck = true);
+	Collider_Box(game::Float2* pOrigin, game::Float2 size = { 1,1 }, bool dynamic = true, bool block = true);
 	Collider_Box(game::Float2* pOrigin, const Collider_Box& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;
@@ -40,7 +42,7 @@ class Collider_Circle : public Collider
 public:
 	float radius;
 
-	Collider_Circle(game::Float2* pOrigin, float r, bool dyn = true, bool blck = true);
+	Collider_Circle(game::Float2* pOrigin, float radius = 1.f, bool dynamic = true, bool block = true);
 
 	virtual void CheckCollision(Collider* pCollider) override;
 };

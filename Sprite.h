@@ -1,6 +1,8 @@
 #pragma once
+
 #include "DataTypes.h"
 #include "Textures.h"
+
 
 class Sprite
 {

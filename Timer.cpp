@@ -1,5 +1,6 @@
 #include "Timer.h"
 
+
 void Timer::Start()
 {
 	QueryPerformanceFrequency(&frequency);

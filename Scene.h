@@ -1,4 +1,5 @@
 #pragma once
+
 #include "DataTypes.h"
 #include "Camera.h"
 #include "Player.h"

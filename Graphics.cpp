@@ -3,6 +3,7 @@
 
 #pragma comment(lib, "d2d1")
 
+
 void Graphics::Init(HWND hWnd)
 {
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);

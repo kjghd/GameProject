@@ -1,5 +1,7 @@
 #pragma once
+
 #include "DataTypes.h"
+
 
 class Camera
 {

@@ -1,5 +1,6 @@
 #include "Input.h"
 
+
 Input::Input()
 	:
 	mouseLoc{ 0,0 }

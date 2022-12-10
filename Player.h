@@ -1,8 +1,10 @@
 #pragma once
+
 #include "DataTypes.h"
 #include "Textures.h"
 #include "Collider.h"
 #include "Sprite.h"
+
 
 class Player
 {

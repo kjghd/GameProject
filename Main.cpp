@@ -3,8 +3,10 @@
 #include "Timer.h"
 #include "Input.h"
 #include "Scene.h"
+
 #include <Windows.h>
 #include <Windowsx.h>
+
 
 // Globals.
 static Graphics g_graphics;

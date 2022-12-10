@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+
 game::Int2 Camera::m_screenResolution = { 640,480 };
 
 Camera::Camera()

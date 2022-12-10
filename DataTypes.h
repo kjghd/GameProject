@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace game
 {
 	struct Int2
