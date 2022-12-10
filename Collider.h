@@ -21,7 +21,7 @@ class Collider_Box : public Collider
 public:
 	game::Float2 size;
 
-	Collider_Box(game::Float2* pOrigin, game::Float2 sz, bool dyn = true, bool blck = true);
+	Collider_Box(game::Float2* pOrigin, game::Float2 sz = { 1,1 }, bool dyn = true, bool blck = true);
 	Collider_Box(game::Float2* pOrigin, const Collider_Box& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 
+
 // Collider
 Collider::Collider(game::Float2* pOrigin, bool dyn, bool blck)
 	:
