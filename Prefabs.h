@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Tile.h"
+#include "GameObject.h"
 #include "PrefabTags.h"
 
 #include <vector>
@@ -8,12 +8,14 @@
 
 class PrefabList
 {
-	Tile prefabs[PREFAB_COUNT];
+	GameObject* prefabs[PREFAB_COUNT];
 
 public:
 	PrefabList();
 
-	const Tile* Get(int prefabTag);
+	~PrefabList();
+
+	GameObject* Get(int prefabTag);
 };
 
 static PrefabList prefabList;

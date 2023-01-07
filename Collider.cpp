@@ -115,10 +115,16 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 
 
 // Collider Circle
-Collider_Circle::Collider_Circle(game::Float2* pOrigin, float r, bool dyn, bool blck)
+Collider_Circle::Collider_Circle(game::Float2* pOrigin, float radius, bool dynamic, bool block)
 	:
-	Collider(pOrigin, dyn, blck),
-	radius(r)
+	Collider(pOrigin, dynamic, block),
+	radius(radius)
+{
+}
+Collider_Circle::Collider_Circle(game::Float2* pOrigin, const Collider_Circle& collider)
+	:
+	Collider(pOrigin, collider.dynamic, collider.block),
+	radius(collider.radius)
 {
 }
 
@@ -128,7 +134,17 @@ void Collider_Circle::CheckCollision(Collider* pCollider)
 	if (dynamic_cast<Collider_Circle*>(pCollider))
 	{
 		Collider_Circle* circle{ dynamic_cast<Collider_Circle*>(pCollider) };
-
+		float length = radius + circle->radius;
+		game::Float2 vec{ circle->origin - origin };
+		float distance = std::sqrtf(std::powf(vec.x, 2.f) + std::powf(vec.y, 2.f));
+		float overlap = distance - length;
+		if (overlap <= 0)
+		{
+			if (block && circle->block && dynamic)
+			{
+				moveBuffer += vec * (overlap / distance);
+			}
+		}
 	}
 	// Circle vs box
 	else if (dynamic_cast<Collider_Box*>(pCollider))

@@ -25,30 +25,30 @@ void Renderer::Render()
 	m_pCamera = &m_pScene->GetCamera();
 
 	// Blocks
-	std::sort(m_pScene->vTiles.begin(), m_pScene->vTiles.end(), Tile::CompareRenderLayer);
+	std::sort(m_pScene->vpGameObjects.begin(), m_pScene->vpGameObjects.end(), GameObject::CompareRenderLayer);
 
 	for (int i{ SL_COUNT }; i >= 0 ; --i )
-		for (auto& tile : m_pScene->vTiles)
+		for (auto& pGameObject : m_pScene->vpGameObjects)
 		{
-			if (tile.m_sprite.layer == i)
+			if (pGameObject->m_sprite.layer == i)
 			{
 				game::Rect rect{
 				m_pCamera->WorldTransformToScreenRect(
-					tile.m_location + tile.m_sprite.offset,
-					tile.m_sprite.size
+					pGameObject->m_location + pGameObject->m_sprite.offset,
+					pGameObject->m_sprite.size
 				)
 				};
 
 				m_pGraphics->DrawBitmap(
 					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-					tile.m_sprite.texture
+					pGameObject->m_sprite.texture
 				);
 			}
 		}
 
 	// Block preview
 	m_pGraphics->DrawBitmap(
-		D2D1::RectF(0, 0, 40, 40),
+		D2D1::RectF(0, 0, 60, 60),
 		prefabList.Get(m_pScene->current_prefab)->m_sprite.texture
 	);
 

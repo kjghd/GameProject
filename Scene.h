@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Tile.h"
+#include "Ball.h"
 #include "Input.h"
 
 #include <vector>
@@ -13,11 +14,15 @@ class Scene
 {
 	const char* name;
 	Camera camera;
-	std::stack<Tile> vSpawnQueue;
+	std::stack<GameObject*> vpSpawnQueue;
+
+
 	std::vector<size_t> vDestroyQueue;
 
+
 public:
-	std::vector<Tile> vTiles;
+	std::vector<GameObject*> vpGameObjects;
+
 	int current_prefab;
 
 	Player player;

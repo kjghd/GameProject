@@ -13,6 +13,10 @@ enum Textures
 	T_Red,
 	T_Yellow,
 
+	T_BallBlue,
+	T_BallGreen,
+	T_BallRed,
+	T_BallYellow,
 
 	T_COUNT
 };

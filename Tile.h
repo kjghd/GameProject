@@ -1,19 +1,12 @@
 #pragma once
 
-#include "DataTypes.h"
-#include "Textures.h"
-#include "Sprite.h"
+#include "GameObject.h"
 #include "Collider.h"
 
-#include <memory>
 
-
-class Tile
+class Tile : public GameObject
 {
 public:
-	game::Float2 m_location;
-
-	Sprite m_sprite;
 	Collider_Box m_collider;
 
 	Tile();
@@ -32,10 +25,8 @@ public:
 	Tile& operator =(const Tile& tile)
 	{
 		m_location = tile.m_location;
-		m_sprite = Sprite(&m_location, tile.m_sprite),
+		m_sprite = Sprite(&m_location, tile.m_sprite);
 		m_collider = Collider_Box(&m_location, tile.m_collider);
 		return *this;
 	}
-
-	static bool CompareRenderLayer(Tile& tileA, Tile& tileB);
 };

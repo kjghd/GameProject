@@ -30,11 +30,19 @@ void Graphics::Init(HWND hWnd)
 
 	LoadImageFromFile(L"Data/Textures/Error.png", T_Error);
 	LoadImageFromFile(L"Data/Textures/Shadow.png", T_Shadow);
+	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
+
 	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
 	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);
 	LoadImageFromFile(L"Data/Textures/Block_Red.png", T_Red);
 	LoadImageFromFile(L"Data/Textures/Block_Yellow.png", T_Yellow);
-	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
+
+	LoadImageFromFile(L"Data/Textures/Ball_Blue.png", T_BallBlue);
+	LoadImageFromFile(L"Data/Textures/Ball_Green.png", T_BallGreen);
+	LoadImageFromFile(L"Data/Textures/Ball_Red.png", T_BallRed);
+	LoadImageFromFile(L"Data/Textures/Ball_Yellow.png", T_BallYellow);
+
+
 
 	windowDPI = GetDpiForWindow(hWnd);
 

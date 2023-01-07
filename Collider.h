@@ -43,6 +43,16 @@ public:
 	float radius;
 
 	Collider_Circle(game::Float2* pOrigin, float radius = 1.f, bool dynamic = true, bool block = true);
+	Collider_Circle(game::Float2* pOrigin, const Collider_Circle& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;
+
+	Collider_Circle& operator =(const Collider_Circle& collider)
+	{
+		origin = collider.origin;
+		dynamic = collider.dynamic;
+		block = collider.block;
+		radius = collider.radius;
+		return *this;
+	}
 };
