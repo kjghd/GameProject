@@ -31,6 +31,7 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/Error.png", T_Error);
 	LoadImageFromFile(L"Data/Textures/Shadow.png", T_Shadow);
 	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
+	LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
 
 	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
 	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);

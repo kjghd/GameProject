@@ -14,6 +14,8 @@ class Ball : public GameObject
 public:
 	Collider_Circle m_collider;
 
+	virtual void Update() override;
+
 	Ball();
 	Ball(
 		game::Float2 location,

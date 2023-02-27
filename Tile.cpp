@@ -29,3 +29,8 @@ Tile::Tile(const Tile& tile)
 	m_collider(&m_location, tile.m_collider)
 {
 }
+
+void Tile::Update()
+{
+	m_collider.Update();
+}

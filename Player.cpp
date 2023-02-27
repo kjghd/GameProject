@@ -1,21 +1,16 @@
 #include "Player.h"
 
-#include <cmath>
-#include <algorithm>
-
 
 Player::Player()
 	:
-	m_location({ 0,0 }),
-	m_sprite(&m_location, SL_Player, T_Wallace, { 1, 1.5 }, { 0, 0.3334 }),
-	m_collider(Collider_Circle(&m_location, .5, true, true)),
+	Ball({ 0,0 }, SL_Object, T_Wallace, { 1, 1.5 }, { 0, 0.5 }, .3, true, true),
 	m_speed(5)
 {
 }
 
 void Player::Update(float deltaTime)
 {
-
+	m_collider.Update();
 }
 
 void Player::Move(game::Float2 direction, float deltaTime)

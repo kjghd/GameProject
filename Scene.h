@@ -10,8 +10,10 @@
 #include <vector>
 #include <stack>
 
+
 class Scene
 {
+	Input* pInput;
 	const char* name;
 	Camera camera;
 	std::stack<GameObject*> vpSpawnQueue;
@@ -25,13 +27,14 @@ public:
 
 	int current_prefab;
 
-	Player player;
+	Player* pPlayer;
 
-	Scene();
+	Scene(Input* pInput);
 
 	Camera& GetCamera();
+	Input& GetInput();
 
-	void Update(Input* pInput, float deltaTime);
+	void Update(float deltaTime);
 
 	void QueueToSpawn(int prefab, game::Float2 location = {0,0});
 	void QueueToDestroy(size_t tileIndex);

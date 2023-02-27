@@ -28,12 +28,22 @@ GameObject::GameObject(const game::Float2 location, const Sprite& sprite)
 {
 }
 
-void GameObject::Nothing()
+void GameObject::Update()
 {
 	// Does nothing
 }
 
 bool GameObject::CompareRenderLayer(GameObject* gameObjectA, GameObject* gameObjectB)
 {
-	return gameObjectA->m_sprite.layer < gameObjectB->m_sprite.layer;
+	return gameObjectA->m_sprite.layer > gameObjectB->m_sprite.layer;
+}
+
+bool GameObject::CompareLocationX(GameObject* gameObjectA, GameObject* gameObjectB)
+{
+	return gameObjectA->m_location.x < gameObjectB->m_location.x;
+}
+
+bool GameObject::CompareLocationY(GameObject* gameObjectA, GameObject* gameObjectB)
+{
+	return gameObjectA->m_location.y > gameObjectB->m_location.y;
 }

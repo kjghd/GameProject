@@ -23,28 +23,76 @@ void Renderer::Render()
 	m_pGraphics->ClearScreen();
 
 	m_pCamera = &m_pScene->GetCamera();
+	
 
-	// Blocks
-	std::sort(m_pScene->vpGameObjects.begin(), m_pScene->vpGameObjects.end(), GameObject::CompareRenderLayer);
+	// Sort for rendering.
+	std::vector<GameObject*> vpUnsorted{ m_pScene->vpGameObjects };
+	std::vector<GameObject*> vpSorted;
 
-	for (int i{ SL_COUNT }; i >= 0 ; --i )
-		for (auto& pGameObject : m_pScene->vpGameObjects)
+	while (!vpUnsorted.empty())
+	{
+		// Find lowest sprite.
+		GameObject* pLowestFound{ nullptr };
+		for (auto& pGameObject : vpUnsorted)
 		{
-			if (pGameObject->m_sprite.layer == i)
-			{
-				game::Rect rect{
-				m_pCamera->WorldTransformToScreenRect(
-					pGameObject->m_location + pGameObject->m_sprite.offset,
-					pGameObject->m_sprite.size
-				)
-				};
+			if (!pLowestFound)
+				pLowestFound = pGameObject;
 
-				m_pGraphics->DrawBitmap(
-					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-					pGameObject->m_sprite.texture
-				);
+			else if (pGameObject != pLowestFound)
+			{
+				// under
+				if (pGameObject->m_sprite.layer > pLowestFound->m_sprite.layer)
+					pLowestFound = pGameObject;
+
+				// above
+				else if (pGameObject->m_location.y > pLowestFound->m_location.y)
+					pLowestFound = pGameObject;
+
+				// row and left of
+				else if (pGameObject->m_location.y == pLowestFound->m_location.y &&
+					pGameObject->m_location.x < pLowestFound->m_location.x)
+					pLowestFound = pGameObject;
 			}
 		}
+
+		// Update Lists.
+		if (pLowestFound)
+		{
+			// Remove from unsorted.
+			int i{ 0 };
+			for (auto& pGameObject : vpUnsorted)
+			{
+				if (pGameObject == pLowestFound)
+				{
+					vpUnsorted.erase(vpUnsorted.begin() + i);
+					break;
+				}
+
+				++i;
+			}
+
+			// Add to sorted.
+			vpSorted.push_back(pLowestFound);
+		}
+	}
+
+
+	// Render
+	for (auto& pGameObject : vpSorted)
+	{
+		game::Rect rect{
+				m_pCamera->WorldTransformToScreenRect(
+				pGameObject->m_location + pGameObject->m_sprite.offset,
+				pGameObject->m_sprite.size
+				)
+		};
+
+		m_pGraphics->DrawBitmap(
+			D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+			pGameObject->m_sprite.texture
+		);
+	}
+
 
 	// Block preview
 	m_pGraphics->DrawBitmap(
@@ -52,29 +100,23 @@ void Renderer::Render()
 		prefabList.Get(m_pScene->current_prefab)->m_sprite.texture
 	);
 
-	// Player
-	game::Rect playerRect{
-		m_pCamera->WorldTransformToScreenRect(
-			m_pScene->player.m_location + m_pScene->player.m_sprite.offset,
-			m_pScene->player.m_sprite.size
+	// Cursor
+	game::Float2 loc{
+	m_pCamera->ScreenLocToWorldLoc(
+			m_pScene->GetInput().GetMouseLoc().x,
+			m_pScene->GetInput().GetMouseLoc().y
 		)
 	};
+	game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
 
-	m_pGraphics->DrawBitmap(
-		D2D1::RectF(playerRect.l,playerRect.t, playerRect.r, playerRect.b),
-		m_pScene->player.m_sprite.texture
-	);
-	// Player Collision Debug
-	game::Float2 playerLoc{
-		m_pCamera->WorldLocToScreenLoc(
-			m_pScene->player.m_location.x,
-			m_pScene->player.m_location.y
+	game::Float2 locScreen{
+	m_pCamera->WorldLocToScreenLoc(
+			locRounded.x,
+			locRounded.y
 		)
 	};
-	m_pGraphics->DebugCircle(
-		{playerLoc.x, playerLoc.y},
-		m_pCamera->WU_to_SU(m_pScene->player.m_collider.radius)
-	);
+	
+	m_pGraphics->DebugCircle({ locScreen.x, locScreen.y }, m_pCamera->WU_to_SU(.5f));
 
 	m_pGraphics->EndDraw();
 

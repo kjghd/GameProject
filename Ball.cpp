@@ -30,3 +30,8 @@ Ball::Ball(const Ball& ball)
 	m_collider(&m_location, ball.m_collider)
 {
 }
+
+void Ball::Update()
+{
+	m_collider.Update();
+}

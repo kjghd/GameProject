@@ -7,13 +7,12 @@
 
 class GameObject
 {
-	virtual void Nothing();
-
 public:
 	game::Float2 m_location;
 
 	Sprite m_sprite;
 
+	virtual void Update();
 
 	GameObject();
 
@@ -28,6 +27,9 @@ public:
 	GameObject(const game::Float2 location, const Sprite& sprite);
 
 	static bool CompareRenderLayer(GameObject* gameObjectA, GameObject* gameObjectB);
+	static bool CompareLocationX(GameObject* gameObjectA, GameObject* gameObjectB);
+	static bool CompareLocationY(GameObject* gameObjectA, GameObject* gameObjectB);
+
 
 };
 

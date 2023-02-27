@@ -7,14 +7,14 @@
 #include <algorithm>
 
 
-Scene::Scene()
+Scene::Scene(Input* pInput)
 	:
+	pInput(pInput),
 	camera(Camera()),
 	current_prefab(PREFAB_Block_Dynamic),
-	player(Player()),
+	pPlayer(nullptr),
 	name("cool level")
 {
-	//Load();
 }
 
 Camera& Scene::GetCamera()
@@ -22,7 +22,13 @@ Camera& Scene::GetCamera()
 	return camera;
 }
 
-void Scene::Update(Input* pInput, float deltaTime)
+Input& Scene::GetInput()
+{
+	return *pInput;
+}
+
+
+void Scene::Update(float deltaTime)
 {
 	// Destroy.
 	std::sort(vDestroyQueue.begin(), vDestroyQueue.end(), std::greater<size_t>());
@@ -35,10 +41,18 @@ void Scene::Update(Input* pInput, float deltaTime)
 	vDestroyQueue.clear();
 
 	// Spawn.
+	if (!pPlayer) QueueToSpawn(PREFAB_Player);
 	while (!vpSpawnQueue.empty())
 	{
 		vpGameObjects.push_back(vpSpawnQueue.top());
 		vpSpawnQueue.pop();
+	}
+
+	if (!pPlayer)
+	{
+		for (const auto& pObject : vpGameObjects)
+			if (dynamic_cast<Player*>(pObject))
+				pPlayer = dynamic_cast<Player*>(pObject);
 	}
 
 	// Camera controls.
@@ -71,7 +85,7 @@ void Scene::Update(Input* pInput, float deltaTime)
 	}
 
 	// Tile spawn controls.
-	if (pInput->CheckHeld(BTN_LMB))
+	if (pInput->CheckPressed(BTN_LMB))
 	{
 		game::Float2 loc{
 			camera.ScreenLocToWorldLoc(
@@ -83,7 +97,7 @@ void Scene::Update(Input* pInput, float deltaTime)
 
 		bool canSpawn{ true };
 		for (auto& pGameObject : vpGameObjects)
-			if (pGameObject->m_location == locRounded && pGameObject->m_sprite.layer < SL_Floor) canSpawn = false;
+			if (pGameObject->m_location == locRounded && pGameObject->m_sprite.layer < SL_Object) canSpawn = false;
 
 		if (canSpawn)
 			QueueToSpawn(current_prefab, locRounded);
@@ -94,25 +108,23 @@ void Scene::Update(Input* pInput, float deltaTime)
 	if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Block_Dynamic;
 	if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_BallStatic;
 	if (pInput->CheckPressed(BTN_5)) current_prefab = PREFAB_BallDynamic;
-
+	if (pInput->CheckPressed(BTN_6)) current_prefab = PREFAB_Mushroom;
 
 	// Levels
 	//if (pInput->CheckPressed(BTN_0)) Save();
 	//if (pInput->CheckPressed(BTN_9)) Load();
 
 	// Player
-	if (pInput->CheckHeld(BTN_W)) player.Move({ 0, 1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_S)) player.Move({ 0,-1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_A)) player.Move({ -1, 0 }, deltaTime);
-	if (pInput->CheckHeld(BTN_D)) player.Move({ 1, 0 }, deltaTime);
+	if (pInput->CheckHeld(BTN_W)) pPlayer->Move({ 0, 1 }, deltaTime);
+	if (pInput->CheckHeld(BTN_S)) pPlayer->Move({ 0,-1 }, deltaTime);
+	if (pInput->CheckHeld(BTN_A)) pPlayer->Move({ -1, 0 }, deltaTime);
+	if (pInput->CheckHeld(BTN_D)) pPlayer->Move({ 1, 0 }, deltaTime);
 
 	// Collision
 	for (auto& pObjectA : vpGameObjects)
 	{
 		if (dynamic_cast<Tile*>(pObjectA))
-		{
 			for (auto& pObjectB : vpGameObjects)
-			{
 				if (pObjectB != pObjectA)
 				{
 					if (dynamic_cast<Tile*>(pObjectB))
@@ -120,14 +132,9 @@ void Scene::Update(Input* pInput, float deltaTime)
 					else if (dynamic_cast<Ball*>(pObjectB))
 						dynamic_cast<Tile*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
 				}
-			}
-			dynamic_cast<Tile*>(pObjectA)->m_collider.CheckCollision(&player.m_collider);
-			player.m_collider.CheckCollision(&dynamic_cast<Tile*>(pObjectA)->m_collider);
-		}
+
 		if (dynamic_cast<Ball*>(pObjectA))
-		{
 			for (auto& pObjectB : vpGameObjects)
-			{
 				if (pObjectB != pObjectA)
 				{
 					if (dynamic_cast<Tile*>(pObjectB))
@@ -135,27 +142,16 @@ void Scene::Update(Input* pInput, float deltaTime)
 					else if (dynamic_cast<Ball*>(pObjectB))
 						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
 				}
-			}
-			dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&player.m_collider);
-			player.m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectA)->m_collider);
-		}
 	}
 
 	// Update
 	for (auto& pGameObject : vpGameObjects)
-	{
-		if (dynamic_cast<Tile*>(pGameObject))
-			dynamic_cast<Tile*>(pGameObject)->m_collider.Update();
-		else if (dynamic_cast<Ball*>(pGameObject))
-			dynamic_cast<Ball*>(pGameObject)->m_collider.Update();
-	}
+		pGameObject->Update();
 
-	player.Update(deltaTime);
-	player.m_collider.Update();
-
+	// Camera
 	game::Float2 playerCenter{
-		player.m_location.x + player.m_sprite.offset.x,
-		player.m_location.y + player.m_sprite.offset.y
+		pPlayer->m_location.x + pPlayer->m_sprite.offset.x,
+		pPlayer->m_location.y + pPlayer->m_sprite.offset.y
 	};
 	camera.MoveTo(playerCenter, deltaTime);
 }   
@@ -163,7 +159,12 @@ void Scene::Update(Input* pInput, float deltaTime)
 void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
 	GameObject* pPrefab{ prefabList.Get(prefab) };
-	if (dynamic_cast<Tile*>(pPrefab))
+	if (dynamic_cast<Player*>(pPrefab))
+	{
+		vpSpawnQueue.push(new Player(*dynamic_cast<Player*>(pPrefab)));
+		vpSpawnQueue.top()->m_location = location;
+	}
+	else if (dynamic_cast<Tile*>(pPrefab))
 	{
 		vpSpawnQueue.push(new Tile(*dynamic_cast<Tile*>(pPrefab)));
 		vpSpawnQueue.top()->m_location = location;
@@ -171,6 +172,11 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 	else if (dynamic_cast<Ball*>(pPrefab))
 	{
 		vpSpawnQueue.push(new Ball(*dynamic_cast<Ball*>(pPrefab)));
+		vpSpawnQueue.top()->m_location = location;
+	}
+	else
+	{
+		vpSpawnQueue.push(new GameObject(*pPrefab));
 		vpSpawnQueue.top()->m_location = location;
 	}
 }

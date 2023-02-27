@@ -1,18 +1,11 @@
 #pragma once
 
-#include "DataTypes.h"
-#include "Textures.h"
-#include "Collider.h"
-#include "Sprite.h"
+#include "Ball.h"
 
 
-class Player
+class Player : public Ball
 {
 public:
-	game::Float2 m_location;
-	Sprite m_sprite;
-	Collider_Circle m_collider;
-
 	float m_speed;
 
 	Player();

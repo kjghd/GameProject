@@ -7,6 +7,7 @@ enum Textures
 
 	T_Shadow,
 	T_Wallace,
+	T_Mushroom,
 
 	T_Blue,
 	T_Green,

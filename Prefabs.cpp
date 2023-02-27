@@ -1,18 +1,26 @@
 #include "Prefabs.h"
 #include "Tile.h"
 #include "Ball.h"
+#include "Player.h"
 
 
-PrefabList::PrefabList()			//		 Loc      Sprite					    Collision
-{									//		          Layer		  Texture  Size     Offset   Size     Dynamic Block
-	prefabs[PREFAB_Block_Dynamic] = new Tile({ 0,0 }, SL_Dynamic, T_Red,   { 1,1 }, { 0,0 }, { 1,1 }, true,   true );
-	prefabs[PREFAB_Block_Wall]    =	new Tile({ 0,0 }, SL_Wall,	  T_Blue,  { 1,1 }, { 0,0 }, { 1,1 }, false,  true );
-	prefabs[PREFAB_Block_Floor]   =	new Tile({ 0,0 }, SL_Floor,   T_Green, { 1,1 }, { 0,0 }, { 1,1 }, false,  false);
+PrefabList::PrefabList()
+{					
+	prefabs[PREFAB_Player] = new Player();
+
+									//		 Loc      Sprite								Collision
+									//		          Layer		 Texture  Size     Offset   Size     Dynamic Block
+	prefabs[PREFAB_Block_Dynamic] = new Tile({ 0,0 }, SL_Object, T_Red,   { 1,1 }, { 0,0 }, { 1,1 }, true,   true );
+	prefabs[PREFAB_Block_Wall]    =	new Tile({ 0,0 }, SL_Object, T_Blue,  { 1,1 }, { 0,0 }, { 1,1 }, false,  true );
 	
-								  //	   Loc      Sprite					     Collision
-								  //		        Layer    Texture     Size     Offset   Size Dynamic Block
-	prefabs[PREFAB_BallStatic]  = new Ball({ 0,0 }, SL_Wall, T_BallBlue, { 1,1 }, { 0,0 }, .5,  false,  true);
-	prefabs[PREFAB_BallDynamic] = new Ball({ 0,0 }, SL_Wall, T_BallRed, { 1,1 }, { 0,0 }, .5,  true,   true);
+	prefabs[PREFAB_Block_Floor]   =	new GameObject({ 0,0 }, SL_Floor, T_Green, { 1,1 }, { 0,0 });
+	
+								  //	   Loc      Sprite	    								   Collision
+								  //		        Layer      Texture     Size          Offset    Size Dynamic Block
+	prefabs[PREFAB_BallStatic]  = new Ball({ 0,0 }, SL_Object, T_BallBlue, { 1,1      }, { 0,0 },  .5,  false,  true);
+	prefabs[PREFAB_BallDynamic] = new Ball({ 0,0 }, SL_Object, T_BallRed,  { 1,1      }, { 0,0 },  .5,  true,   true);
+	prefabs[PREFAB_Mushroom]    = new Ball({ 0,0 }, SL_Object, T_Mushroom, { 1.5,1.92 }, { 0,.7 }, .3,  false,  true);
+
 }
 
 PrefabList::~PrefabList()

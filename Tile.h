@@ -9,6 +9,8 @@ class Tile : public GameObject
 public:
 	Collider_Box m_collider;
 
+	virtual void Update() override;
+
 	Tile();
 	Tile(
 		game::Float2 location,

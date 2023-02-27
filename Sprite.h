@@ -5,9 +5,9 @@
 
 enum SpriteLayers
 {
-	SL_Player,
-	SL_Dynamic,
-	SL_Wall,
+	SL_UI,
+	SL_FX,
+	SL_Object,
 	SL_Floor,
 	SL_DEFAULT,
 

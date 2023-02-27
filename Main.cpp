@@ -13,7 +13,7 @@ static Graphics g_graphics;
 static Renderer g_renderer;
 static Timer g_timer;
 static Input g_input;
-static Scene g_scene;
+static Scene g_scene(&g_input);
 
 // Window Procedure.
 LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -141,7 +141,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 
-		g_scene.Update(&g_input, static_cast<float>(g_timer.deltaTime));
+		g_scene.Update(static_cast<float>(g_timer.deltaTime));
 
 		g_renderer.Render();
 	}
