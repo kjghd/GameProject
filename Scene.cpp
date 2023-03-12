@@ -17,6 +17,36 @@ Scene::Scene(Input* pInput)
 {
 }
 
+void Scene::Collision()
+{
+	// Collision
+
+
+	for (auto& pObjectA : vpGameObjects)
+	{
+		if (dynamic_cast<Tile*>(pObjectA))
+			for (auto& pObjectB : vpGameObjects)
+				if (pObjectB != pObjectA)
+				{
+					if (dynamic_cast<Tile*>(pObjectB))
+						dynamic_cast<Tile*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Tile*>(pObjectB)->m_collider);
+					else if (dynamic_cast<Ball*>(pObjectB))
+						dynamic_cast<Tile*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+				}
+
+		if (dynamic_cast<Ball*>(pObjectA))
+			for (auto& pObjectB : vpGameObjects)
+				if (pObjectB != pObjectA)
+				{
+					if (dynamic_cast<Tile*>(pObjectB))
+						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Tile*>(pObjectB)->m_collider);
+					else if (dynamic_cast<Ball*>(pObjectB))
+						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+				}
+	}
+
+}
+
 Camera& Scene::GetCamera()
 {
 	return camera;
@@ -120,33 +150,11 @@ void Scene::Update(float deltaTime)
 	if (pInput->CheckHeld(BTN_A)) pPlayer->Move({ -1, 0 }, deltaTime);
 	if (pInput->CheckHeld(BTN_D)) pPlayer->Move({ 1, 0 }, deltaTime);
 
-	// Collision
-	for (auto& pObjectA : vpGameObjects)
-	{
-		if (dynamic_cast<Tile*>(pObjectA))
-			for (auto& pObjectB : vpGameObjects)
-				if (pObjectB != pObjectA)
-				{
-					if (dynamic_cast<Tile*>(pObjectB))
-						dynamic_cast<Tile*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Tile*>(pObjectB)->m_collider);
-					else if (dynamic_cast<Ball*>(pObjectB))
-						dynamic_cast<Tile*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
-				}
-
-		if (dynamic_cast<Ball*>(pObjectA))
-			for (auto& pObjectB : vpGameObjects)
-				if (pObjectB != pObjectA)
-				{
-					if (dynamic_cast<Tile*>(pObjectB))
-						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Tile*>(pObjectB)->m_collider);
-					else if (dynamic_cast<Ball*>(pObjectB))
-						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
-				}
-	}
+	Collision();
 
 	// Update
 	for (auto& pGameObject : vpGameObjects)
-		pGameObject->Update();
+		pGameObject->Update(deltaTime);
 
 	// Camera
 	game::Float2 playerCenter{
@@ -188,36 +196,72 @@ void Scene::QueueToDestroy(size_t tileIndex)
 
 void Scene::Save()
 {
-	//std::string directory{ "Data/Levels/"};
-	//directory += name;
-	//directory += ".csv";
-	//
-	//std::ofstream file;
-	//file.open(directory, std::ios_base::out);
-	//
-	//std::string buffer;
-	//for (const auto& tile : vTiles)
-	//{
-	//	// Tile
-	//	buffer += std::to_string(tile.m_location.x);		buffer += ',';
-	//	buffer += std::to_string(tile.m_location.y);		buffer += ',';
-	//	// Tile sprite
-	//	buffer += std::to_string(tile.m_sprite.layer);		buffer += ',';
-	//	buffer += std::to_string(tile.m_sprite.texture);	buffer += ',';
-	//	buffer += std::to_string(tile.m_sprite.size.x);		buffer += ',';
-	//	buffer += std::to_string(tile.m_sprite.size.y);		buffer += ',';
-	//	buffer += std::to_string(tile.m_sprite.offset.x);	buffer += ',';
-	//	buffer += std::to_string(tile.m_sprite.offset.y);	buffer += ',';
-	//	// Tile collider
-	//	buffer += std::to_string(tile.m_collider.size.x);	buffer += ',';
-	//	buffer += std::to_string(tile.m_collider.size.y);	buffer += ',';
-	//	buffer += std::to_string(tile.m_collider.dynamic);	buffer += ',';
-	//	buffer += std::to_string(tile.m_collider.block);	buffer += '\n';
-	//}
-	//
-	//file.write(buffer.c_str(), buffer.size());
-	//
-	//file.close();
+	std::string directory{ "Data/Levels/"};
+	directory += name;
+	directory += ".csv";
+	
+	std::ofstream file;
+	file.open(directory, std::ios_base::out);
+	
+	std::string buffer;
+	for (const auto& pGameObject : vpGameObjects)
+	{
+		// Location
+		buffer += std::to_string(pGameObject->m_location.x);	buffer += ',';
+		buffer += std::to_string(pGameObject->m_location.y);	buffer += ',';
+		// Sprite
+		buffer += std::to_string(pGameObject->m_sprite.layer);		buffer += ',';
+		buffer += std::to_string(pGameObject->m_sprite.texture);	buffer += ',';
+		buffer += std::to_string(pGameObject->m_sprite.size.x);		buffer += ',';
+		buffer += std::to_string(pGameObject->m_sprite.size.y);		buffer += ',';
+		buffer += std::to_string(pGameObject->m_sprite.offset.x);	buffer += ',';
+		buffer += std::to_string(pGameObject->m_sprite.offset.y);	buffer += ',';
+
+		// Ball
+		if (dynamic_cast<Ball*>(pGameObject))
+		{
+			Ball* pBall{ dynamic_cast<Ball*>(pGameObject) };
+			
+			buffer += std::to_string(pBall->m_collider.block);			buffer += ',';
+			buffer += std::to_string(pBall->m_collider.dynamic);		buffer += ',';
+			buffer += std::to_string(pBall->m_collider.hit_immovable);	buffer += ',';
+			buffer += std::to_string(pBall->m_collider.moveBuffer.x);	buffer += ',';
+			buffer += std::to_string(pBall->m_collider.moveBuffer.y);	buffer += ',';
+			buffer += std::to_string(pBall->m_collider.moving);			buffer += ',';
+			buffer += std::to_string(pBall->m_collider.origin.x);		buffer += ',';
+			buffer += std::to_string(pBall->m_collider.origin.y);		buffer += ',';
+			buffer += std::to_string(pBall->m_collider.radius);			buffer += ',';
+
+			// Player
+			if (dynamic_cast<Player*>(pGameObject))
+			{
+				Player* pPlayer{ dynamic_cast<Player*>(pGameObject) };
+
+				// Speed
+				buffer += std::to_string(pPlayer->m_speed); buffer += ',';
+			}
+		}
+		// Box
+		else if (dynamic_cast<Tile*>(pGameObject))
+		{
+			Tile* pTile{ dynamic_cast<Tile*>(pGameObject) };
+
+			buffer += std::to_string(pTile->m_collider.block);			buffer += ',';
+			buffer += std::to_string(pTile->m_collider.dynamic);		buffer += ',';
+			buffer += std::to_string(pTile->m_collider.hit_immovable);	buffer += ',';
+			buffer += std::to_string(pTile->m_collider.moveBuffer.x);	buffer += ',';
+			buffer += std::to_string(pTile->m_collider.moveBuffer.y);	buffer += ',';
+			buffer += std::to_string(pTile->m_collider.moving);			buffer += ',';
+			buffer += std::to_string(pTile->m_collider.origin.x);		buffer += ',';
+			buffer += std::to_string(pTile->m_collider.origin.y);		buffer += ',';
+			buffer += std::to_string(pTile->m_collider.size.x);			buffer += ',';
+			buffer += std::to_string(pTile->m_collider.size.y);			buffer += ',';
+		}
+	}
+	
+	file.write(buffer.c_str(), buffer.size());
+	
+	file.close();
 }
 
 void Scene::Load()

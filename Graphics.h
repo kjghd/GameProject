@@ -43,6 +43,7 @@ public:
 
 	void DrawBitmap(D2D1_RECT_F rectf, unsigned int texture);
 
+	void DebugBox(D2D1_RECT_F rectf);
 	void DebugCircle(D2D1_POINT_2F location, float radius);
 };
 

@@ -31,7 +31,7 @@ Ball::Ball(const Ball& ball)
 {
 }
 
-void Ball::Update()
+void Ball::Update(float deltaTime)
 {
 	m_collider.Update();
 }

@@ -10,7 +10,7 @@ public:
 
 	Player();
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime) override;
 
 	void Move(game::Float2 direction, float deltaTime);
 };

@@ -7,7 +7,8 @@ Renderer::Renderer()
 	:
 	m_pGraphics(nullptr),
 	m_pScene(nullptr),
-	m_pCamera(nullptr)
+	m_pCamera(nullptr),
+	m_debug(false)
 {
 }
 
@@ -86,11 +87,48 @@ void Renderer::Render()
 				pGameObject->m_sprite.size
 				)
 		};
-
+	
 		m_pGraphics->DrawBitmap(
 			D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
 			pGameObject->m_sprite.texture
 		);
+	}
+
+	// Collision Debug
+	if (m_debug)
+	{
+		for (auto& pGameObject : vpSorted)
+		{
+			if (dynamic_cast<Tile*>(pGameObject))
+			{
+				Tile* pTile{ dynamic_cast<Tile*>(pGameObject) };
+
+				game::Float2 topRight{
+					m_pCamera->WorldLocToScreenLoc(
+						pTile->m_location.x + pTile->m_collider.size.x / 2,
+						pTile->m_location.y + pTile->m_collider.size.y / 2
+					)
+				};
+				game::Float2 bottomLeft{
+					m_pCamera->WorldLocToScreenLoc(
+						pTile->m_location.x - pTile->m_collider.size.x / 2,
+						pTile->m_location.y - pTile->m_collider.size.y / 2
+					)
+				};
+
+				m_pGraphics->DebugBox(D2D1::RectF(bottomLeft.x, topRight.y, topRight.x, bottomLeft.y));
+			}
+			else if (dynamic_cast<Ball*>(pGameObject))
+			{
+				Ball* pBall{ dynamic_cast<Ball*>(pGameObject) };
+
+				game::Float2 loc{ m_pCamera->WorldLocToScreenLoc(pBall->m_location.x, pBall->m_location.y) };
+				float radius{ m_pCamera->WU_to_SU(pBall->m_collider.radius) };
+
+				m_pGraphics->DebugCircle(D2D1::Point2F(loc.x, loc.y), radius);
+			}
+		}
+
 	}
 
 

@@ -30,7 +30,7 @@ Tile::Tile(const Tile& tile)
 {
 }
 
-void Tile::Update()
+void Tile::Update(float deltaTime)
 {
 	m_collider.Update();
 }

@@ -9,12 +9,16 @@ public:
 	game::Float2& origin;
 	bool dynamic;
 	bool block;
+	bool moving;
+	bool hit_immovable;
 
 	game::Float2 moveBuffer;
 
 	Collider(game::Float2* pOrigin, bool dynamic = true, bool block = true);
 
 	void Update();
+
+	bool CheckCanMove();
 
 	virtual void CheckCollision(Collider* pCollider);
 };

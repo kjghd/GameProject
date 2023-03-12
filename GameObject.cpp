@@ -28,7 +28,7 @@ GameObject::GameObject(const game::Float2 location, const Sprite& sprite)
 {
 }
 
-void GameObject::Update()
+void GameObject::Update(float deltaTime)
 {
 	// Does nothing
 }

@@ -9,6 +9,7 @@ class Renderer
 	Graphics* m_pGraphics;
 	Scene* m_pScene;
 	Camera* m_pCamera;
+	bool m_debug;
 
 public:
 

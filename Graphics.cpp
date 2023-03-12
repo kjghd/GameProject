@@ -109,6 +109,18 @@ void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture)
 	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, 1.f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
 }
 
+void Graphics::DebugBox(D2D1_RECT_F rectf)
+{
+	D2D1_RECT_F adjustedRect{
+		rectf.left / (windowDPI / 96.f),
+		rectf.top / (windowDPI / 96.f),
+		rectf.right / (windowDPI / 96.f),
+		rectf.bottom / (windowDPI / 96.f)
+	};
+
+	pRenderTarget->DrawRectangle(adjustedRect, pDebugBrush);
+}
+
 void Graphics::DebugCircle(D2D1_POINT_2F location, float radius)
 {
 	D2D1_POINT_2F adjustedLoc{

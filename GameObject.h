@@ -12,7 +12,7 @@ public:
 
 	Sprite m_sprite;
 
-	virtual void Update();
+	virtual void Update(float deltaTime);
 
 	GameObject();
 

@@ -13,8 +13,8 @@ class Ball : public GameObject
 {
 public:
 	Collider_Circle m_collider;
-
-	virtual void Update() override;
+	
+	virtual void Update(float deltaTime) override;
 
 	Ball();
 	Ball(

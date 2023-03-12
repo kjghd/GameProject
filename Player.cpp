@@ -16,4 +16,5 @@ void Player::Update(float deltaTime)
 void Player::Move(game::Float2 direction, float deltaTime)
 {
 	m_location += direction * (m_speed * deltaTime / 1000.f);
+	m_collider.moving = true;
 }

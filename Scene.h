@@ -17,9 +17,9 @@ class Scene
 	const char* name;
 	Camera camera;
 	std::stack<GameObject*> vpSpawnQueue;
-
-
 	std::vector<size_t> vDestroyQueue;
+
+	void Collision();
 
 
 public:

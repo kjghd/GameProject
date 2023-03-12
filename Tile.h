@@ -9,7 +9,7 @@ class Tile : public GameObject
 public:
 	Collider_Box m_collider;
 
-	virtual void Update() override;
+	virtual void Update(float deltaTime) override;
 
 	Tile();
 	Tile(
