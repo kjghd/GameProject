@@ -1,19 +1,20 @@
 #include "Prefabs.h"
-#include "Tile.h"
+#include "Box.h"
 #include "Ball.h"
-#include "Player.h"
+#include "Character.h"
 
 
 PrefabList::PrefabList()
 {					
-	prefabs[PREFAB_Player] = new Player();
+	prefabs[PREFAB_Player] = new Character();
 
 									//		 Loc      Sprite								Collision
 									//		          Layer		 Texture  Size     Offset   Size     Dynamic Block
-	prefabs[PREFAB_Block_Dynamic] = new Tile({ 0,0 }, SL_Object, T_Red,   { 1,1 }, { 0,0 }, { 1,1 }, true,   true );
-	prefabs[PREFAB_Block_Wall]    =	new Tile({ 0,0 }, SL_Object, T_Blue,  { 1,1 }, { 0,0 }, { 1,1 }, false,  true );
+	prefabs[PREFAB_Block_Dynamic] = new Box({ 0,0 }, SL_Object, T_Red,   { 1,1 }, { 0,0 }, { 1,1 }, true,   true );
+	prefabs[PREFAB_Block_Wall]    =	new Box({ 0,0 }, SL_Object, T_Blue,  { 1,1 }, { 0,0 }, { 1,1 }, false,  true );
 	
 	prefabs[PREFAB_Block_Floor]   =	new GameObject({ 0,0 }, SL_Floor, T_Green, { 1,1 }, { 0,0 });
+
 	
 								  //	   Loc      Sprite	    								   Collision
 								  //		        Layer      Texture     Size          Offset    Size Dynamic Block

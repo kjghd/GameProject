@@ -41,7 +41,7 @@ public:
 
 	void ClearScreen(D2D1_COLOR_F colour = { 0,0,0,1 });
 
-	void DrawBitmap(D2D1_RECT_F rectf, unsigned int texture);
+	void DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity = 1.f);
 
 	void DebugBox(D2D1_RECT_F rectf);
 	void DebugCircle(D2D1_POINT_2F location, float radius);

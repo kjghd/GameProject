@@ -5,8 +5,8 @@ enum Textures
 {
 	T_Error,
 
-	T_Shadow,
 	T_Wallace,
+	T_WallaceB,
 	T_Mushroom,
 
 	T_Blue,

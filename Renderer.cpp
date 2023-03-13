@@ -79,29 +79,32 @@ void Renderer::Render()
 
 
 	// Render
-	for (auto& pGameObject : vpSorted)
-	{
-		game::Rect rect{
-				m_pCamera->WorldTransformToScreenRect(
-				pGameObject->m_location + pGameObject->m_sprite.offset,
-				pGameObject->m_sprite.size
-				)
-		};
-	
-		m_pGraphics->DrawBitmap(
-			D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-			pGameObject->m_sprite.texture
-		);
-	}
+	for (size_t i = SL_COUNT; i > 0 ; --i)
+		for (auto& pGameObject : vpSorted)
+			if (pGameObject->m_sprite.layer == i)
+			{
+				game::Rect rect{
+					m_pCamera->WorldTransformToScreenRect(
+					pGameObject->m_location + pGameObject->m_sprite.offset,
+					pGameObject->m_sprite.size
+					)
+				};
+
+				m_pGraphics->DrawBitmap(
+					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+					pGameObject->m_sprite.texture
+				);
+			}
+
 
 	// Collision Debug
 	if (m_debug)
 	{
 		for (auto& pGameObject : vpSorted)
 		{
-			if (dynamic_cast<Tile*>(pGameObject))
+			if (dynamic_cast<Box*>(pGameObject))
 			{
-				Tile* pTile{ dynamic_cast<Tile*>(pGameObject) };
+				Box* pTile{ dynamic_cast<Box*>(pGameObject) };
 
 				game::Float2 topRight{
 					m_pCamera->WorldLocToScreenLoc(

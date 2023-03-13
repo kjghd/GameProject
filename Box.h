@@ -4,15 +4,15 @@
 #include "Collider.h"
 
 
-class Tile : public GameObject
+class Box : public GameObject
 {
 public:
 	Collider_Box m_collider;
 
 	virtual void Update(float deltaTime) override;
 
-	Tile();
-	Tile(
+	Box();
+	Box(
 		game::Float2 location,
 		int sprite_layer,
 		int sprite_texture,
@@ -22,13 +22,13 @@ public:
 		bool collider_dynamic,
 		bool collider_block
 	);
-	Tile(const Tile& tile);
+	Box(const Box& box);
 
-	Tile& operator =(const Tile& tile)
+	Box& operator =(const Box& box)
 	{
-		m_location = tile.m_location;
-		m_sprite = Sprite(&m_location, tile.m_sprite);
-		m_collider = Collider_Box(&m_location, tile.m_collider);
+		m_location = box.m_location;
+		m_sprite = Sprite(&m_location, box.m_sprite);
+		m_collider = Collider_Box(&m_location, box.m_collider);
 		return *this;
 	}
 };

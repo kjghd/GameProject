@@ -2,8 +2,8 @@
 
 #include "DataTypes.h"
 #include "Camera.h"
-#include "Player.h"
-#include "Tile.h"
+#include "Character.h"
+#include "Box.h"
 #include "Ball.h"
 #include "Input.h"
 
@@ -27,7 +27,7 @@ public:
 
 	int current_prefab;
 
-	Player* pPlayer;
+	Character* pPlayer;
 
 	Scene(Input* pInput);
 

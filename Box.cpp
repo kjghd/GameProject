@@ -1,7 +1,7 @@
-#include "Tile.h"
+#include "Box.h"
 
 
-Tile::Tile()
+Box::Box()
 	:
 	GameObject(),
 	m_collider(&m_location)
@@ -9,7 +9,7 @@ Tile::Tile()
 }
 
 
-Tile::Tile(game::Float2 location,
+Box::Box(game::Float2 location,
 	int sprite_layer,
 	int sprite_texture,
 	game::Float2 sprite_size,
@@ -23,14 +23,14 @@ Tile::Tile(game::Float2 location,
 {
 }
 
-Tile::Tile(const Tile& tile)
+Box::Box(const Box& box)
 	:
-	GameObject(tile.m_location, tile.m_sprite),
-	m_collider(&m_location, tile.m_collider)
+	GameObject(box.m_location, box.m_sprite),
+	m_collider(&m_location, box.m_collider)
 {
 }
 
-void Tile::Update(float deltaTime)
+void Box::Update(float deltaTime)
 {
 	m_collider.Update();
 }

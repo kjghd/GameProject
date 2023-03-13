@@ -3,12 +3,12 @@
 #include "Ball.h"
 
 
-class Player : public Ball
+class Character : public Ball
 {
 public:
 	float m_speed;
 
-	Player();
+	Character();
 
 	virtual void Update(float deltaTime) override;
 

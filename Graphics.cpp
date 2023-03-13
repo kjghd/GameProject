@@ -29,8 +29,8 @@ void Graphics::Init(HWND hWnd)
 	vpBitmaps.resize(T_COUNT);
 
 	LoadImageFromFile(L"Data/Textures/Error.png", T_Error);
-	LoadImageFromFile(L"Data/Textures/Shadow.png", T_Shadow);
 	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
+	LoadImageFromFile(L"Data/Textures/Wallace_2.png", T_WallaceB);
 	LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
 
 	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
@@ -96,7 +96,7 @@ void Graphics::ClearScreen(D2D1_COLOR_F colour)
 	pRenderTarget->Clear(colour);
 }
 
-void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture)
+void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity)
 {
 	D2D1_MATRIX_3X2_F transform;
 	D2D1_RECT_F adjustedRect{
@@ -106,7 +106,7 @@ void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture)
 		rectf.bottom / (windowDPI / 96.f)
 	};
 
-	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, 1.f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
+	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
 }
 
 void Graphics::DebugBox(D2D1_RECT_F rectf)
