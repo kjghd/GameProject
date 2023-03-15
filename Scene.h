@@ -3,20 +3,20 @@
 #include "DataTypes.h"
 #include "Camera.h"
 #include "Character.h"
+#include "Player.h"
 #include "Box.h"
 #include "Ball.h"
 #include "Input.h"
 
 #include <vector>
-#include <stack>
+//#include <stack>
 
 
 class Scene
 {
 	Input* pInput;
-	const char* name;
-	Camera camera;
-	std::stack<GameObject*> vpSpawnQueue;
+	Camera* pCurrentCamera;
+	std::vector<GameObject*> vpSpawnQueue;
 	std::vector<size_t> vDestroyQueue;
 
 	void Collision();
@@ -27,7 +27,7 @@ public:
 
 	int current_prefab;
 
-	Character* pPlayer;
+	Player* pPlayer;
 
 	Scene(Input* pInput);
 

@@ -10,10 +10,9 @@
 Scene::Scene(Input* pInput)
 	:
 	pInput(pInput),
-	camera(Camera()),
+	pCurrentCamera(nullptr),
 	current_prefab(PREFAB_Block_Dynamic),
-	pPlayer(nullptr),
-	name("cool level")
+	pPlayer(nullptr)
 {
 }
 
@@ -49,7 +48,7 @@ void Scene::Collision()
 
 Camera& Scene::GetCamera()
 {
-	return camera;
+	return *pCurrentCamera;
 }
 
 Input& Scene::GetInput()
@@ -70,30 +69,53 @@ void Scene::Update(float deltaTime)
 	}
 	vDestroyQueue.clear();
 
-	// Spawn.
-	if (!pPlayer) QueueToSpawn(PREFAB_Player);
-	while (!vpSpawnQueue.empty())
-	{
-		vpGameObjects.push_back(vpSpawnQueue.top());
-		vpSpawnQueue.pop();
-	}
 
+	// Check if a player exists.
 	if (!pPlayer)
 	{
-		for (const auto& pObject : vpGameObjects)
-			if (dynamic_cast<Character*>(pObject))
-				pPlayer = dynamic_cast<Character*>(pObject);
+		bool playerExists{ false };
+
+		for (const auto& pGameObject : vpGameObjects)
+			if (dynamic_cast<Player*>(pGameObject))
+				playerExists = true;
+
+		for (const auto& pSpawnObject : vpSpawnQueue)
+			if (dynamic_cast<Player*>(pSpawnObject))
+				playerExists = true;
+
+		if (!playerExists)
+			QueueToSpawn(PREFAB_Player);
 	}
 
-	// Camera controls.
-	if (pInput->CheckHeld(BTN_E)) camera.DecreaseZoom(.1f);
-	if (pInput->CheckHeld(BTN_Q)) camera.IncreaseZoom(.1f);
-	
-	// Tile delete controls
+	// Spawn.
+	while (!vpSpawnQueue.empty())
+	{
+		vpGameObjects.push_back(vpSpawnQueue.back());
+		vpSpawnQueue.pop_back();
+	}
+
+	// Assign current player
+	if (!pPlayer)
+	{
+		for (const auto& pGameObject : vpGameObjects)
+			if (dynamic_cast<Player*>(pGameObject))
+			{
+				pPlayer = dynamic_cast<Player*>(pGameObject);
+				pPlayer->m_pInput = pInput;
+			}
+	}
+
+	// Assign current camera
+	if (!pCurrentCamera && pPlayer)
+	{
+		pCurrentCamera = &pPlayer->m_camera;
+	}
+
+	// Object delete controls
 	if (pInput->CheckHeld(BTN_RMB))
 	{
 		game::Float2 loc{
-			camera.ScreenLocToWorldLoc(
+			pCurrentCamera->ScreenLocToWorldLoc(
 					pInput->GetMouseLoc().x,
 					pInput->GetMouseLoc().y
 				)
@@ -114,11 +136,11 @@ void Scene::Update(float deltaTime)
 
 	}
 
-	// Tile spawn controls.
+	// Object spawn controls.
 	if (pInput->CheckPressed(BTN_LMB))
 	{
 		game::Float2 loc{
-			camera.ScreenLocToWorldLoc(
+			pCurrentCamera->ScreenLocToWorldLoc(
 					pInput->GetMouseLoc().x,
 					pInput->GetMouseLoc().y
 				)
@@ -147,48 +169,40 @@ void Scene::Update(float deltaTime)
 	//if (pInput->CheckPressed(BTN_0)) Save();
 	//if (pInput->CheckPressed(BTN_9)) Load();
 
-	// Player
-	if (pInput->CheckHeld(BTN_W)) pPlayer->Move({ 0, 1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_S)) pPlayer->Move({ 0,-1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_A)) pPlayer->Move({ -1, 0 }, deltaTime);
-	if (pInput->CheckHeld(BTN_D)) pPlayer->Move({ 1, 0 }, deltaTime);
-
 	Collision();
 
 	// Update
 	for (auto& pGameObject : vpGameObjects)
 		pGameObject->Update(deltaTime);
-
-	// Camera
-	game::Float2 playerCenter{
-		pPlayer->m_location.x + pPlayer->m_sprite.offset.x,
-		pPlayer->m_location.y + pPlayer->m_sprite.offset.y
-	};
-	camera.MoveTo(playerCenter, deltaTime);
 }   
 
 void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
 	GameObject* pPrefab{ prefabList.Get(prefab) };
-	if (dynamic_cast<Character*>(pPrefab))
+	if (dynamic_cast<Player*>(pPrefab))
 	{
-		vpSpawnQueue.push(new Character(*dynamic_cast<Character*>(pPrefab)));
-		vpSpawnQueue.top()->m_location = location;
+		vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else if (dynamic_cast<Character*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
 	}
 	else if (dynamic_cast<Box*>(pPrefab))
 	{
-		vpSpawnQueue.push(new Box(*dynamic_cast<Box*>(pPrefab)));
-		vpSpawnQueue.top()->m_location = location;
+		vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
 	}
 	else if (dynamic_cast<Ball*>(pPrefab))
 	{
-		vpSpawnQueue.push(new Ball(*dynamic_cast<Ball*>(pPrefab)));
-		vpSpawnQueue.top()->m_location = location;
+		vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
 	}
 	else
 	{
-		vpSpawnQueue.push(new GameObject(*pPrefab));
-		vpSpawnQueue.top()->m_location = location;
+		vpSpawnQueue.push_back(new GameObject(*pPrefab));
+		vpSpawnQueue.back()->m_location = location;
 	}
 }
 
@@ -200,8 +214,7 @@ void Scene::QueueToDestroy(size_t tileIndex)
 void Scene::Save()
 {
 	std::string directory{ "Data/Levels/"};
-	directory += name;
-	directory += ".csv";
+	directory += "level.csv";
 	
 	std::ofstream file;
 	file.open(directory, std::ios_base::out);

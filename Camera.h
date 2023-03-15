@@ -6,10 +6,10 @@
 class Camera
 {
 public:
-	Camera();
+	Camera(game::Float2* pLocation);
 
-	void Move(game::Float2 amount, float deltaTime);
-	void MoveTo(game::Float2 destination, float deltaTime);
+	void Offset(game::Float2 amount, float deltaTime);
+	void OffsetTo(game::Float2 destination, float deltaTime);
 
 	void SetZoom(float amount);
 	void DecreaseZoom(float factor);
@@ -27,7 +27,8 @@ public:
 	static game::Int2 m_screenResolution;
 
 protected:
-	game::Float2 m_location;
+	game::Float2& m_origin;
+	game::Float2 m_offset;
 	float m_zoom;
 	float m_speed;
 };

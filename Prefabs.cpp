@@ -2,11 +2,12 @@
 #include "Box.h"
 #include "Ball.h"
 #include "Character.h"
+#include "Player.h"
 
 
 PrefabList::PrefabList()
 {					
-	prefabs[PREFAB_Player] = new Character();
+	prefabs[PREFAB_Player] = new Player();
 
 									//		 Loc      Sprite								Collision
 									//		          Layer		 Texture  Size     Offset   Size     Dynamic Block

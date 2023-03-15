@@ -3,23 +3,24 @@
 
 game::Int2 Camera::m_screenResolution = { 640,480 };
 
-Camera::Camera()
+Camera::Camera(game::Float2* pLocation)
 	:
 	m_zoom(64.f),
-	m_speed(6.f),
-	m_location({ 0,0 })
+	m_speed(4.f),
+	m_origin(*pLocation),
+	m_offset{0,0}
 {
 }
 
-void Camera::Move(game::Float2 amount, float deltaTime)
+void Camera::Offset(game::Float2 amount, float deltaTime)
 {
-	m_location = m_location + amount * (m_speed * deltaTime / 1000);
+	m_origin = m_origin + amount * (m_speed * deltaTime / 1000);
 }
-void Camera::MoveTo(game::Float2 destination, float deltaTime)
+void Camera::OffsetTo(game::Float2 destination, float deltaTime)
 {
-	game::Float2 distance{ destination - m_location };
+	game::Float2 distance{ destination - (m_origin + m_offset) };
 
-	m_location += distance * (m_speed * deltaTime / 1000);
+	m_offset += distance * (m_speed * deltaTime / 1000);
 }
 
 void Camera::SetZoom(float amount)
@@ -62,7 +63,7 @@ game::Float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
 	};
 
 	// Cam to Cent (WU)
-	game::Float2 C{ -m_location };
+	game::Float2 C{ -(m_origin + m_offset) };
 
 	// Loc to Cent
 	game::Float2 D{ A + B + C };
@@ -81,7 +82,7 @@ game::Float2 Camera::WorldLocToScreenLoc(float worldX, float worldY)
 	};
 
 	// Cent to Cam (WU)
-	game::Float2 B{ m_location };
+	game::Float2 B{ m_origin + m_offset };
 	// SU
 	B = {
 		WU_to_SU(B.x),

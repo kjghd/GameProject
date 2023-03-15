@@ -156,6 +156,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Prefabs.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Prefabs.h" />
     <ClInclude Include="PrefabTags.h" />
     <ClInclude Include="Renderer.h" />
