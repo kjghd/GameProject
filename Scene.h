@@ -38,6 +38,4 @@ public:
 
 	void QueueToSpawn(int prefab, game::Float2 location = {0,0});
 	void QueueToDestroy(size_t tileIndex);
-	void Save();
-	void Load();
 };

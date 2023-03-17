@@ -17,14 +17,22 @@ public:
 	GameObject();
 
 	GameObject(
-		game::Float2 location,
+		ImageData* sprite_pImageData,
+		float sprite_frameTime,
 		int sprite_layer,
-		int sprite_texture,
-		game::Float2 sprite_size,
+		game::Float2 sprite_scale,
 		game::Float2 sprite_offset
 	);
 
-	GameObject(const game::Float2 location, const Sprite& sprite);
+	GameObject(const Sprite& sprite);
+
+	GameObject& operator=(const GameObject& gameObject)
+	{
+		m_location = gameObject.m_location;
+		m_sprite = Sprite(&m_location, gameObject.m_sprite);
+
+		return *this;
+	}
 
 	static bool CompareRenderLayer(GameObject* gameObjectA, GameObject* gameObjectB);
 	static bool CompareLocationX(GameObject* gameObjectA, GameObject* gameObjectB);

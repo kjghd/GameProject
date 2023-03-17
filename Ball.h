@@ -18,10 +18,10 @@ public:
 
 	Ball();
 	Ball(
-		game::Float2 location,
+		ImageData* sprite_pImageData,
+		float sprite_frameTime,
 		int sprite_layer,
-		int sprite_texture,
-		game::Float2 sprite_size,
+		game::Float2 sprite_scale,
 		game::Float2 sprite_offset,
 		float collider_radius,
 		bool collider_dynamic,
@@ -34,9 +34,8 @@ public:
 		m_location = ball.m_location;
 		m_sprite = Sprite(&m_location, ball.m_sprite);
 		m_collider = Collider_Circle(&m_location, ball.m_collider);
+
 		return *this;
 	}
-
-	static bool CompareRenderLayer(Ball& ballA, Ball& ballB);
 };
 

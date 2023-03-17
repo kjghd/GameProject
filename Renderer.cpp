@@ -8,7 +8,7 @@ Renderer::Renderer()
 	m_pGraphics(nullptr),
 	m_pScene(nullptr),
 	m_pCamera(nullptr),
-	m_debug(false)
+	m_debug(true)
 {
 }
 
@@ -85,14 +85,22 @@ void Renderer::Render()
 			{
 				game::Rect rect{
 					m_pCamera->WorldTransformToScreenRect(
-					pGameObject->m_location + pGameObject->m_sprite.offset,
-					pGameObject->m_sprite.size
+					pGameObject->m_sprite.GetLocation(),
+					pGameObject->m_sprite.GetSize()
 					)
 				};
 
-				m_pGraphics->DrawBitmap(
+				//m_pGraphics->DrawBitmap(
+				//	D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+				//	pGameObject->m_sprite.pImageData->GetTexture()
+				//);
+
+				game::Rect region{ pGameObject->m_sprite.pImageData->GetCurrentRect(pGameObject->m_sprite.currentAnim) };
+
+				m_pGraphics->DrawBitmapRegion(
 					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-					pGameObject->m_sprite.texture
+					pGameObject->m_sprite.pImageData->GetTexture(),
+					D2D1::RectF(region.l, region.t, region.r, region.b)
 				);
 			}
 
@@ -138,7 +146,7 @@ void Renderer::Render()
 	// Block preview
 	m_pGraphics->DrawBitmap(
 		D2D1::RectF(0, 0, 60, 60),
-		prefabList.Get(m_pScene->current_prefab)->m_sprite.texture
+		prefabList.Get(m_pScene->current_prefab)->m_sprite.pImageData->GetTexture()
 	);
 
 	// Cursor

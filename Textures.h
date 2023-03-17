@@ -6,18 +6,17 @@ enum Textures
 	T_Error,
 
 	T_Wallace,
-	T_WallaceB,
 	T_Mushroom,
+
+	T_Animation,
 
 	T_Blue,
 	T_Green,
 	T_Red,
-	T_Yellow,
 
 	T_BallBlue,
 	T_BallGreen,
 	T_BallRed,
-	T_BallYellow,
 
 	T_COUNT
 };

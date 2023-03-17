@@ -13,9 +13,8 @@ enum PrefabTag
 	PREFAB_BallDynamic,
 
 	PREFAB_Mushroom,
-	PREFAB_Tree,
-	PREFAB_Rock,
-	PREFAB_Dirt,
+
+	PREFAB_Animation,
 
 
 	PREFAB_COUNT

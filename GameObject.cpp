@@ -4,33 +4,33 @@
 GameObject::GameObject()
 	:
 	m_location{ 0,0 },
-	m_sprite(&m_location)
+	m_sprite(Sprite(&m_location, nullptr, 0))
 {
 }
 
 GameObject::GameObject(
-	game::Float2 location,
+	ImageData* sprite_pImageData,
+	float sprite_frameTime,
 	int sprite_layer,
-	int sprite_texture,
-	game::Float2 sprite_size,
+	game::Float2 sprite_scale,
 	game::Float2 sprite_offset
 )
 	:
-	m_location(location),
-	m_sprite(&m_location, sprite_layer, sprite_texture, sprite_size, sprite_offset)
+	m_location{0,0},
+	m_sprite(Sprite(&m_location, sprite_pImageData, sprite_frameTime, sprite_layer, sprite_scale, sprite_offset))
 {
 }
 
-GameObject::GameObject(const game::Float2 location, const Sprite& sprite)
+GameObject::GameObject(const Sprite& sprite)
 	:
-	m_location(location),
-	m_sprite(&m_location, sprite)
+	m_location{0,0},
+	m_sprite(Sprite(& m_location, sprite))
 {
 }
 
 void GameObject::Update(float deltaTime)
 {
-	// Does nothing
+	m_sprite.Update(deltaTime);
 }
 
 bool GameObject::CompareRenderLayer(GameObject* gameObjectA, GameObject* gameObjectB)

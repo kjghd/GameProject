@@ -30,18 +30,17 @@ void Graphics::Init(HWND hWnd)
 
 	LoadImageFromFile(L"Data/Textures/Error.png", T_Error);
 	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
-	LoadImageFromFile(L"Data/Textures/Wallace_2.png", T_WallaceB);
 	LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
+
+	LoadImageFromFile(L"Data/Textures/sprite_sheet.png", T_Animation);
 
 	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
 	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);
 	LoadImageFromFile(L"Data/Textures/Block_Red.png", T_Red);
-	LoadImageFromFile(L"Data/Textures/Block_Yellow.png", T_Yellow);
 
 	LoadImageFromFile(L"Data/Textures/Ball_Blue.png", T_BallBlue);
 	LoadImageFromFile(L"Data/Textures/Ball_Green.png", T_BallGreen);
 	LoadImageFromFile(L"Data/Textures/Ball_Red.png", T_BallRed);
-	LoadImageFromFile(L"Data/Textures/Ball_Yellow.png", T_BallYellow);
 
 
 
@@ -108,6 +107,20 @@ void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity
 
 	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
 }
+
+void Graphics::DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RECT_F region, FLOAT opacity)
+{
+	D2D1_MATRIX_3X2_F transform;
+	D2D1_RECT_F adjustedRect{
+		rectf.left / (windowDPI / 96.f),
+		rectf.top / (windowDPI / 96.f),
+		rectf.right / (windowDPI / 96.f),
+		rectf.bottom / (windowDPI / 96.f)
+	};
+
+	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, region);
+}
+
 
 void Graphics::DebugBox(D2D1_RECT_F rectf)
 {
