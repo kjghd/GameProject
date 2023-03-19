@@ -33,6 +33,7 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
 
 	LoadImageFromFile(L"Data/Textures/sprite_sheet.png", T_Animation);
+	LoadImageFromFile(L"Data/Textures/guy_sheet.png", T_Guy);
 
 	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
 	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);

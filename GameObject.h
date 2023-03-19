@@ -24,6 +24,15 @@ public:
 		game::Float2 sprite_offset
 	);
 
+	GameObject(
+		ImageData* sprite_pImageData,
+		int sprite_layer,
+		game::Float2 sprite_scale,
+		game::Float2 sprite_offset
+	);
+
+	GameObject(const GameObject& gameObject);
+
 	GameObject(const Sprite& sprite);
 
 	GameObject& operator=(const GameObject& gameObject)
@@ -34,10 +43,8 @@ public:
 		return *this;
 	}
 
-	static bool CompareRenderLayer(GameObject* gameObjectA, GameObject* gameObjectB);
-	static bool CompareLocationX(GameObject* gameObjectA, GameObject* gameObjectB);
-	static bool CompareLocationY(GameObject* gameObjectA, GameObject* gameObjectB);
-
-
+	static bool CompareRenderOrder_Under(GameObject* gameObjectA, GameObject* gameObjectB);
+	static bool CompareRenderOrder_Above(GameObject* gameObjectA, GameObject* gameObjectB);
+	static bool CompareRenderOrder_RowAndLeftOf(GameObject* gameObjectA, GameObject* gameObjectB);
 };
 

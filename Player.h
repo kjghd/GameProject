@@ -22,6 +22,17 @@ public:
 		bool collider_block
 	);
 
+	Player(
+		float speed,
+		ImageData* sprite_pImageData,
+		int sprite_layer,
+		game::Float2 sprite_scale,
+		game::Float2 sprite_offset,
+		float collider_radius,
+		bool collider_dynamic,
+		bool collider_block
+	);
+
     virtual void Update(float deltaTime) override;
 
 	Player& operator =(const Player& player)

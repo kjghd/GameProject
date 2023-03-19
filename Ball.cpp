@@ -24,6 +24,21 @@ Ball::Ball(
 {
 }
 
+Ball::Ball(
+	ImageData* sprite_pImageData,
+	int sprite_layer,
+	game::Float2 sprite_scale,
+	game::Float2 sprite_offset,
+	float collider_radius,
+	bool collider_dynamic,
+	bool collider_block
+)
+	:
+	GameObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset),
+	m_collider(&m_location, collider_radius, collider_dynamic, collider_block)
+{
+}
+
 Ball::Ball(const Ball& ball)
 	:
 	GameObject(ball.m_sprite),

@@ -23,6 +23,19 @@ Box::Box(ImageData* sprite_pImageData,
 {
 }
 
+Box::Box(ImageData* sprite_pImageData,
+	int sprite_layer,
+	game::Float2 sprite_scale,
+	game::Float2 sprite_offset,
+	game::Float2 collider_size,
+	bool collider_dynamic,
+	bool collider_block)
+	:
+	GameObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset),
+	m_collider(&m_location, collider_size, collider_dynamic, collider_block)
+{
+}
+
 Box::Box(const Box& box)
 	:
 	GameObject(box.m_sprite),

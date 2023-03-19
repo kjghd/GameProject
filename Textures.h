@@ -9,6 +9,7 @@ enum Textures
 	T_Mushroom,
 
 	T_Animation,
+	T_Guy,
 
 	T_Blue,
 	T_Green,

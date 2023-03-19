@@ -16,11 +16,10 @@ enum SpriteLayers
 
 class Sprite
 {
-public:
+protected:
 	game::Float2& origin;
 	game::Float2 offset;
 	game::Float2 scale;
-
 
 	int layer;
 	ImageData* pImageData;
@@ -28,14 +27,22 @@ public:
 	int currentAnim;
 	float frameTimeMax;
 	float frameTimeCurrent;
-	
+
+public:
 	Sprite(game::Float2* pOrigin, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::Float2 scale = { 1,1 }, game::Float2 offset = { 0,0 });
+	Sprite(game::Float2* pOrigin, ImageData* pImageData, int layer = SL_DEFAULT, game::Float2 scale = { 1,1 }, game::Float2 offset = { 0,0 });
 	Sprite(game::Float2* pOrigin, const Sprite& sprite);
 
 	void Update(float deltaTime);
 
 	game::Float2 GetLocation();
 	game::Float2 GetSize();
+
+	int GetRenderLayer();
+	game::Rect GetSourceRect();
+	int GetBitmapIndex();
+	int GetCurrentAnimation();
+	void SetAnimation(int index);
 
 	Sprite& operator =(const Sprite& sprite)
 	{

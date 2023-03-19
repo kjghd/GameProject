@@ -8,7 +8,7 @@ Renderer::Renderer()
 	m_pGraphics(nullptr),
 	m_pScene(nullptr),
 	m_pCamera(nullptr),
-	m_debug(true)
+	m_debug(false)
 {
 }
 
@@ -41,17 +41,13 @@ void Renderer::Render()
 
 			else if (pGameObject != pLowestFound)
 			{
-				// under
-				if (pGameObject->m_sprite.layer > pLowestFound->m_sprite.layer)
+				if (GameObject::CompareRenderOrder_Under(pGameObject, pLowestFound))
 					pLowestFound = pGameObject;
 
-				// above
-				else if (pGameObject->m_location.y > pLowestFound->m_location.y)
+				else if (GameObject::CompareRenderOrder_Above(pGameObject, pLowestFound))
 					pLowestFound = pGameObject;
 
-				// row and left of
-				else if (pGameObject->m_location.y == pLowestFound->m_location.y &&
-					pGameObject->m_location.x < pLowestFound->m_location.x)
+				else if (GameObject::CompareRenderOrder_RowAndLeftOf(pGameObject, pLowestFound))
 					pLowestFound = pGameObject;
 			}
 		}
@@ -81,7 +77,7 @@ void Renderer::Render()
 	// Render
 	for (size_t i = SL_COUNT; i > 0 ; --i)
 		for (auto& pGameObject : vpSorted)
-			if (pGameObject->m_sprite.layer == i)
+			if (pGameObject->m_sprite.GetRenderLayer() == i)
 			{
 				game::Rect rect{
 					m_pCamera->WorldTransformToScreenRect(
@@ -90,16 +86,12 @@ void Renderer::Render()
 					)
 				};
 
-				//m_pGraphics->DrawBitmap(
-				//	D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-				//	pGameObject->m_sprite.pImageData->GetTexture()
-				//);
 
-				game::Rect region{ pGameObject->m_sprite.pImageData->GetCurrentRect(pGameObject->m_sprite.currentAnim) };
+				game::Rect region{ pGameObject->m_sprite.GetSourceRect() };
 
 				m_pGraphics->DrawBitmapRegion(
 					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-					pGameObject->m_sprite.pImageData->GetTexture(),
+					pGameObject->m_sprite.GetBitmapIndex(),
 					D2D1::RectF(region.l, region.t, region.r, region.b)
 				);
 			}
@@ -142,11 +134,13 @@ void Renderer::Render()
 
 	}
 
-
 	// Block preview
-	m_pGraphics->DrawBitmap(
+	game::Rect region{ prefabList.Get(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
+
+	m_pGraphics->DrawBitmapRegion(
 		D2D1::RectF(0, 0, 60, 60),
-		prefabList.Get(m_pScene->current_prefab)->m_sprite.pImageData->GetTexture()
+		prefabList.Get(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
+		D2D1::RectF(region.l, region.t, region.r, region.b)
 	);
 
 	// Cursor

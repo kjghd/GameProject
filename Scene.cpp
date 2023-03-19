@@ -149,7 +149,7 @@ void Scene::Update(float deltaTime)
 
 		bool canSpawn{ true };
 		for (auto& pGameObject : vpGameObjects)
-			if (pGameObject->m_location == locRounded && pGameObject->m_sprite.layer < SL_Object) canSpawn = false;
+			if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object) canSpawn = false;
 
 		if (canSpawn)
 			QueueToSpawn(current_prefab, locRounded);

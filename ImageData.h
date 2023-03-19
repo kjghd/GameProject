@@ -19,11 +19,12 @@ private:
 public:
 	ImageData();
 	ImageData(int texture, game::Int2 dimensions_px, int frames, game::Rect* frameRectArray, int animCount, game::Int2* animRangeArray);
+	ImageData(int texture, game::Int2 dimensions_px);
 	~ImageData();
 
 	int GetTexture();
 	game::Int2 GetDimensionsPx();
-	game::Rect GetCurrentRect(int currentAnim);
+	game::Rect GetCurrentRect(int currentFrame);
 	int GetAnimStartFrame(int currentAnim);
 	int GetAnimEndFrame(int currentAnim);
 

@@ -22,6 +22,15 @@ public:
 		bool collider_dynamic,
 		bool collider_block
 	);
+	Box(
+		ImageData* sprite_pImageData,
+		int sprite_layer,
+		game::Float2 sprite_scale,
+		game::Float2 sprite_offset,
+		game::Float2 collider_size,
+		bool collider_dynamic,
+		bool collider_block
+	);
 	Box(const Box& box);
 
 	Box& operator =(const Box& box)

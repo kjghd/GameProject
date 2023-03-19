@@ -7,10 +7,12 @@ ImageData::ImageData()
 	m_texture(T_Error),
 	m_dimensions_px{ 16,16 },
 	m_frames(1),
-	m_frameRectArray(new game::Rect{ 0,0,15,15 }),
+	m_frameRectArray(new game::Rect[1]),
 	m_animCount(1),
-	m_animRangeArray(new game::Int2{ 0,0 })
+	m_animRangeArray(new game::Int2[1])
 {
+	m_frameRectArray[0] = { 0,0,(float)m_dimensions_px.x, (float)m_dimensions_px.y };
+	m_animRangeArray[0] = { 0,0 };
 }
 
 ImageData::ImageData(int texture, game::Int2 dimensions_px, int frames, game::Rect* frameRectArray, int animCount, game::Int2* animRangeArray)
@@ -27,6 +29,19 @@ ImageData::ImageData(int texture, game::Int2 dimensions_px, int frames, game::Re
 
 	for (size_t i{ 0 }; i < animCount; ++i)
 		m_animRangeArray[i] = animRangeArray[i];
+}
+
+ImageData::ImageData(int texture, game::Int2 dimensions_px)
+	:
+	m_texture(texture),
+	m_dimensions_px(dimensions_px),
+	m_frames(1),
+	m_frameRectArray(new game::Rect[1]),
+	m_animCount(1),
+	m_animRangeArray(new game::Int2[1])
+{
+	m_frameRectArray[0] = game::Rect{ 0,0,(float)dimensions_px.x, (float)dimensions_px.y };
+	m_animRangeArray[0] = game::Int2{ 0,0 };
 }
 
 ImageData::~ImageData()
