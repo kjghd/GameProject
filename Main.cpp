@@ -3,15 +3,17 @@
 #include "Timer.h"
 #include "Input.h"
 #include "Scene.h"
+
 #include <Windows.h>
 #include <Windowsx.h>
+
 
 // Globals.
 static Graphics g_graphics;
 static Renderer g_renderer;
 static Timer g_timer;
 static Input g_input;
-static Scene g_scene;
+static Scene g_scene(&g_input);
 
 // Window Procedure.
 LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -99,8 +101,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	RegisterClass(&wc);
 
 	// Window Dimensions
-	int width  = 640;
-	int height = 480;
+	int width  = 1280;
+	int height = 720;
 	RECT wndRect{ 0,0, width, height };
 	AdjustWindowRect(&wndRect, WS_CAPTION, FALSE);
 
@@ -139,7 +141,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 
-		g_scene.Update(&g_input, g_timer.deltaTime);
+		g_scene.Update(static_cast<float>(g_timer.deltaTime));
 
 		g_renderer.Render();
 	}

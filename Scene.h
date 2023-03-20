@@ -1,31 +1,42 @@
 #pragma once
+
 #include "DataTypes.h"
-#include "WorldObject.h"
+#include "Camera.h"
+#include "Player.h"
 #include "Input.h"
+#include "Prefabs.h"
 
 #include <vector>
-#include <stack>
+//#include <stack>
+
 
 class Scene
 {
-	const char* name;
-	Camera camera;
-	std::stack<Tile> vSpawnQueue;
+	Input* pInput;
+	Camera* pCurrentCamera;
+	std::vector<GameObject*> vpSpawnQueue;
+	std::vector<size_t> vDestroyQueue;
+
+
+	void Collision();
+
 
 public:
-	std::vector<Tile> vTiles;
+	std::vector<GameObject*> vpGameObjects;
+
 	int current_prefab;
 
-	Player player;
+	Player* pPlayer;
 
-	Scene();
+	PrefabList prefabs;
+
+	Scene(Input* pInput);
 
 	Camera& GetCamera();
+	Input& GetInput();
 
-	void Update(Input* pInput, double deltaTime);
+	void Update(float deltaTime);
 
 	void QueueToSpawn(int prefab, game::Float2 location = {0,0});
-
-	void Save();
-	void Load();
+	void QueueToDestroy(size_t tileIndex);
 };

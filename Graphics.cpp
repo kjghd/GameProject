@@ -3,6 +3,7 @@
 
 #pragma comment(lib, "d2d1")
 
+
 void Graphics::Init(HWND hWnd)
 {
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
@@ -28,9 +29,22 @@ void Graphics::Init(HWND hWnd)
 	vpBitmaps.resize(T_COUNT);
 
 	LoadImageFromFile(L"Data/Textures/Error.png", T_Error);
-	LoadImageFromFile(L"Data/Textures/Shadow.png", T_Shadow);
-	LoadImageFromFile(L"Data/Textures/Bricks_01.png", T_Bricks_01);
-	LoadImageFromFile(L"Data/Textures/Pavement_01.png", T_Pavement_01);
+	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
+	LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
+
+	LoadImageFromFile(L"Data/Textures/sprite_sheet.png", T_Animation);
+	LoadImageFromFile(L"Data/Textures/guy_sheet.png", T_Guy);
+	LoadImageFromFile(L"Data/Textures/guy_sheet2.png", T_Guy2);
+
+
+	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
+	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);
+	LoadImageFromFile(L"Data/Textures/Block_Red.png", T_Red);
+
+	LoadImageFromFile(L"Data/Textures/Ball_Blue.png", T_BallBlue);
+	LoadImageFromFile(L"Data/Textures/Ball_Green.png", T_BallGreen);
+	LoadImageFromFile(L"Data/Textures/Ball_Red.png", T_BallRed);
+
 
 
 	windowDPI = GetDpiForWindow(hWnd);
@@ -84,7 +98,7 @@ void Graphics::ClearScreen(D2D1_COLOR_F colour)
 	pRenderTarget->Clear(colour);
 }
 
-void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture)
+void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity)
 {
 	D2D1_MATRIX_3X2_F transform;
 	D2D1_RECT_F adjustedRect{
@@ -94,7 +108,33 @@ void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture)
 		rectf.bottom / (windowDPI / 96.f)
 	};
 
-	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, 1.f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
+	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
+}
+
+void Graphics::DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RECT_F region, FLOAT opacity)
+{
+	D2D1_MATRIX_3X2_F transform;
+	D2D1_RECT_F adjustedRect{
+		rectf.left / (windowDPI / 96.f),
+		rectf.top / (windowDPI / 96.f),
+		rectf.right / (windowDPI / 96.f),
+		rectf.bottom / (windowDPI / 96.f)
+	};
+
+	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, region);
+}
+
+
+void Graphics::DebugBox(D2D1_RECT_F rectf)
+{
+	D2D1_RECT_F adjustedRect{
+		rectf.left / (windowDPI / 96.f),
+		rectf.top / (windowDPI / 96.f),
+		rectf.right / (windowDPI / 96.f),
+		rectf.bottom / (windowDPI / 96.f)
+	};
+
+	pRenderTarget->DrawRectangle(adjustedRect, pDebugBrush);
 }
 
 void Graphics::DebugCircle(D2D1_POINT_2F location, float radius)

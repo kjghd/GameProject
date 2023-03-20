@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 
+
 class Timer
 {
 	LARGE_INTEGER frequency;

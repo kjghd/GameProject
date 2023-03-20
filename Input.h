@@ -1,5 +1,7 @@
 #pragma once
-#include <d2dbasetypes.h>
+
+#include <D2D1.h>
+
 
 enum Buttons
 {
@@ -40,6 +42,8 @@ class Input
 	D2D1_POINT_2F mouseLoc;
 
 public:
+	Input();
+
 	void ResetMoved();
 
 	void SetMouseLoc(D2D1_POINT_2F location);

@@ -1,145 +1,241 @@
 #include "Scene.h"
 #include "Prefabs.h"
+
+#include "Box.h"
+#include "Ball.h"
+#include "Character.h"
+#include "NPC.h"
+
 #include <fileapi.h>
 #include <fstream>
 #include <string>
+#include <algorithm>
 
-Scene::Scene()
+
+Scene::Scene(Input* pInput)
 	:
-	camera(Camera()),
-	current_prefab(PREFAB_Block_Brick_01),
-	player(Player()),
-	name("cool level")
+	pInput(pInput),
+	pCurrentCamera(nullptr),
+	current_prefab(PREFAB_BallDynamic),
+	pPlayer(nullptr),
+	prefabs()
 {
-	Load();
+}
+
+void Scene::Collision()
+{
+	// Collision
+
+
+	for (auto& pObjectA : vpGameObjects)
+	{
+		if (dynamic_cast<Box*>(pObjectA))
+		{
+			for (auto& pObjectB : vpGameObjects)
+				if (pObjectB != pObjectA)
+				{
+					if (dynamic_cast<Box*>(pObjectB))
+						dynamic_cast<Box*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Box*>(pObjectB)->m_collider);
+					else if (dynamic_cast<Ball*>(pObjectB))
+						dynamic_cast<Box*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+				}
+		}
+
+
+		else if (dynamic_cast<Ball*>(pObjectA))
+		{
+			for (auto& pObjectB : vpGameObjects)
+				if (pObjectB != pObjectA)
+				{
+					if (dynamic_cast<Box*>(pObjectB))
+					{
+						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Box*>(pObjectB)->m_collider);
+
+						if (dynamic_cast<Character*>(pObjectA))
+							dynamic_cast<Character*>(pObjectA)->m_viewRange.CheckCollision(&dynamic_cast<Box*>(pObjectB)->m_collider);
+					}
+					else if (dynamic_cast<Ball*>(pObjectB))
+					{
+						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+
+						if (dynamic_cast<Character*>(pObjectA))
+							dynamic_cast<Character*>(pObjectA)->m_viewRange.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+					}
+				}
+		}
+	}
+
 }
 
 Camera& Scene::GetCamera()
 {
-	return camera;
+	return *pCurrentCamera;
 }
 
-void Scene::Update(Input* pInput, double deltaTime)
+Input& Scene::GetInput()
 {
-	// Spawn.
-	while (!vSpawnQueue.empty())
+	return *pInput;
+}
+
+
+void Scene::Update(float deltaTime)
+{
+	// Destroy.
+	std::sort(vDestroyQueue.begin(), vDestroyQueue.end(), std::greater<size_t>());
+	for (const auto& destroyIndex : vDestroyQueue)
 	{
-		vTiles.push_back(vSpawnQueue.top());
-		vSpawnQueue.pop();
+		delete vpGameObjects.at(destroyIndex);
+		vpGameObjects.at(destroyIndex) = nullptr;
+		vpGameObjects.erase(vpGameObjects.begin() + destroyIndex);
+	}
+	vDestroyQueue.clear();
+
+	// Check if a player exists.
+	if (!pPlayer)
+	{
+		bool playerExists{ false };
+
+		for (const auto& pGameObject : vpGameObjects)
+			if (dynamic_cast<Player*>(pGameObject))
+				playerExists = true;
+
+		for (const auto& pSpawnObject : vpSpawnQueue)
+			if (dynamic_cast<Player*>(pSpawnObject))
+				playerExists = true;
+
+		if (!playerExists)
+			QueueToSpawn(PREFAB_Player);
 	}
 
-	// Camera controls.
-	/*if (pInput->CheckHeld(BTN_W)) camera.Move({  0, 1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_S)) camera.Move({  0,-1 }, deltaTime);
-	if (pInput->CheckHeld(BTN_A)) camera.Move({  -1, 0 }, deltaTime);
-	if (pInput->CheckHeld(BTN_D)) camera.Move({ 1, 0 }, deltaTime);*/
+	// Spawn.
+	while (!vpSpawnQueue.empty())
+	{
+		vpGameObjects.push_back(vpSpawnQueue.back());
+		vpSpawnQueue.pop_back();
+	}
 
-	if (pInput->CheckHeld(BTN_Q)) camera.SetZoom(128);
-	if (pInput->CheckHeld(BTN_E)) camera.SetZoom(64);
+	// Assign current player
+	if (!pPlayer)
+	{
+		for (const auto& pGameObject : vpGameObjects)
+			if (dynamic_cast<Player*>(pGameObject))
+			{
+				pPlayer = dynamic_cast<Player*>(pGameObject);
+				pPlayer->m_pInput = pInput;
+			}
+	}
 
-	// Other controls.
-	if (pInput->CheckPressed(BTN_LMB))
+	// Assign current camera
+	if (!pCurrentCamera && pPlayer)
+	{
+		pCurrentCamera = &pPlayer->m_camera;
+	}
+
+	// Object delete controls
+	if (pInput->CheckPressed(BTN_RMB))
 	{
 		game::Float2 loc{
-			camera.ScreenLocToWorldLoc(
+			pCurrentCamera->ScreenLocToWorldLoc(
 					pInput->GetMouseLoc().x,
 					pInput->GetMouseLoc().y
 				)
 		};
+		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
 
-		QueueToSpawn(current_prefab, { roundf(loc.x), roundf(loc.y) });
+		size_t i{};
+		for (auto& pGameObject : vpGameObjects)
+		{
+			game::Float2 tileLocRounded{
+				roundf(pGameObject->m_location.x),
+				roundf(pGameObject->m_location.y)
+			};
+			if (tileLocRounded == locRounded)
+			{
+				if (dynamic_cast<Character*>(pGameObject))
+				{
+					Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
+					if (pCharacter->m_health > 0)
+					{
+						pCharacter->m_health = 0;
+					}
+					else
+						QueueToDestroy(i);
+				}
+				else
+					QueueToDestroy(i);
+			}
+			++i;
+		}
+
 	}
 
-	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_Block_Brick_01;
-	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Block_Pavement_01;
+	// Object spawn controls.
+	if (pInput->CheckPressed(BTN_LMB))
+	{
+		game::Float2 loc{
+			pCurrentCamera->ScreenLocToWorldLoc(
+					pInput->GetMouseLoc().x,
+					pInput->GetMouseLoc().y
+				)
+		};
+		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
 
-	if (pInput->CheckPressed(BTN_0)) Save();
-	if (pInput->CheckPressed(BTN_9)) Load();
+		bool canSpawn{ true };
+		for (auto& pGameObject : vpGameObjects)
+			if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object) canSpawn = false;
 
+		if (canSpawn)
+			QueueToSpawn(current_prefab, locRounded);
+	}
 
-	// Player
-	 if (pInput->CheckHeld(BTN_W)) player.Move({ 0, 1 }, deltaTime);
-	 if (pInput->CheckHeld(BTN_S)) player.Move({ 0,-1 }, deltaTime);
-	 if (pInput->CheckHeld(BTN_A)) player.Move({ -1, 0 }, deltaTime);
-	 if (pInput->CheckHeld(BTN_D)) player.Move({ 1, 0 }, deltaTime);
+	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_BallDynamic;
+	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
+	if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Animation;
+	if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
 
-	 for(auto& tile : vTiles)
-		player.Collide_CircleVsBox(tile);
-	player.Update(deltaTime);
+	Collision();
 
-	camera.MoveTo(player.m_location, deltaTime);
+	// Update
+	for (auto& pGameObject : vpGameObjects)
+		pGameObject->Update(deltaTime);
 }   
 
 void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
-	vSpawnQueue.push(*prefabList.Get(prefab));
-	vSpawnQueue.top().m_location = location;
+	GameObject* pPrefab{ prefabs.Get(prefab) };
+	if (dynamic_cast<Player*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else if (dynamic_cast<NPC*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else if (dynamic_cast<Character*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else if (dynamic_cast<Box*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else if (dynamic_cast<Ball*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else
+	{
+		vpSpawnQueue.push_back(new GameObject(*pPrefab));
+		vpSpawnQueue.back()->m_location = location;
+	}
 }
 
-void Scene::Save()
+void Scene::QueueToDestroy(size_t tileIndex)
 {
-	std::string directory{ "Data/Levels/"};
-	directory += name;
-	directory += ".csv";
-
-	std::ofstream file;
-	file.open(directory, std::ios_base::out);
-
-	std::string buffer;
-	for (const auto& tile : vTiles)
-	{
-		buffer += std::to_string(tile.m_texture);		buffer += ',';
-		buffer += std::to_string(tile.m_location.x);	buffer += ',';
-		buffer += std::to_string(tile.m_location.y);	buffer += ',';
-		buffer += std::to_string(tile.m_block);			buffer += '\n';
-	}
-
-	file.write(buffer.c_str(), buffer.size());
-
-	file.close();
-}
-
-void Scene::Load()
-{
-	vTiles.clear();
-
-	player.m_location = { 0,0 };
-
-	std::string directory{ "Data/Levels/" };
-	directory += "example";
-	directory += ".csv";
-
-	std::ifstream file;
-	file.open(directory, std::ios_base::out);
-
-	while (file.peek() != EOF)
-	{
-		// Get line
-		std::string buffer;
-		std::getline(file, buffer);
-
-		// Seperate values
-		std::vector<std::string> values;
-		values.push_back("");
-		for (const auto& c : buffer)
-		{
-			if (c != ',')
-				values.back() += c;
-			else
-				values.push_back("");
-		}
-
-		// Cast
-		int texture{ std::stoi(values.at(0)) };
-		game::Float2 location{
-			std::stof(values.at(1)),
-			std::stof(values.at(2))
-		};
-		bool block{ std::stoi(values.at(3)) ? true : false};
-
-		// Add block
-		vTiles.push_back(Tile(texture, location, block));
-	}
-
-	file.close();
+	vDestroyQueue.push_back(tileIndex);
 }

@@ -1,16 +1,27 @@
 #pragma once
-#include "WorldObject.h"
-#include <vector>
+
+#include "GameObject.h"
+#include "ImageData.h"
 #include "PrefabTags.h"
+#include "Textures.h"
+
+#include <vector>
+
 
 class PrefabList
 {
-	Tile prefabs[PREFAB_COUNT];
+	void InitImageData();
+	void InitGameObjects();
+
+	GameObject* prefabs[PREFAB_COUNT];
+	ImageData imageDatas[T_COUNT];
 
 public:
 	PrefabList();
 
-	const Tile* Get(int prefabTag);
+	~PrefabList();
+
+	GameObject* Get(int prefabTag);
 };
 
-static PrefabList prefabList;
+//static inline PrefabList prefabList;
