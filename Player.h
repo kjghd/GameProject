@@ -11,27 +11,20 @@ public:
     Camera m_camera;
 
 	Player(
+		float health,
 		float speed,
 		ImageData* sprite_pImageData,
-		float sprite_frameTime,
 		int sprite_layer,
 		game::Float2 sprite_scale,
 		game::Float2 sprite_offset,
 		float collider_radius,
 		bool collider_dynamic,
-		bool collider_block
+		bool collider_block,
+		float view_radius,
+		float sprite_frameTime = 1000.f
 	);
 
-	Player(
-		float speed,
-		ImageData* sprite_pImageData,
-		int sprite_layer,
-		game::Float2 sprite_scale,
-		game::Float2 sprite_offset,
-		float collider_radius,
-		bool collider_dynamic,
-		bool collider_block
-	);
+	Player(const Player& player);
 
     virtual void Update(float deltaTime) override;
 
@@ -39,10 +32,11 @@ public:
 	{
 		m_location = player.m_location;
 		m_sprite = Sprite(&m_location, player.m_sprite);
-		m_collider = Collider_Circle(&m_location, player.m_collider);
+		m_collider = Collider_Circle(this, player.m_collider);
 		m_speed = player.m_speed;
 		m_pInput = player.m_pInput;
 		m_camera = m_camera;
+		m_viewRange = Collider_Circle(this, player.m_viewRange);
 
 		return *this;
 	}

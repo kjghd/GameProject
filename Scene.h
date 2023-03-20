@@ -2,11 +2,9 @@
 
 #include "DataTypes.h"
 #include "Camera.h"
-#include "Character.h"
 #include "Player.h"
-#include "Box.h"
-#include "Ball.h"
 #include "Input.h"
+#include "Prefabs.h"
 
 #include <vector>
 //#include <stack>
@@ -19,6 +17,7 @@ class Scene
 	std::vector<GameObject*> vpSpawnQueue;
 	std::vector<size_t> vDestroyQueue;
 
+
 	void Collision();
 
 
@@ -28,6 +27,8 @@ public:
 	int current_prefab;
 
 	Player* pPlayer;
+
+	PrefabList prefabs;
 
 	Scene(Input* pInput);
 

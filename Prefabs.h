@@ -24,4 +24,4 @@ public:
 	GameObject* Get(int prefabTag);
 };
 
-static PrefabList prefabList;
+//static inline PrefabList prefabList;

@@ -8,12 +8,13 @@ GameObject::GameObject()
 {
 }
 
+// Used in prefabs
 GameObject::GameObject(
 	ImageData* sprite_pImageData,
-	float sprite_frameTime,
 	int sprite_layer,
 	game::Float2 sprite_scale,
-	game::Float2 sprite_offset
+	game::Float2 sprite_offset,
+	float sprite_frameTime
 )
 	:
 	m_location{ 0,0 },
@@ -21,18 +22,7 @@ GameObject::GameObject(
 {
 }
 
-GameObject::GameObject(
-	ImageData* sprite_pImageData,
-	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset
-)
-	:
-	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, sprite_pImageData, sprite_layer, sprite_scale, sprite_offset))
-{
-}
-
+// Used in scene
 GameObject::GameObject(const GameObject& gameObject)
 	:
 	m_location{ 0,0 },
@@ -40,6 +30,7 @@ GameObject::GameObject(const GameObject& gameObject)
 {
 }
 
+// Used by derived classes
 GameObject::GameObject(const Sprite& sprite)
 	:
 	m_location{ 0,0 },

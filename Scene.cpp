@@ -1,6 +1,11 @@
 #include "Scene.h"
 #include "Prefabs.h"
 
+#include "Box.h"
+#include "Ball.h"
+#include "Character.h"
+#include "NPC.h"
+
 #include <fileapi.h>
 #include <fstream>
 #include <string>
@@ -12,7 +17,8 @@ Scene::Scene(Input* pInput)
 	pInput(pInput),
 	pCurrentCamera(nullptr),
 	current_prefab(PREFAB_BallDynamic),
-	pPlayer(nullptr)
+	pPlayer(nullptr),
+	prefabs()
 {
 }
 
@@ -24,6 +30,7 @@ void Scene::Collision()
 	for (auto& pObjectA : vpGameObjects)
 	{
 		if (dynamic_cast<Box*>(pObjectA))
+		{
 			for (auto& pObjectB : vpGameObjects)
 				if (pObjectB != pObjectA)
 				{
@@ -32,16 +39,30 @@ void Scene::Collision()
 					else if (dynamic_cast<Ball*>(pObjectB))
 						dynamic_cast<Box*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
 				}
+		}
 
-		if (dynamic_cast<Ball*>(pObjectA))
+
+		else if (dynamic_cast<Ball*>(pObjectA))
+		{
 			for (auto& pObjectB : vpGameObjects)
 				if (pObjectB != pObjectA)
 				{
 					if (dynamic_cast<Box*>(pObjectB))
+					{
 						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Box*>(pObjectB)->m_collider);
+
+						if (dynamic_cast<Character*>(pObjectA))
+							dynamic_cast<Character*>(pObjectA)->m_viewRange.CheckCollision(&dynamic_cast<Box*>(pObjectB)->m_collider);
+					}
 					else if (dynamic_cast<Ball*>(pObjectB))
+					{
 						dynamic_cast<Ball*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+
+						if (dynamic_cast<Character*>(pObjectA))
+							dynamic_cast<Character*>(pObjectA)->m_viewRange.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
+					}
 				}
+		}
 	}
 
 }
@@ -68,7 +89,6 @@ void Scene::Update(float deltaTime)
 		vpGameObjects.erase(vpGameObjects.begin() + destroyIndex);
 	}
 	vDestroyQueue.clear();
-
 
 	// Check if a player exists.
 	if (!pPlayer)
@@ -112,7 +132,7 @@ void Scene::Update(float deltaTime)
 	}
 
 	// Object delete controls
-	if (pInput->CheckHeld(BTN_RMB))
+	if (pInput->CheckPressed(BTN_RMB))
 	{
 		game::Float2 loc{
 			pCurrentCamera->ScreenLocToWorldLoc(
@@ -130,7 +150,20 @@ void Scene::Update(float deltaTime)
 				roundf(pGameObject->m_location.y)
 			};
 			if (tileLocRounded == locRounded)
-				QueueToDestroy(i);
+			{
+				if (dynamic_cast<Character*>(pGameObject))
+				{
+					Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
+					if (pCharacter->m_health > 0)
+					{
+						pCharacter->m_health = 0;
+					}
+					else
+						QueueToDestroy(i);
+				}
+				else
+					QueueToDestroy(i);
+			}
 			++i;
 		}
 
@@ -158,6 +191,7 @@ void Scene::Update(float deltaTime)
 	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_BallDynamic;
 	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
 	if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Animation;
+	if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
 
 	Collision();
 
@@ -168,10 +202,15 @@ void Scene::Update(float deltaTime)
 
 void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
-	GameObject* pPrefab{ prefabList.Get(prefab) };
+	GameObject* pPrefab{ prefabs.Get(prefab) };
 	if (dynamic_cast<Player*>(pPrefab))
 	{
 		vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
+	else if (dynamic_cast<NPC*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pPrefab)));
 		vpSpawnQueue.back()->m_location = location;
 	}
 	else if (dynamic_cast<Character*>(pPrefab))

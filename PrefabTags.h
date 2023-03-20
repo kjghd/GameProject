@@ -4,6 +4,7 @@
 enum PrefabTag
 {
 	PREFAB_Player,
+	PREFAB_NPC,
 
 	PREFAB_Block_Dynamic,
 	PREFAB_Block_Wall,

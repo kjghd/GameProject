@@ -1,6 +1,9 @@
 #include "Renderer.h"
 #include "Prefabs.h"
 
+#include "Box.h"
+#include "Ball.h"
+
 #include <algorithm>
 
 Renderer::Renderer()
@@ -29,7 +32,6 @@ void Renderer::Render()
 	// Sort for rendering.
 	std::vector<GameObject*> vpUnsorted{ m_pScene->vpGameObjects };
 	std::vector<GameObject*> vpSorted;
-
 	while (!vpUnsorted.empty())
 	{
 		// Find lowest sprite.
@@ -73,7 +75,6 @@ void Renderer::Render()
 		}
 	}
 
-
 	// Render
 	for (size_t i = SL_COUNT; i > 0 ; --i)
 		for (auto& pGameObject : vpSorted)
@@ -86,7 +87,6 @@ void Renderer::Render()
 					)
 				};
 
-
 				game::Rect region{ pGameObject->m_sprite.GetSourceRect() };
 
 				m_pGraphics->DrawBitmapRegion(
@@ -95,7 +95,6 @@ void Renderer::Render()
 					D2D1::RectF(region.l, region.t, region.r, region.b)
 				);
 			}
-
 
 	// Collision Debug
 	if (m_debug)
@@ -125,21 +124,32 @@ void Renderer::Render()
 			{
 				Ball* pBall{ dynamic_cast<Ball*>(pGameObject) };
 
-				game::Float2 loc{ m_pCamera->WorldLocToScreenLoc(pBall->m_location.x, pBall->m_location.y) };
-				float radius{ m_pCamera->WU_to_SU(pBall->m_collider.radius) };
+				game::Float2 loc_collider{ m_pCamera->WorldLocToScreenLoc(pBall->m_collider.origin.x, pBall->m_collider.origin.y) };
+				float radius_collider{ m_pCamera->WU_to_SU(pBall->m_collider.radius) };
 
-				m_pGraphics->DebugCircle(D2D1::Point2F(loc.x, loc.y), radius);
+				m_pGraphics->DebugCircle(D2D1::Point2F(loc_collider.x, loc_collider.y), radius_collider);
+
+				if (dynamic_cast<Character*>(pGameObject))
+				{
+					Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
+
+					game::Float2 loc_view{ m_pCamera->WorldLocToScreenLoc(pCharacter->m_viewRange.origin.x, pCharacter->m_viewRange.origin.y) };
+					float radius_view{ m_pCamera->WU_to_SU(pCharacter->m_viewRange.radius) };
+
+					m_pGraphics->DebugCircle(D2D1::Point2F(loc_view.x, loc_view.y), radius_view);
+				}
 			}
 		}
 
 	}
 
+
 	// Block preview
-	game::Rect region{ prefabList.Get(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
+	game::Rect region{ m_pScene->prefabs.Get(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
 
 	m_pGraphics->DrawBitmapRegion(
 		D2D1::RectF(0, 0, 60, 60),
-		prefabList.Get(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
+		m_pScene->prefabs.Get(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
 		D2D1::RectF(region.l, region.t, region.r, region.b)
 	);
 

@@ -10,6 +10,7 @@ enum Textures
 
 	T_Animation,
 	T_Guy,
+	T_Guy2,
 
 	T_Blue,
 	T_Green,

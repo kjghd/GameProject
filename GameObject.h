@@ -18,17 +18,10 @@ public:
 
 	GameObject(
 		ImageData* sprite_pImageData,
-		float sprite_frameTime,
 		int sprite_layer,
 		game::Float2 sprite_scale,
-		game::Float2 sprite_offset
-	);
-
-	GameObject(
-		ImageData* sprite_pImageData,
-		int sprite_layer,
-		game::Float2 sprite_scale,
-		game::Float2 sprite_offset
+		game::Float2 sprite_offset,
+		float sprite_frameTime = 1000.f
 	);
 
 	GameObject(const GameObject& gameObject);

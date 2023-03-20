@@ -78,6 +78,7 @@ void DetermineCollision(Collider* pA, Collider* pB, CollisionInfo col_info)
 {
 	if (col_info.overlap >= 0)
 	{
+		pA->pCollisions.push_back(pB);
 		if (pA->block && pB->block && pA->dynamic)
 		{
 			if ((pA->moving && pB->moving) || (!pA->moving && !pB->moving) || (!pB->dynamic))
@@ -94,19 +95,16 @@ void DetermineCollision(Collider* pA, Collider* pB, CollisionInfo col_info)
 
 
 // Collider
-Collider::Collider(game::Float2* pOrigin, bool dyn, bool blck)
+Collider::Collider(GameObject* pOwner, bool dynamic, bool block, bool trigger)
 	:
-	origin(*pOrigin),
-	dynamic(dyn),
-	block(blck),
+	pOwner(pOwner),
+	origin(pOwner->m_location),
+	dynamic(dynamic),
+	block(block),
+	trigger(trigger),
 	moving(false),
 	moveBuffer{ 0,0 }
 {
-}
-
-bool Collider::CheckCanMove()
-{
-	return dynamic && !hit_immovable;
 }
 
 void Collider::CheckCollision(Collider* pCollider)
@@ -119,21 +117,21 @@ void Collider::Update()
 	moving = false;
 	origin += moveBuffer;
 	moveBuffer = { 0,0 };
-	hit_immovable = false;
+	pCollisions.clear();
 }
 
 
 
 // Collider Box
-Collider_Box::Collider_Box(game::Float2* pOrigin, game::Float2 sz, bool dyn, bool blck)
+Collider_Box::Collider_Box(GameObject* pOwner, game::Float2 sz, bool dyn, bool blck, bool trigger)
 	:
-	Collider(pOrigin, dyn, blck),
+	Collider(pOwner, dyn, blck, trigger),
 	size(sz)
 {
 }
-Collider_Box::Collider_Box(game::Float2* pOrigin, const Collider_Box& collider)
+Collider_Box::Collider_Box(GameObject* pOwner, const Collider_Box& collider)
 	:
-	Collider(pOrigin, collider.dynamic, collider.block),
+	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	size(collider.size)
 {
 }
@@ -160,15 +158,15 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 
 
 // Collider Circle
-Collider_Circle::Collider_Circle(game::Float2* pOrigin, float radius, bool dynamic, bool block)
+Collider_Circle::Collider_Circle(GameObject* pOwner, float radius, bool dynamic, bool block, bool trigger)
 	:
-	Collider(pOrigin, dynamic, block),
+	Collider(pOwner, dynamic, block, trigger),
 	radius(radius)
 {
 }
-Collider_Circle::Collider_Circle(game::Float2* pOrigin, const Collider_Circle& collider)
+Collider_Circle::Collider_Circle(GameObject* pOwner, const Collider_Circle& collider)
 	:
-	Collider(pOrigin, collider.dynamic, collider.block),
+	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	radius(collider.radius)
 {
 }

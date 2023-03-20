@@ -14,30 +14,23 @@ public:
 	Box();
 	Box(
 		ImageData* sprite_pImageData,
-		float sprite_frameTime,
 		int sprite_layer,
 		game::Float2 sprite_scale,
 		game::Float2 sprite_offset,
 		game::Float2 collider_size,
 		bool collider_dynamic,
-		bool collider_block
-	);
-	Box(
-		ImageData* sprite_pImageData,
-		int sprite_layer,
-		game::Float2 sprite_scale,
-		game::Float2 sprite_offset,
-		game::Float2 collider_size,
-		bool collider_dynamic,
-		bool collider_block
+		bool collider_block,
+		float sprite_frameTime = 1000.f
 	);
 	Box(const Box& box);
+
+	Box(const Sprite& sprite, const Collider_Box& collider);
 
 	Box& operator =(const Box& box)
 	{
 		m_location = box.m_location;
 		m_sprite = Sprite(&m_location, box.m_sprite);
-		m_collider = Collider_Box(&m_location, box.m_collider);
+		m_collider = Collider_Box(this, box.m_collider);
 
 		return *this;
 	}
