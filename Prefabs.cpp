@@ -57,11 +57,11 @@ void PrefabList::InitImageData()
 
 void PrefabList::InitGameObjects()
 {
-	prefabs[PREFAB_Player] = new Player(100, 3.5, &imageDatas[T_Guy], SL_Object, {.6,.6}, {0,.6}, .28, true, true, 1, 100);
-	prefabs[PREFAB_NPC] = new NPC(100, 100, 1.75, &imageDatas[T_Guy2], SL_Object, {.6,.6}, {0,.6}, .28, true, true, 4, 200);
-	prefabs[PREFAB_BallDynamic] = new Ball(&imageDatas[T_BallRed], SL_Object, {1,1}, {0,0}, .5, true, true);
-	prefabs[PREFAB_Mushroom] = new Ball(&imageDatas[T_Mushroom], SL_Object, {1,1}, {.1,2.2}, .65, false, true);
-	prefabs[PREFAB_Animation] = new GameObject(&imageDatas[T_Animation], SL_Floor, { 1,1 }, { 0,0 }, 500);
+	prefabs[PREFAB_Player] = new Player(100.f, 3.5f, &imageDatas[T_Guy], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 1.f, 100.f);
+	prefabs[PREFAB_NPC] = new NPC(100.f, 100.f, 1.75f, &imageDatas[T_Guy2], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 4.f, 200.f);
+	prefabs[PREFAB_BallDynamic] = new Ball(&imageDatas[T_BallRed], SL_Object, {1.f,1.f}, {0,0}, .5f, true, true);
+	prefabs[PREFAB_Mushroom] = new Ball(&imageDatas[T_Mushroom], SL_Object, {1.f,1.f}, {.1f,2.2f}, .65f, false, true);
+	prefabs[PREFAB_Animation] = new GameObject(&imageDatas[T_Animation], SL_Floor, { 1.f,1.f }, { 0,0 }, 500.f);
 }
 
 PrefabList::PrefabList()

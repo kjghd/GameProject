@@ -37,16 +37,4 @@ public:
 	void Move(game::Float2 direction);
 
 	void ApplyMovement(float deltaTime);
-
-	Character& operator =(const Character& character)
-	{
-		m_location = character.m_location;
-		m_sprite = Sprite(&m_location, character.m_sprite);
-		m_collider = Collider_Circle(this, character.m_collider);
-		m_speed = character.m_speed;
-		m_viewRange = Collider_Circle(this, character.m_viewRange);
-
-		return *this;
-	}
-
 };

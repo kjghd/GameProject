@@ -78,7 +78,7 @@ void DetermineCollision(Collider* pA, Collider* pB, CollisionInfo col_info)
 {
 	if (col_info.overlap >= 0)
 	{
-		pA->pCollisions.push_back(pB);
+		if (pA->trigger) pA->pCollisions.push_back(pB);
 		if (pA->block && pB->block && pA->dynamic)
 		{
 			if ((pA->moving && pB->moving) || (!pA->moving && !pB->moving) || (!pB->dynamic))

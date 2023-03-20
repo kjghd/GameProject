@@ -31,15 +31,5 @@ public:
 
 	void Wander(float deltaTime);
 
-	NPC& operator =(const NPC& npc)
-	{
-		m_location = npc.m_location;
-		m_sprite = Sprite(&m_location, npc.m_sprite);
-		m_collider = Collider_Circle(this, npc.m_collider);
-		m_speed = npc.m_speed;
-		m_viewRange = Collider_Circle(this, npc.m_viewRange);
-
-		return *this;
-	}
 };
 

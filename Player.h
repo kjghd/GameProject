@@ -28,17 +28,5 @@ public:
 
     virtual void Update(float deltaTime) override;
 
-	Player& operator =(const Player& player)
-	{
-		m_location = player.m_location;
-		m_sprite = Sprite(&m_location, player.m_sprite);
-		m_collider = Collider_Circle(this, player.m_collider);
-		m_speed = player.m_speed;
-		m_pInput = player.m_pInput;
-		m_camera = m_camera;
-		m_viewRange = Collider_Circle(this, player.m_viewRange);
-
-		return *this;
-	}
 };
 

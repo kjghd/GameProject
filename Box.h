@@ -25,13 +25,4 @@ public:
 	Box(const Box& box);
 
 	Box(const Sprite& sprite, const Collider_Box& collider);
-
-	Box& operator =(const Box& box)
-	{
-		m_location = box.m_location;
-		m_sprite = Sprite(&m_location, box.m_sprite);
-		m_collider = Collider_Box(this, box.m_collider);
-
-		return *this;
-	}
 };

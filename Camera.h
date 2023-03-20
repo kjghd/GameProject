@@ -26,14 +26,6 @@ public:
 
 	static game::Int2 m_screenResolution;
 
-	Camera& operator=(const Camera& camera)
-	{
-		m_origin = camera.m_origin;
-		m_offset = camera.m_offset;
-		m_zoom = camera.m_zoom;
-		m_zoom = camera.m_speed;
-	}
-
 protected:
 	game::Float2& m_origin;
 	game::Float2 m_offset;

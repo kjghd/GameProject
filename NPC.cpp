@@ -33,6 +33,7 @@ NPC::NPC(float damage,
 	wanderCooldown(0),
 	wanderTime(0)
 {
+	m_collider.trigger = true;
 }
 
 NPC::NPC(const NPC& npc)

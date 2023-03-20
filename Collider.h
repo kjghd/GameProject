@@ -33,17 +33,6 @@ public:
 	Collider_Box(GameObject* pOwner, const Collider_Box& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;
-
-	Collider_Box& operator =(const Collider_Box& collider)
-	{
-		pOwner = collider.pOwner;
-		origin = collider.origin;
-		dynamic = collider.dynamic;
-		block = collider.block;
-		trigger = collider.trigger;
-		size = collider.size;
-		return *this;
-	}
 };
 class Collider_Circle : public Collider
 {
@@ -54,15 +43,4 @@ public:
 	Collider_Circle(GameObject* pOwner, const Collider_Circle& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;
-
-	Collider_Circle& operator =(const Collider_Circle& collider)
-	{
-		pOwner = collider.pOwner;
-		origin = collider.origin;
-		dynamic = collider.dynamic;
-		block = collider.block;
-		trigger = collider.trigger;
-		radius = collider.radius;
-		return *this;
-	}
 };

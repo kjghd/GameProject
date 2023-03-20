@@ -46,19 +46,19 @@ void Player::Update(float deltaTime)
 	{
 		if (m_pInput)
 		{
-			if (m_pInput->CheckHeld(BTN_Q)) m_camera.DecreaseZoom(.1);
-			if (m_pInput->CheckHeld(BTN_E)) m_camera.IncreaseZoom(.1);
+			if (m_pInput->CheckHeld(BTN_Q)) m_camera.DecreaseZoom(.1f);
+			if (m_pInput->CheckHeld(BTN_E)) m_camera.IncreaseZoom(.1f);
 
 			game::Float2 direction{ 0,0 };
 
-			if (m_pInput->CheckHeld(BTN_W)) direction.y += 1;
-			if (m_pInput->CheckHeld(BTN_S)) direction.y -= 1;
-			if (m_pInput->CheckHeld(BTN_A)) direction.x -= 1;
-			if (m_pInput->CheckHeld(BTN_D)) direction.x += 1;
+			if (m_pInput->CheckHeld(BTN_W)) direction.y += 1.f;
+			if (m_pInput->CheckHeld(BTN_S)) direction.y -= 1.f;
+			if (m_pInput->CheckHeld(BTN_A)) direction.x -= 1.f;
+			if (m_pInput->CheckHeld(BTN_D)) direction.x += 1.f;
 			if (direction.x != 0 && direction.y != 0)
 			{
-				direction.x *= std::sqrt(2) / 2;
-				direction.y *= std::sqrt(2) / 2;
+				direction.x *= std::sqrtf(2.f) / 2.f;
+				direction.y *= std::sqrtf(2.f) / 2.f;
 			}
 
 			if (direction.x || direction.y)

@@ -16,21 +16,6 @@ Sprite::Sprite(game::Float2* pOrigin, ImageData* pImageData, float frameTime, in
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
 
-Sprite::Sprite(game::Float2* pOrigin, ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset)
-	:
-	origin(*pOrigin),
-	pImageData(pImageData),
-	layer(layer),
-	offset(offset),
-	scale(scale),
-	currentAnim(0),
-	currentFrame(0),
-	frameTimeMax(0),
-	frameTimeCurrent(0)
-{
-	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
-}
-
 Sprite::Sprite(game::Float2* pOrigin, const Sprite& sprite)
 	:
 	origin(*pOrigin),
