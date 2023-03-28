@@ -21,11 +21,46 @@ game::Rect* SeperateSprites(game::Float2 px, game::Int2 size)
 	return pRects;
 }
 
+//ImageData BuildImageData(int textureIndex, game::Int2 dimensions_px, game::Int2 dimensions_sprites = {1,1}, game::Int2* pAnimations = nullptr, int animCount = 0)
+//{
+//	int size{ dimensions_sprites.x * dimensions_sprites.y };
+//
+//	game::Rect* pRects = new game::Rect[size];
+//
+//	for (size_t y = 0; y < dimensions_sprites.y; y++)
+//		for (size_t x = 0; x < dimensions_sprites.x; x++)
+//			pRects[y * dimensions_sprites.x + x] = {
+//				(float)dimensions_px.x * x,
+//				(float)dimensions_px.y * y,
+//				(float)dimensions_px.x * (x + 1),
+//				(float)dimensions_px.y * (y + 1)
+//		};
+//
+//	game::Int2* pAnims{ nullptr };
+//
+//	if (!pAnims)
+//	{
+//		pAnims = new game::Int2[size];
+//
+//		for (size_t y = 0; y < dimensions_sprites.y; y++)
+//			for (size_t x = 0; x < dimensions_sprites.x; x++)
+//				pAnims[y * dimensions_sprites.x + x] = { (int)x,(int)y };
+//	}
+//	else
+//	{
+//		pAnims = pAnimations;
+//	}
+//
+//	int animations{ pAnims ? animCount : size };
+//
+//	return ImageData(textureIndex, dimensions_px, size, pRects, animations, pAnims);
+//}
+
 void PrefabList::InitImageData()
 {
 	imageDatas[T_Wallace] = ImageData(T_Wallace, { 91,212 });
-	
 	imageDatas[T_Mushroom] = ImageData(T_Mushroom, { 141,183 });
+	imageDatas[T_BallRed] = ImageData(T_BallRed, { 32,32 });
 
 	game::Rect* Animation_Rects{ SeperateSprites({32,32}, {8,5}) };
 	game::Int2 Animation_Anims[2] = {
@@ -36,22 +71,22 @@ void PrefabList::InitImageData()
 	delete[] Animation_Rects;
 	Animation_Rects = nullptr;
 
-	game::Rect* Guy_Rects{ SeperateSprites({73,86}, {8,5}) };
+	game::Rect* Guy_Rects{ SeperateSprites({73,86}, {8,4}) };
 	game::Int2 Guy_Anims[7] = {
 		{0,0},
 		{1,1},
 		{2,2},
+		{3,3},
 		{8,15},
 		{16,23},
-		{24,31},
-		{32,39}
+		{24,31}
 	};
-	imageDatas[T_Guy] = ImageData(T_Guy, { 73,86 }, 40, Guy_Rects, 7, Guy_Anims);
-	imageDatas[T_Guy2] = ImageData(T_Guy2, { 73,86 }, 40, Guy_Rects, 7, Guy_Anims);
+	imageDatas[T_Guy] = ImageData(T_Guy, { 73,86 }, 32, Guy_Rects, 7, Guy_Anims);
+	imageDatas[T_Guy2] = ImageData(T_Guy2, { 73,86 }, 32, Guy_Rects, 7, Guy_Anims);
 	delete[] Guy_Rects;
 	Guy_Rects = nullptr;
 
-	imageDatas[T_BallRed] = ImageData(T_BallRed, { 32,32 });
+
 
 }
 

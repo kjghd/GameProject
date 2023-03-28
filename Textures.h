@@ -12,6 +12,8 @@ enum Textures
 	T_Guy,
 	T_Guy2,
 
+	T_Font,
+
 	T_Blue,
 	T_Green,
 	T_Red,

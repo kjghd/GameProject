@@ -32,6 +32,8 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
 	LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
 
+	LoadImageFromFile(L"Data/Textures/font_32x48.png", T_Font);
+
 	LoadImageFromFile(L"Data/Textures/sprite_sheet.png", T_Animation);
 	LoadImageFromFile(L"Data/Textures/guy_sheet.png", T_Guy);
 	LoadImageFromFile(L"Data/Textures/guy_sheet2.png", T_Guy2);
@@ -98,22 +100,35 @@ void Graphics::ClearScreen(D2D1_COLOR_F colour)
 	pRenderTarget->Clear(colour);
 }
 
-void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity)
+void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity, bool invertX, bool invertY)
 {
-	D2D1_MATRIX_3X2_F transform;
 	D2D1_RECT_F adjustedRect{
 		rectf.left / (windowDPI / 96.f),
 		rectf.top / (windowDPI / 96.f),
 		rectf.right / (windowDPI / 96.f),
 		rectf.bottom / (windowDPI / 96.f)
 	};
+
+	if (invertX || invertY)
+	{
+		D2D1_POINT_2F center{
+			adjustedRect.left + (adjustedRect.right - adjustedRect.left) / 2,
+			adjustedRect.top + (adjustedRect.bottom - adjustedRect.top) / 2
+		};
+		D2D1_SIZE_F scale{
+			invertX ? -1 : 1,
+			invertY ? -1 : 1
+		};
+		pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(scale, center));
+	}
 
 	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
+
+	pRenderTarget->SetTransform(D2D1::Matrix3x2F{ 1,0,0,1,0,0 });
 }
 
-void Graphics::DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RECT_F region, FLOAT opacity)
+void Graphics::DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RECT_F region, FLOAT opacity, bool invertX, bool invertY)
 {
-	D2D1_MATRIX_3X2_F transform;
 	D2D1_RECT_F adjustedRect{
 		rectf.left / (windowDPI / 96.f),
 		rectf.top / (windowDPI / 96.f),
@@ -121,7 +136,22 @@ void Graphics::DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RE
 		rectf.bottom / (windowDPI / 96.f)
 	};
 
+	if (invertX || invertY)
+	{
+		D2D1_POINT_2F center{
+			adjustedRect.left + (adjustedRect.right - adjustedRect.left) / 2,
+			adjustedRect.top + (adjustedRect.bottom - adjustedRect.top) / 2
+		};
+		D2D1_SIZE_F scale{
+			invertX ? -1 : 1,
+			invertY ? -1 : 1
+		};
+		pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(scale, center));
+	}
+
 	pRenderTarget->DrawBitmap(vpBitmaps.at(texture), adjustedRect, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, region);
+
+	pRenderTarget->SetTransform(D2D1::Matrix3x2F{ 1,0,0,1,0,0 });
 }
 
 

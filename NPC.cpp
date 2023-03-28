@@ -58,6 +58,7 @@ void NPC::Update(float deltaTime)
 				Character* pCharacter{ dynamic_cast<Character*>(pViewTarget->pOwner) };
 				if (!dynamic_cast<NPC*>(pViewTarget->pOwner) && pCharacter->m_health > 0)
 				{
+					m_lookDirection = pCharacter->m_location - m_location;
 					Move(pCharacter->m_location - m_location);
 					targeting = true;
 					wanderTime = 0;
@@ -82,8 +83,8 @@ void NPC::Update(float deltaTime)
 
 		ApplyMovement(deltaTime);
 	}
-	else if (m_sprite.GetCurrentAnimation() != 2)
-		m_sprite.SetAnimation(2);
+	else if (m_sprite.GetCurrentAnimation() != 4)
+		m_sprite.SetAnimation(4);
 
 	m_sprite.Update(deltaTime);
 	m_collider.Update();
@@ -104,6 +105,9 @@ void NPC::Wander(float deltaTime)
 			float y = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2));
 
 			wanderDirection = { x, y };
+
+			m_lookDirection = { x, y };
+
 
 			wanderTime = 10000 * (x >= 0 ? x : -x);
 			wanderCooldown = 10000 * (y >= 0 ? y : -y);

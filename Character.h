@@ -11,6 +11,8 @@ public:
 	float m_health;
 	float m_speed;
 
+	game::Float2 m_lookDirection;
+
 	Collider_Circle m_viewRange;
 
 	Character(

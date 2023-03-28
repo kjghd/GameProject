@@ -49,6 +49,8 @@ void Player::Update(float deltaTime)
 			if (m_pInput->CheckHeld(BTN_Q)) m_camera.DecreaseZoom(.1f);
 			if (m_pInput->CheckHeld(BTN_E)) m_camera.IncreaseZoom(.1f);
 
+			m_lookDirection = m_camera.ScreenLocToWorldLoc(m_pInput->GetMouseLoc().x, m_pInput->GetMouseLoc().y) - m_location;
+
 			game::Float2 direction{ 0,0 };
 
 			if (m_pInput->CheckHeld(BTN_W)) direction.y += 1.f;
@@ -69,8 +71,8 @@ void Player::Update(float deltaTime)
 
 		ApplyMovement(deltaTime);
 	}
-	else if(m_sprite.GetCurrentAnimation() != 2)
-		m_sprite.SetAnimation(2);
+	else if(m_sprite.GetCurrentAnimation() != 4)
+		m_sprite.SetAnimation(4);
 
 	m_camera.OffsetTo(m_sprite.GetLocation(), deltaTime);
 

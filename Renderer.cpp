@@ -92,7 +92,10 @@ void Renderer::Render()
 				m_pGraphics->DrawBitmapRegion(
 					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
 					pGameObject->m_sprite.GetBitmapIndex(),
-					D2D1::RectF(region.l, region.t, region.r, region.b)
+					D2D1::RectF(region.l, region.t, region.r, region.b),
+					1,
+					pGameObject->m_sprite.CheckInvertedX(),
+					pGameObject->m_sprite.CheckInvertedY()
 				);
 			}
 

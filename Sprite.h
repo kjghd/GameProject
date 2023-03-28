@@ -28,11 +28,19 @@ protected:
 	float frameTimeMax;
 	float frameTimeCurrent;
 
+	int direction;
+	bool invertedX;
+	bool invertedY;
+
 public:
 	Sprite(game::Float2* pOrigin, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::Float2 scale = { 1,1 }, game::Float2 offset = { 0,0 });
 	Sprite(game::Float2* pOrigin, const Sprite& sprite);
 
 	void Update(float deltaTime);
+
+	void Pause();
+	void PlayForwards();
+	void PlayBackwards();
 
 	game::Float2 GetLocation();
 	game::Float2 GetSize();
@@ -41,5 +49,11 @@ public:
 	game::Rect GetSourceRect();
 	int GetBitmapIndex();
 	int GetCurrentAnimation();
+	bool CheckInvertedX();
+	bool CheckInvertedY();
+
 	void SetAnimation(int index);
+	void FlipX();
+	void FlipY();
+
 };
