@@ -83,8 +83,8 @@ void NPC::Update(float deltaTime)
 
 		ApplyMovement(deltaTime);
 	}
-	else if (m_sprite.GetCurrentAnimation() != 4)
-		m_sprite.SetAnimation(4);
+	else if (m_sprite.GetCurrentAnimation() != 3)
+		m_sprite.SetAnimation(3);
 
 	m_sprite.Update(deltaTime);
 	m_collider.Update();

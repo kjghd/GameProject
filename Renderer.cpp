@@ -29,6 +29,8 @@ void Renderer::Render()
 	m_pCamera = &m_pScene->GetCamera();
 	
 
+	/* World Objects */
+
 	// Sort for rendering.
 	std::vector<GameObject*> vpUnsorted{ m_pScene->vpGameObjects };
 	std::vector<GameObject*> vpSorted;
@@ -146,6 +148,8 @@ void Renderer::Render()
 
 	}
 
+
+	/* User Interface */
 
 	// Block preview
 	game::Rect region{ m_pScene->prefabs.Get(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
