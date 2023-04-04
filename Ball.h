@@ -4,12 +4,12 @@
 #include "Textures.h"
 #include "Sprite.h"
 #include "Collider.h"
-#include "GameObject.h"
+#include "WorldObject.h"
 
 #include <memory>
 
 
-class Ball : public GameObject
+class Ball : public WorldObject
 {
 public:
 	Collider_Circle m_collider;

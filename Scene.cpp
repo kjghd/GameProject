@@ -14,12 +14,41 @@
 
 Scene::Scene(Input* pInput)
 	:
+	state(SState_Run),
 	pInput(pInput),
 	pCurrentCamera(nullptr),
-	current_prefab(PREFAB_BallDynamic),
+	current_prefab(PREFAB_W_Floor),
 	pPlayer(nullptr),
-	prefabs()
+	prefabs(),
+	ui_background(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Background))),
+	button_resume(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Resume))),
+	button_mainMenu(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_MainMenu)))
 {
+	ui_background->SetLocation_percentage({ .5,.5 });
+
+	button_resume->SetLocation_percentage({ .5,.4 });
+	button_resume->SetInput(pInput);
+
+	button_mainMenu->SetLocation_percentage({ .5,.6 });
+	button_mainMenu->SetInput(pInput);
+}
+
+Scene::~Scene()
+{
+	for (auto& pGameObject : vpGameObjects)
+	{
+		delete pGameObject;
+		pGameObject = nullptr;
+	}
+
+	delete ui_background;
+	ui_background = nullptr;
+
+	delete button_resume;
+	button_resume = nullptr;
+
+	delete button_mainMenu;
+	button_mainMenu = nullptr;
 }
 
 void Scene::Collision()
@@ -80,129 +109,144 @@ Input& Scene::GetInput()
 
 void Scene::Update(float deltaTime)
 {
-	// Destroy.
-	std::sort(vDestroyQueue.begin(), vDestroyQueue.end(), std::greater<size_t>());
-	for (const auto& destroyIndex : vDestroyQueue)
+	switch (state)
 	{
-		delete vpGameObjects.at(destroyIndex);
-		vpGameObjects.at(destroyIndex) = nullptr;
-		vpGameObjects.erase(vpGameObjects.begin() + destroyIndex);
-	}
-	vDestroyQueue.clear();
-
-	// Check if a player exists.
-	if (!pPlayer)
+	case SState_Run:
 	{
-		bool playerExists{ false };
+		DestroyObjects();
 
-		for (const auto& pGameObject : vpGameObjects)
-			if (dynamic_cast<Player*>(pGameObject))
-				playerExists = true;
-
-		for (const auto& pSpawnObject : vpSpawnQueue)
-			if (dynamic_cast<Player*>(pSpawnObject))
-				playerExists = true;
-
-		if (!playerExists)
-			QueueToSpawn(PREFAB_Player);
-	}
-
-	// Spawn.
-	while (!vpSpawnQueue.empty())
-	{
-		vpGameObjects.push_back(vpSpawnQueue.back());
-		vpSpawnQueue.pop_back();
-	}
-
-	// Assign current player
-	if (!pPlayer)
-	{
-		for (const auto& pGameObject : vpGameObjects)
-			if (dynamic_cast<Player*>(pGameObject))
-			{
-				pPlayer = dynamic_cast<Player*>(pGameObject);
-				pPlayer->m_pInput = pInput;
-			}
-	}
-
-	// Assign current camera
-	if (!pCurrentCamera && pPlayer)
-	{
-		pCurrentCamera = &pPlayer->m_camera;
-	}
-
-	// Object delete controls
-	if (pInput->CheckPressed(BTN_RMB))
-	{
-		game::Float2 loc{
-			pCurrentCamera->ScreenLocToWorldLoc(
-					pInput->GetMouseLoc().x,
-					pInput->GetMouseLoc().y
-				)
-		};
-		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
-
-		size_t i{};
-		for (auto& pGameObject : vpGameObjects)
+		// Check if a player exists.
+		if (!pPlayer)
 		{
-			game::Float2 tileLocRounded{
-				roundf(pGameObject->m_location.x),
-				roundf(pGameObject->m_location.y)
-			};
-			if (tileLocRounded == locRounded)
-			{
-				if (dynamic_cast<Character*>(pGameObject))
+			bool playerExists{ false };
+
+			for (const auto& pGameObject : vpGameObjects)
+				if (dynamic_cast<Player*>(pGameObject))
+					playerExists = true;
+
+			for (const auto& pSpawnObject : vpSpawnQueue)
+				if (dynamic_cast<Player*>(pSpawnObject))
+					playerExists = true;
+
+			if (!playerExists)
+				QueueToSpawn(PREFAB_W_Player);
+		}
+
+		SpawnObjects();
+
+		// Assign current player
+		if (!pPlayer)
+		{
+			for (const auto& pGameObject : vpGameObjects)
+				if (dynamic_cast<Player*>(pGameObject))
 				{
-					Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
-					if (pCharacter->m_health > 0)
+					pPlayer = dynamic_cast<Player*>(pGameObject);
+					pPlayer->m_pInput = pInput;
+				}
+		}
+
+		// Assign current camera
+		if (!pCurrentCamera && pPlayer)
+		{
+			pCurrentCamera = &pPlayer->m_camera;
+		}
+
+
+		/* Player Controls */
+		if (pInput->CheckPressed(BTN_ESC))
+		{
+			state = SState_Pause;
+		}
+
+		// Object delete controls
+		if (pInput->CheckPressed(BTN_RMB))
+		{
+			game::Float2 loc{
+				pCurrentCamera->ScreenLocToWorldLoc(
+						pInput->GetMouseLoc().x,
+						pInput->GetMouseLoc().y
+					)
+			};
+			game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
+
+			size_t i{};
+			for (auto& pGameObject : vpGameObjects)
+			{
+				game::Float2 tileLocRounded{
+					roundf(pGameObject->m_location.x),
+					roundf(pGameObject->m_location.y)
+				};
+				if (tileLocRounded == locRounded)
+				{
+					if (dynamic_cast<Character*>(pGameObject))
 					{
-						pCharacter->m_health = 0;
+						Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
+						if (pCharacter->m_health > 0)
+						{
+							pCharacter->m_health = 0;
+						}
+						else
+							QueueToDestroy(i);
 					}
 					else
 						QueueToDestroy(i);
 				}
-				else
-					QueueToDestroy(i);
+				++i;
 			}
-			++i;
+
 		}
 
-	}
+		// Object spawn controls.
+		if (pInput->CheckPressed(BTN_LMB))
+		{
+			game::Float2 loc{
+				pCurrentCamera->ScreenLocToWorldLoc(
+						pInput->GetMouseLoc().x,
+						pInput->GetMouseLoc().y
+					)
+			};
+			game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
 
-	// Object spawn controls.
-	if (pInput->CheckPressed(BTN_LMB))
-	{
-		game::Float2 loc{
-			pCurrentCamera->ScreenLocToWorldLoc(
-					pInput->GetMouseLoc().x,
-					pInput->GetMouseLoc().y
-				)
-		};
-		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
+			bool canSpawn{ true };
+			for (auto& pGameObject : vpGameObjects)
+				if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object) canSpawn = false;
 
-		bool canSpawn{ true };
+			if (canSpawn)
+				QueueToSpawn(current_prefab, locRounded);
+		}
+
+		if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_W_BallDynamic;
+		if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_W_Mushroom;
+		if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_W_Floor;
+		if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_W_NPC;
+
+
+		Collision();
+
+		// Update
 		for (auto& pGameObject : vpGameObjects)
-			if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object) canSpawn = false;
+			pGameObject->Update(deltaTime);
 
-		if (canSpawn)
-			QueueToSpawn(current_prefab, locRounded);
+		break;
 	}
+	case SState_Pause:
+	{
+		if (pInput->CheckPressed(BTN_ESC)) state = SState_Run;
+		if (button_resume->Pressed()) state = SState_Run;
 
-	if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_BallDynamic;
-	if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
-	if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Animation;
-	if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
+		ui_background->Update(deltaTime);
+		button_resume->Update(deltaTime);
+		button_mainMenu->Update(deltaTime);
 
-	Collision();
-
-	// Update
-	for (auto& pGameObject : vpGameObjects)
-		pGameObject->Update(deltaTime);
+		break;
+	}
+	default: break;
+	}
 }   
 
 void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
-	GameObject* pPrefab{ prefabs.Get(prefab) };
+	WorldObject* pPrefab{ prefabs.GetWorldObject(prefab) };
 	if (dynamic_cast<Player*>(pPrefab))
 	{
 		vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
@@ -230,7 +274,7 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 	}
 	else
 	{
-		vpSpawnQueue.push_back(new GameObject(*pPrefab));
+		vpSpawnQueue.push_back(new WorldObject(*pPrefab));
 		vpSpawnQueue.back()->m_location = location;
 	}
 }
@@ -238,4 +282,25 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 void Scene::QueueToDestroy(size_t tileIndex)
 {
 	vDestroyQueue.push_back(tileIndex);
+}
+
+void Scene::SpawnObjects()
+{
+	while (!vpSpawnQueue.empty())
+	{
+		vpGameObjects.push_back(vpSpawnQueue.back());
+		vpSpawnQueue.pop_back();
+	}
+}
+
+void Scene::DestroyObjects()
+{
+	std::sort(vDestroyQueue.begin(), vDestroyQueue.end(), std::greater<size_t>());
+	for (const auto& destroyIndex : vDestroyQueue)
+	{
+		delete vpGameObjects.at(destroyIndex);
+		vpGameObjects.at(destroyIndex) = nullptr;
+		vpGameObjects.erase(vpGameObjects.begin() + destroyIndex);
+	}
+	vDestroyQueue.clear();
 }

@@ -32,12 +32,12 @@ void Renderer::Render()
 	/* World Objects */
 
 	// Sort for rendering.
-	std::vector<GameObject*> vpUnsorted{ m_pScene->vpGameObjects };
-	std::vector<GameObject*> vpSorted;
+	std::vector<WorldObject*> vpUnsorted{ m_pScene->vpGameObjects };
+	std::vector<WorldObject*> vpSorted;
 	while (!vpUnsorted.empty())
 	{
 		// Find lowest sprite.
-		GameObject* pLowestFound{ nullptr };
+		WorldObject* pLowestFound{ nullptr };
 		for (auto& pGameObject : vpUnsorted)
 		{
 			if (!pLowestFound)
@@ -45,13 +45,13 @@ void Renderer::Render()
 
 			else if (pGameObject != pLowestFound)
 			{
-				if (GameObject::CompareRenderOrder_Under(pGameObject, pLowestFound))
+				if (WorldObject::CompareRenderOrder_Under(pGameObject, pLowestFound))
 					pLowestFound = pGameObject;
 
-				else if (GameObject::CompareRenderOrder_Above(pGameObject, pLowestFound))
+				else if (WorldObject::CompareRenderOrder_Above(pGameObject, pLowestFound))
 					pLowestFound = pGameObject;
 
-				else if (GameObject::CompareRenderOrder_RowAndLeftOf(pGameObject, pLowestFound))
+				else if (WorldObject::CompareRenderOrder_RowAndLeftOf(pGameObject, pLowestFound))
 					pLowestFound = pGameObject;
 			}
 		}
@@ -151,32 +151,64 @@ void Renderer::Render()
 
 	/* User Interface */
 
-	// Block preview
-	game::Rect region{ m_pScene->prefabs.Get(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
+	if (m_pScene->state == SState_Pause)
+	{
+		game::Rect bg_source{ m_pScene->ui_background->GetSourceRect() };
+		game::Rect bg_screen{ m_pScene->ui_background->GetScreenRect() };
 
-	m_pGraphics->DrawBitmapRegion(
-		D2D1::RectF(0, 0, 60, 60),
-		m_pScene->prefabs.Get(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
-		D2D1::RectF(region.l, region.t, region.r, region.b)
-	);
+		m_pGraphics->DrawBitmapRegion(
+			{ bg_screen.l, bg_screen.t, bg_screen.r, bg_screen.b },
+			m_pScene->ui_background->GetBitmapIndex(),
+			{ bg_source.l, bg_source.t, bg_source.r, bg_source.b }
+		);
 
-	// Cursor
-	game::Float2 loc{
-	m_pCamera->ScreenLocToWorldLoc(
-			m_pScene->GetInput().GetMouseLoc().x,
-			m_pScene->GetInput().GetMouseLoc().y
-		)
-	};
-	game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
+		game::Rect resume_source{ m_pScene->button_resume->GetSourceRect() };
+		game::Rect resume_screen{ m_pScene->button_resume->GetScreenRect() };
 
-	game::Float2 locScreen{
-	m_pCamera->WorldLocToScreenLoc(
-			locRounded.x,
-			locRounded.y
-		)
-	};
-	
-	m_pGraphics->DebugCircle({ locScreen.x, locScreen.y }, m_pCamera->WU_to_SU(.5f));
+		m_pGraphics->DrawBitmapRegion(
+			{ resume_screen.l, resume_screen.t, resume_screen.r, resume_screen.b },
+			m_pScene->button_resume->GetBitmapIndex(),
+			{resume_source.l, resume_source.t, resume_source.r, resume_source.b}
+		);
+
+		game::Rect mainMenu_source{ m_pScene->button_mainMenu->GetSourceRect() };
+		game::Rect mainMenu_screen{ m_pScene->button_mainMenu->GetScreenRect() };
+
+		m_pGraphics->DrawBitmapRegion(
+			{ mainMenu_screen.l, mainMenu_screen.t, mainMenu_screen.r, mainMenu_screen.b },
+			m_pScene->button_mainMenu->GetBitmapIndex(),
+			{ mainMenu_source.l, mainMenu_source.t, mainMenu_source.r, mainMenu_source.b }
+		);
+	}
+	else if (m_pScene->state == SState_Run)
+	{
+		// Block preview
+		game::Rect region{ m_pScene->prefabs.GetWorldObject(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
+
+		m_pGraphics->DrawBitmapRegion(
+			D2D1::RectF(0, 0, 60, 60),
+			m_pScene->prefabs.GetWorldObject(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
+			D2D1::RectF(region.l, region.t, region.r, region.b)
+		);
+
+		// Cursor
+		game::Float2 loc{
+		m_pCamera->ScreenLocToWorldLoc(
+				m_pScene->GetInput().GetMouseLoc().x,
+				m_pScene->GetInput().GetMouseLoc().y
+			)
+		};
+		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
+
+		game::Float2 locScreen{
+		m_pCamera->WorldLocToScreenLoc(
+				locRounded.x,
+				locRounded.y
+			)
+		};
+
+		m_pGraphics->DebugCircle({ locScreen.x, locScreen.y }, m_pCamera->WU_to_SU(.5f));
+	}
 
 	m_pGraphics->EndDraw();
 

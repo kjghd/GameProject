@@ -1,7 +1,7 @@
-#include "GameObject.h"
+#include "WorldObject.h"
 
 
-GameObject::GameObject()
+WorldObject::WorldObject()
 	:
 	m_location{ 0,0 },
 	m_sprite(Sprite(&m_location, nullptr, 0))
@@ -9,7 +9,7 @@ GameObject::GameObject()
 }
 
 // Used in prefabs
-GameObject::GameObject(
+WorldObject::WorldObject(
 	ImageData* sprite_pImageData,
 	int sprite_layer,
 	game::Float2 sprite_scale,
@@ -23,7 +23,7 @@ GameObject::GameObject(
 }
 
 // Used in scene
-GameObject::GameObject(const GameObject& gameObject)
+WorldObject::WorldObject(const WorldObject& gameObject)
 	:
 	m_location{ 0,0 },
 	m_sprite(Sprite(&m_location, gameObject.m_sprite))
@@ -31,29 +31,29 @@ GameObject::GameObject(const GameObject& gameObject)
 }
 
 // Used by derived classes
-GameObject::GameObject(const Sprite& sprite)
+WorldObject::WorldObject(const Sprite& sprite)
 	:
 	m_location{ 0,0 },
 	m_sprite(Sprite(&m_location, sprite))
 {
 }
 
-void GameObject::Update(float deltaTime)
+void WorldObject::Update(float deltaTime)
 {
 	m_sprite.Update(deltaTime);
 }
 
-bool GameObject::CompareRenderOrder_Under(GameObject* gameObjectA, GameObject* gameObjectB)
+bool WorldObject::CompareRenderOrder_Under(WorldObject* gameObjectA, WorldObject* gameObjectB)
 {
 	return gameObjectA->m_sprite.GetRenderLayer() > gameObjectB->m_sprite.GetRenderLayer();
 }
 
-bool GameObject::CompareRenderOrder_Above(GameObject* gameObjectA, GameObject* gameObjectB)
+bool WorldObject::CompareRenderOrder_Above(WorldObject* gameObjectA, WorldObject* gameObjectB)
 {
 	return gameObjectA->m_location.y > gameObjectB->m_location.y;
 }
 
-bool GameObject::CompareRenderOrder_RowAndLeftOf(GameObject* gameObjectA, GameObject* gameObjectB)
+bool WorldObject::CompareRenderOrder_RowAndLeftOf(WorldObject* gameObjectA, WorldObject* gameObjectB)
 {
 	return gameObjectA->m_location.y == gameObjectB->m_location.y && gameObjectA->m_location.x < gameObjectB->m_location.x;
 }

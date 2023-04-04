@@ -21,41 +21,6 @@ game::Rect* SeperateSprites(game::Float2 px, game::Int2 size)
 	return pRects;
 }
 
-//ImageData BuildImageData(int textureIndex, game::Int2 dimensions_px, game::Int2 dimensions_sprites = {1,1}, game::Int2* pAnimations = nullptr, int animCount = 0)
-//{
-//	int size{ dimensions_sprites.x * dimensions_sprites.y };
-//
-//	game::Rect* pRects = new game::Rect[size];
-//
-//	for (size_t y = 0; y < dimensions_sprites.y; y++)
-//		for (size_t x = 0; x < dimensions_sprites.x; x++)
-//			pRects[y * dimensions_sprites.x + x] = {
-//				(float)dimensions_px.x * x,
-//				(float)dimensions_px.y * y,
-//				(float)dimensions_px.x * (x + 1),
-//				(float)dimensions_px.y * (y + 1)
-//		};
-//
-//	game::Int2* pAnims{ nullptr };
-//
-//	if (!pAnims)
-//	{
-//		pAnims = new game::Int2[size];
-//
-//		for (size_t y = 0; y < dimensions_sprites.y; y++)
-//			for (size_t x = 0; x < dimensions_sprites.x; x++)
-//				pAnims[y * dimensions_sprites.x + x] = { (int)x,(int)y };
-//	}
-//	else
-//	{
-//		pAnims = pAnimations;
-//	}
-//
-//	int animations{ pAnims ? animCount : size };
-//
-//	return ImageData(textureIndex, dimensions_px, size, pRects, animations, pAnims);
-//}
-
 void PrefabList::InitImageData()
 {
 	imageDatas[T_Wallace] = ImageData(T_Wallace, { 91,212 });
@@ -86,17 +51,55 @@ void PrefabList::InitImageData()
 	delete[] Guy_Rects;
 	Guy_Rects = nullptr;
 
+	game::Rect* Button_Rects{ SeperateSprites({128,32}, {1,2}) };
+	game::Int2 Button_Anims[2] = {
+		{0,0},
+		{1,1}
+	};
+	imageDatas[T_UI_Resume] = ImageData(T_UI_Resume, { 128,32 }, 2, Button_Rects, 2, Button_Anims);
+	imageDatas[T_UI_MainMenu] = ImageData(T_UI_MainMenu, { 128,32 }, 2, Button_Rects, 2, Button_Anims);
+	delete[] Button_Rects;
+	Button_Rects = nullptr;
 
+	game::Rect* BG_Rects{ SeperateSprites({512,512}, {2,2}) };
+	game::Int2 BG_Anims[1] = {
+		{ 0,3 }
+	};
+	imageDatas[T_UI_BG] = ImageData(T_UI_BG, { 512,512 }, 4, BG_Rects, 1, BG_Anims);
+	delete[] BG_Rects;
+	BG_Rects = nullptr;
 
+	game::Rect* Floor_Rects{ SeperateSprites({64,64}, {4,2}) };
+	game::Int2 Floor_Anims[8] = {
+		{0,0},
+		{1,1},
+		{2,2},
+		{3,3},
+		{4,4},
+		{5,5},
+		{6,6},
+		{7,7}
+	};
+	imageDatas[T_Floor] = ImageData(T_Floor, { 64,64 }, 8, Floor_Rects, 8, Floor_Anims);
+	delete[] Floor_Rects;
+	Floor_Rects = nullptr;
 }
 
 void PrefabList::InitGameObjects()
 {
-	prefabs[PREFAB_Player] = new Player(100.f, 3.5f, &imageDatas[T_Guy], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 1.f, 100.f);
-	prefabs[PREFAB_NPC] = new NPC(100.f, 100.f, 1.75f, &imageDatas[T_Guy2], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 4.f, 200.f);
-	prefabs[PREFAB_BallDynamic] = new Ball(&imageDatas[T_BallRed], SL_Object, {1.f,1.f}, {0,0}, .5f, true, true);
-	prefabs[PREFAB_Mushroom] = new Ball(&imageDatas[T_Mushroom], SL_Object, {1.f,1.f}, {.1f,2.2f}, .65f, false, true);
-	prefabs[PREFAB_Animation] = new GameObject(&imageDatas[T_Animation], SL_Floor, { 1.f,1.f }, { 0,0 }, 500.f);
+	prefabsWorld[PREFAB_W_Player] = new Player(100.f, 3.5f, &imageDatas[T_Guy], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 1.f, 100.f);
+	prefabsWorld[PREFAB_W_NPC] = new NPC(100.f, 100.f, 1.75f, &imageDatas[T_Guy2], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 4.f, 200.f);
+	prefabsWorld[PREFAB_W_BallDynamic] = new Ball(&imageDatas[T_BallRed], SL_Object, {1.f,1.f}, {0,0}, .5f, true, true);
+	prefabsWorld[PREFAB_W_Mushroom] = new Ball(&imageDatas[T_Mushroom], SL_Object, {1.f,1.f}, {.1f,2.2f}, .65f, false, true);
+	prefabsWorld[PREFAB_W_Animation] = new WorldObject(&imageDatas[T_Animation], SL_Floor, { 1.f,1.f }, { 0,0 }, 500.f);
+	prefabsWorld[PREFAB_W_Floor] = new WorldObject(&imageDatas[T_Floor], SL_Floor, { .5f,.5f }, { 0,0 });
+}
+
+void PrefabList::InitScreenObjects()
+{
+	prefabsScreen[PREFAB_S_Resume] = new ScreenObject(&imageDatas[T_UI_Resume], SL_UI_Front);
+	prefabsScreen[PREFAB_S_MainMenu] = new ScreenObject(&imageDatas[T_UI_MainMenu], SL_UI_Front);
+	prefabsScreen[PREFAB_S_Background] = new ScreenObject(&imageDatas[T_UI_BG], SL_UI_Back, {1.3f,1.f}, {0,0}, 100.f);
 }
 
 PrefabList::PrefabList()
@@ -105,18 +108,31 @@ PrefabList::PrefabList()
 {					
 	InitImageData();
 	InitGameObjects();
+	InitScreenObjects();
 }
 
 PrefabList::~PrefabList()
 {
-	for (size_t i{ 0 }; i < PREFAB_COUNT; ++i)
+	for (size_t i{ 0 }; i < PREFAB_W_COUNT; ++i)
 	{
-		delete prefabs[i];
-		prefabs[i] = nullptr;
+		delete prefabsWorld[i];
+		prefabsWorld[i] = nullptr;
 	}
+
+	for (size_t i{ 0 }; i < PREFAB_S_COUNT; ++i)
+	{
+		delete prefabsScreen[i];
+		prefabsScreen[i] = nullptr;
+	}
+
 }
 
-GameObject* PrefabList::Get(int prefabTag)
+WorldObject* PrefabList::GetWorldObject(int prefabTag)
 {
-	return prefabs[prefabTag];
+	return prefabsWorld[prefabTag];
+}
+
+ScreenObject* PrefabList::GetScreenObject(int prefabTag)
+{
+	return prefabsScreen[prefabTag];
 }

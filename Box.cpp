@@ -3,7 +3,7 @@
 
 Box::Box()
 	:
-	GameObject(),
+	WorldObject(),
 	m_collider(this)
 {
 }
@@ -18,21 +18,21 @@ Box::Box(ImageData* sprite_pImageData,
 	bool collider_block,
 	float sprite_frameTime)
 	:
-	GameObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime),
+	WorldObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime),
 	m_collider(this, collider_size, collider_dynamic, collider_block)
 {
 }
 
 Box::Box(const Box& box)
 	:
-	GameObject(box.m_sprite),
+	WorldObject(box.m_sprite),
 	m_collider(this, box.m_collider)
 {
 }
 
 Box::Box(const Sprite& sprite, const Collider_Box& collider)
 	:
-	GameObject(sprite),
+	WorldObject(sprite),
 	m_collider(this, collider)
 {
 }

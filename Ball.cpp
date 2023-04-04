@@ -3,7 +3,7 @@
 
 Ball::Ball()
 	:
-	GameObject(),
+	WorldObject(),
 	m_collider(this)
 {
 }
@@ -19,21 +19,21 @@ Ball::Ball(
 	float sprite_frameTime
 )
 	:
-	GameObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime),
+	WorldObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime),
 	m_collider(this, collider_radius, collider_dynamic, collider_block)
 {
 }
 
 Ball::Ball(const Ball& ball)
 	:
-	GameObject(ball.m_sprite),
+	WorldObject(ball.m_sprite),
 	m_collider(this, ball.m_collider)
 {
 }
 
 Ball::Ball(const Sprite& sprite, const Collider_Circle& collider)
 	:
-	GameObject(sprite),
+	WorldObject(sprite),
 	m_collider(this, collider)
 {
 }

@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 
-game::Int2 Camera::m_screenResolution = { 640,480 };
+game::Int2 Camera::m_screenResolution = { 1280,720 };
 
 Camera::Camera(game::Float2* pLocation)
 	:

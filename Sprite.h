@@ -5,10 +5,14 @@
 
 enum SpriteLayers
 {
-	SL_UI,
+	SL_UI_Front,
+	SL_UI_Mid,
+	SL_UI_Back,
+
 	SL_FX,
 	SL_Object,
 	SL_Floor,
+
 	SL_DEFAULT,
 
 	SL_COUNT
@@ -27,7 +31,6 @@ protected:
 	int currentAnim;
 	float frameTimeMax;
 	float frameTimeCurrent;
-
 	int direction;
 	bool invertedX;
 	bool invertedY;

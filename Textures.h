@@ -22,5 +22,11 @@ enum Textures
 	T_BallGreen,
 	T_BallRed,
 
+	T_Floor,
+
+	T_UI_Resume,
+	T_UI_MainMenu,
+	T_UI_BG,
+
 	T_COUNT
 };

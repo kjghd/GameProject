@@ -38,7 +38,6 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/guy_sheet.png", T_Guy);
 	LoadImageFromFile(L"Data/Textures/guy_sheet2.png", T_Guy2);
 
-
 	LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
 	LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);
 	LoadImageFromFile(L"Data/Textures/Block_Red.png", T_Red);
@@ -47,6 +46,11 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/Ball_Green.png", T_BallGreen);
 	LoadImageFromFile(L"Data/Textures/Ball_Red.png", T_BallRed);
 
+	LoadImageFromFile(L"Data/Textures/shopping_floor.png", T_Floor);
+
+	LoadImageFromFile(L"Data/Textures/Resume.png", T_UI_Resume);
+	LoadImageFromFile(L"Data/Textures/MainMenu.png", T_UI_MainMenu);
+	LoadImageFromFile(L"Data/Textures/BG.png", T_UI_BG);
 
 
 	windowDPI = GetDpiForWindow(hWnd);
@@ -130,9 +134,9 @@ void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity
 void Graphics::DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RECT_F region, FLOAT opacity, bool invertX, bool invertY)
 {
 	D2D1_RECT_F adjustedRect{
-		rectf.left / (windowDPI / 96.f),
-		rectf.top / (windowDPI / 96.f),
-		rectf.right / (windowDPI / 96.f),
+		rectf.left	 / (windowDPI / 96.f),
+		rectf.top    / (windowDPI / 96.f),
+		rectf.right  / (windowDPI / 96.f),
 		rectf.bottom / (windowDPI / 96.f)
 	};
 

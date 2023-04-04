@@ -1,10 +1,10 @@
 #pragma once
 
-#include "GameObject.h"
+#include "WorldObject.h"
 #include "Collider.h"
 
 
-class Box : public GameObject
+class Box : public WorldObject
 {
 public:
 	Collider_Box m_collider;

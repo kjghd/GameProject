@@ -25,6 +25,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	// Input
+	// Mouse
 	else if (uMsg == WM_MOUSEMOVE)
 	{
 		g_input.SetMouseLoc(
@@ -39,6 +40,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	else if (uMsg == WM_LBUTTONUP) g_input.SetOff(BTN_LMB);
 	else if (uMsg == WM_RBUTTONUP) g_input.SetOff(BTN_RMB);
 
+	// Keyboard
 	else if (uMsg == WM_KEYDOWN)
 	{
 		switch (wParam)
@@ -60,6 +62,9 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case 0x51: g_input.SetOn(BTN_Q); break;
 		case 0x53: g_input.SetOn(BTN_S); break;
 		case 0x57: g_input.SetOn(BTN_W); break;
+
+		case VK_TAB: g_input.SetOn(BTN_TAB); break;
+		case VK_ESCAPE: g_input.SetOn(BTN_ESC); break;
 		}
 	}
 	else if (uMsg == WM_KEYUP)
@@ -83,6 +88,9 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case 0x51: g_input.SetOff(BTN_Q); break;
 		case 0x53: g_input.SetOff(BTN_S); break;
 		case 0x57: g_input.SetOff(BTN_W); break;
+
+		case VK_TAB: g_input.SetOff(BTN_TAB); break;
+		case VK_ESCAPE: g_input.SetOff(BTN_ESC); break;
 		}
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "GameObject.h"
+#include "WorldObject.h"
+#include "ScreenObject.h"
 #include "ImageData.h"
 #include "PrefabTags.h"
 #include "Textures.h"
@@ -12,16 +13,17 @@ class PrefabList
 {
 	void InitImageData();
 	void InitGameObjects();
+	void InitScreenObjects();
 
-	GameObject* prefabs[PREFAB_COUNT];
 	ImageData imageDatas[T_COUNT];
+	WorldObject* prefabsWorld[PREFAB_W_COUNT];
+	ScreenObject* prefabsScreen[PREFAB_S_COUNT];
 
 public:
 	PrefabList();
 
 	~PrefabList();
 
-	GameObject* Get(int prefabTag);
+	WorldObject* GetWorldObject(int prefabTag);
+	ScreenObject* GetScreenObject(int prefabTag);
 };
-
-//static inline PrefabList prefabList;

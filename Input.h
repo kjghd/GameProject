@@ -26,6 +26,9 @@ enum Buttons
 	BTN_LMB,
 	BTN_RMB,
 
+	BTN_TAB,
+	BTN_ESC,
+
 	BTN_COUNT,
 };
 

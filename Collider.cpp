@@ -95,7 +95,7 @@ void DetermineCollision(Collider* pA, Collider* pB, CollisionInfo col_info)
 
 
 // Collider
-Collider::Collider(GameObject* pOwner, bool dynamic, bool block, bool trigger)
+Collider::Collider(WorldObject* pOwner, bool dynamic, bool block, bool trigger)
 	:
 	pOwner(pOwner),
 	origin(pOwner->m_location),
@@ -123,13 +123,13 @@ void Collider::Update()
 
 
 // Collider Box
-Collider_Box::Collider_Box(GameObject* pOwner, game::Float2 sz, bool dyn, bool blck, bool trigger)
+Collider_Box::Collider_Box(WorldObject* pOwner, game::Float2 sz, bool dyn, bool blck, bool trigger)
 	:
 	Collider(pOwner, dyn, blck, trigger),
 	size(sz)
 {
 }
-Collider_Box::Collider_Box(GameObject* pOwner, const Collider_Box& collider)
+Collider_Box::Collider_Box(WorldObject* pOwner, const Collider_Box& collider)
 	:
 	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	size(collider.size)
@@ -158,13 +158,13 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 
 
 // Collider Circle
-Collider_Circle::Collider_Circle(GameObject* pOwner, float radius, bool dynamic, bool block, bool trigger)
+Collider_Circle::Collider_Circle(WorldObject* pOwner, float radius, bool dynamic, bool block, bool trigger)
 	:
 	Collider(pOwner, dynamic, block, trigger),
 	radius(radius)
 {
 }
-Collider_Circle::Collider_Circle(GameObject* pOwner, const Collider_Circle& collider)
+Collider_Circle::Collider_Circle(WorldObject* pOwner, const Collider_Circle& collider)
 	:
 	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	radius(collider.radius)
