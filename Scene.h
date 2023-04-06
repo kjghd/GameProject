@@ -34,10 +34,11 @@ public:
 	PrefabList prefabs;
 
 	std::vector<WorldObject*> vpGameObjects;
+	std::vector<ScreenObject*> vpScreenObjects;
 	Player* pPlayer;
-	ScreenObject* ui_background;
-	ScreenObject* button_resume;
-	ScreenObject* button_mainMenu;
+	//ScreenObject* ui_background;
+	//ScreenObject* button_resume;
+	//ScreenObject* button_mainMenu;
 
 	Scene(Input* pInput);
 	~Scene();

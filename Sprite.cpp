@@ -1,9 +1,12 @@
 #include "Sprite.h"
+#include "WorldObject.h"
 
 
-Sprite::Sprite(game::Float2* pOrigin, ImageData* pImageData, float frameTime, int layer, game::Float2 scale, game::Float2 offset)
+std::vector<Sprite*> Sprite::vpSpritesToRender;
+
+Sprite::Sprite(WorldObject* pOwner, ImageData* pImageData, float frameTime, int layer, game::Float2 scale, game::Float2 offset)
 	:
-	origin(*pOrigin),
+	pOwner(pOwner),
 	pImageData(pImageData),
 	layer(layer),
 	offset(offset),
@@ -12,14 +15,16 @@ Sprite::Sprite(game::Float2* pOrigin, ImageData* pImageData, float frameTime, in
 	currentFrame(0),
 	frameTimeMax(frameTime),
 	frameTimeCurrent(0),
-	direction(1)
+	direction(1),
+	invertedX(false),
+	invertedY(false)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
 
-Sprite::Sprite(game::Float2* pOrigin, const Sprite& sprite)
+Sprite::Sprite(WorldObject* pOwner, const Sprite& sprite)
 	:
-	origin(*pOrigin),
+	pOwner(pOwner),
 	pImageData(sprite.pImageData),
 	layer(sprite.layer),
 	scale(sprite.scale),
@@ -28,7 +33,9 @@ Sprite::Sprite(game::Float2* pOrigin, const Sprite& sprite)
 	currentFrame(sprite.currentFrame),
 	frameTimeMax(sprite.frameTimeMax),
 	frameTimeCurrent(sprite.frameTimeCurrent),
-	direction(sprite.direction)
+	direction(sprite.direction),
+	invertedX(sprite.invertedX),
+	invertedY(sprite.invertedY)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
@@ -52,13 +59,15 @@ void Sprite::Update(float deltaTime)
 				currentFrame += direction;
 		}
 	}
+
+	vpSpritesToRender.push_back(this);
 }
 
 void Sprite::Pause() { direction = 0; }
 void Sprite::PlayForwards() { direction = 1; }
 void Sprite::PlayBackwards() { direction = -1; }
 
-game::Float2 Sprite::GetLocation() { return origin + offset; }
+game::Float2 Sprite::GetLocation() { return pOwner->m_location + offset; }
 
 game::Float2 Sprite::GetSize()
 {
@@ -87,3 +96,18 @@ void Sprite::SetAnimation(int index)
 
 void Sprite::FlipX() { invertedX = invertedX ? false : true; };
 void Sprite::FlipY() { invertedY = invertedY ? false : true; };
+
+bool Sprite::CompareLayer(Sprite* pA, Sprite* pB)
+{
+	return pA->GetRenderLayer() > pB->GetRenderLayer();
+}
+
+bool Sprite::CompareAbove(Sprite* pA, Sprite* pB)
+{
+	return pA->GetLocation().y > pB->GetLocation().y;
+}
+
+bool Sprite::CompareRowAndLeftOf(Sprite* pA, Sprite* pB)
+{
+	return pA->GetLocation().y == pB->GetLocation().y && pA->GetLocation().x < pB->GetLocation().x;
+}

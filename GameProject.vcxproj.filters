@@ -85,7 +85,7 @@
       <Filter>Objects\Source</Filter>
     </ClCompile>
     <ClCompile Include="ScreenObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Objects\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,7 +147,7 @@
       <Filter>Objects\Header</Filter>
     </ClInclude>
     <ClInclude Include="ScreenObject.h">
-      <Filter>Header Files</Filter>
+      <Filter>Objects\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

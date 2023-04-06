@@ -4,20 +4,20 @@
 game::Float2 ScreenObject::screenRes = { 1280,720 };
 float ScreenObject::px_per_su = 64.f;
 
-ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset, float frameTime)
-	:
-	location{ 0,0 },
-	sprite(&location, pImageData, frameTime, layer, scale, offset),
-	pInput(nullptr)
-{
-}
-ScreenObject::ScreenObject(const ScreenObject& screenObject)
-	:
-	location(screenObject.location),
-	sprite(&location, screenObject.sprite),
-	pInput(screenObject.pInput)
-{
-}
+//ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset, float frameTime)
+//	:
+//	location{ 0,0 },
+//	//sprite(&location, pImageData, frameTime, layer, scale, offset),
+//	pInput(nullptr)
+//{
+//}
+//ScreenObject::ScreenObject(const ScreenObject& screenObject)
+//	:
+//	location(screenObject.location),
+//	//sprite(&location, screenObject.sprite),
+//	pInput(screenObject.pInput)
+//{
+//}
 
 void ScreenObject::Update(float deltaTime)
 {
@@ -99,4 +99,18 @@ game::Rect ScreenObject::GetScreenRect()
 		(location.x + size.x / 2) * px_per_su,
 		(location.y + size.y / 2) * px_per_su
 	};
+}
+
+bool ScreenObject::InvertedX()
+{
+	return sprite.CheckInvertedX();
+}
+bool ScreenObject::InvertedY()
+{
+	return sprite.CheckInvertedY();
+}
+
+bool ScreenObject::CompareRenderOrder_Under(ScreenObject* screenObjectA, ScreenObject* screenObjectB)
+{
+	return screenObjectA->GetRenderLayer() > screenObjectB->GetRenderLayer();
 }

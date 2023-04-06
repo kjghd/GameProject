@@ -3,6 +3,11 @@
 #include "DataTypes.h"
 #include "ImageData.h"
 
+#include <vector>
+
+class WorldObject;
+
+
 enum SpriteLayers
 {
 	SL_UI_Front,
@@ -21,7 +26,7 @@ enum SpriteLayers
 class Sprite
 {
 protected:
-	game::Float2& origin;
+	WorldObject* pOwner;
 	game::Float2 offset;
 	game::Float2 scale;
 
@@ -36,8 +41,11 @@ protected:
 	bool invertedY;
 
 public:
-	Sprite(game::Float2* pOrigin, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::Float2 scale = { 1,1 }, game::Float2 offset = { 0,0 });
-	Sprite(game::Float2* pOrigin, const Sprite& sprite);
+	static std::vector<Sprite*> vpSpritesToRender;
+
+
+	Sprite(WorldObject* pOwner, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::Float2 scale = { 1,1 }, game::Float2 offset = { 0,0 });
+	Sprite(WorldObject* pOwner, const Sprite& sprite);
 
 	void Update(float deltaTime);
 
@@ -58,5 +66,9 @@ public:
 	void SetAnimation(int index);
 	void FlipX();
 	void FlipY();
+
+	static bool CompareLayer(Sprite* pA, Sprite* pB);
+	static bool CompareAbove(Sprite* pA, Sprite* pB);
+	static bool CompareRowAndLeftOf(Sprite* gameObjectA, Sprite* gameObjectB);
 
 };

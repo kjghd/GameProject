@@ -19,18 +19,29 @@ Scene::Scene(Input* pInput)
 	pCurrentCamera(nullptr),
 	current_prefab(PREFAB_W_Floor),
 	pPlayer(nullptr),
-	prefabs(),
-	ui_background(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Background))),
-	button_resume(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Resume))),
-	button_mainMenu(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_MainMenu)))
+	prefabs()
+	//ui_background(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Background))),
+	//button_resume(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Resume))),
+	//button_mainMenu(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_MainMenu)))
 {
-	ui_background->SetLocation_percentage({ .5,.5 });
+	//vpScreenObjects.push_back(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Background)));
+	//vpScreenObjects.back()->SetLocation_percentage({ .5f,.5f });
+	//
+	//vpScreenObjects.push_back(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Resume)));
+	//vpScreenObjects.back()->SetLocation_percentage({ .5f,.4f });
+	//
+	//vpScreenObjects.push_back(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_MainMenu)));
+	//vpScreenObjects.back()->SetLocation_percentage({ .5f,.6f });
 
-	button_resume->SetLocation_percentage({ .5,.4 });
-	button_resume->SetInput(pInput);
+	//ui_background->SetLocation_percentage({ .5,.5 });
+	//
+	//button_resume->SetLocation_percentage({ .5,.4 });
+	//button_resume->SetInput(pInput);
+	//
+	//button_mainMenu->SetLocation_percentage({ .5,.6 });
+	//button_mainMenu->SetInput(pInput);
 
-	button_mainMenu->SetLocation_percentage({ .5,.6 });
-	button_mainMenu->SetInput(pInput);
+
 }
 
 Scene::~Scene()
@@ -41,14 +52,21 @@ Scene::~Scene()
 		pGameObject = nullptr;
 	}
 
-	delete ui_background;
-	ui_background = nullptr;
+	for (auto& pScreenObject : vpScreenObjects)
+	{
+		delete pScreenObject;
+		pScreenObject = nullptr;
+	}
 
-	delete button_resume;
-	button_resume = nullptr;
 
-	delete button_mainMenu;
-	button_mainMenu = nullptr;
+	//delete ui_background;
+	//ui_background = nullptr;
+	//
+	//delete button_resume;
+	//button_resume = nullptr;
+	//
+	//delete button_mainMenu;
+	//button_mainMenu = nullptr;
 }
 
 void Scene::Collision()
@@ -155,7 +173,7 @@ void Scene::Update(float deltaTime)
 		/* Player Controls */
 		if (pInput->CheckPressed(BTN_ESC))
 		{
-			state = SState_Pause;
+			//state = SState_Pause;
 		}
 
 		// Object delete controls
@@ -231,12 +249,12 @@ void Scene::Update(float deltaTime)
 	}
 	case SState_Pause:
 	{
-		if (pInput->CheckPressed(BTN_ESC)) state = SState_Run;
-		if (button_resume->Pressed()) state = SState_Run;
-
-		ui_background->Update(deltaTime);
-		button_resume->Update(deltaTime);
-		button_mainMenu->Update(deltaTime);
+		//if (pInput->CheckPressed(BTN_ESC)) state = SState_Run;
+		//if (button_resume->Pressed()) state = SState_Run;
+		//
+		//ui_background->Update(deltaTime);
+		//button_resume->Update(deltaTime);
+		//button_mainMenu->Update(deltaTime);
 
 		break;
 	}

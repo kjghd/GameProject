@@ -14,8 +14,8 @@ class ScreenObject
 	Sprite sprite;
 
 public:
-	ScreenObject(ImageData* sprite_pImageData, int sprite_layer, game::Float2 sprite_scale = { 1.f,1.f }, game::Float2 sprite_offset = { 0,0 }, float sprite_frameTime = 0);
-	ScreenObject(const ScreenObject& screenObject);
+	//ScreenObject(ImageData* sprite_pImageData, int sprite_layer, game::Float2 sprite_scale = { 1.f,1.f }, game::Float2 sprite_offset = { 0,0 }, float sprite_frameTime = 0);
+	//ScreenObject(const ScreenObject& screenObject);
 
 	void Update(float deltaTime);
 
@@ -31,5 +31,10 @@ public:
 	int GetRenderLayer();
 	game::Rect GetSourceRect();
 	game::Rect GetScreenRect();
+
+	bool InvertedX();
+	bool InvertedY();
+
+	static bool CompareRenderOrder_Under(ScreenObject* screenObjectA, ScreenObject* screenObjectB);
 };
 

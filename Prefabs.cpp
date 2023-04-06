@@ -97,9 +97,9 @@ void PrefabList::InitGameObjects()
 
 void PrefabList::InitScreenObjects()
 {
-	prefabsScreen[PREFAB_S_Resume] = new ScreenObject(&imageDatas[T_UI_Resume], SL_UI_Front);
-	prefabsScreen[PREFAB_S_MainMenu] = new ScreenObject(&imageDatas[T_UI_MainMenu], SL_UI_Front);
-	prefabsScreen[PREFAB_S_Background] = new ScreenObject(&imageDatas[T_UI_BG], SL_UI_Back, {1.3f,1.f}, {0,0}, 100.f);
+	//prefabsScreen[PREFAB_S_Resume] = new ScreenObject(&imageDatas[T_UI_Resume], SL_UI_Front);
+	//prefabsScreen[PREFAB_S_MainMenu] = new ScreenObject(&imageDatas[T_UI_MainMenu], SL_UI_Front);
+	//prefabsScreen[PREFAB_S_Background] = new ScreenObject(&imageDatas[T_UI_BG], SL_UI_Back, {1.3f,1.f}, {0,0}, 100.f);
 }
 
 PrefabList::PrefabList()

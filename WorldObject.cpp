@@ -4,7 +4,7 @@
 WorldObject::WorldObject()
 	:
 	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, nullptr, 0))
+	m_sprite(Sprite(this, nullptr, 0))
 {
 }
 
@@ -18,7 +18,7 @@ WorldObject::WorldObject(
 )
 	:
 	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, sprite_pImageData, sprite_frameTime, sprite_layer, sprite_scale, sprite_offset))
+	m_sprite(Sprite(this, sprite_pImageData, sprite_frameTime, sprite_layer, sprite_scale, sprite_offset))
 {
 }
 
@@ -26,7 +26,7 @@ WorldObject::WorldObject(
 WorldObject::WorldObject(const WorldObject& gameObject)
 	:
 	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, gameObject.m_sprite))
+	m_sprite(Sprite(this, gameObject.m_sprite))
 {
 }
 
@@ -34,7 +34,7 @@ WorldObject::WorldObject(const WorldObject& gameObject)
 WorldObject::WorldObject(const Sprite& sprite)
 	:
 	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, sprite))
+	m_sprite(Sprite(this, sprite))
 {
 }
 
