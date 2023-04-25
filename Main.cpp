@@ -39,6 +39,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	else if (uMsg == WM_RBUTTONDOWN) g_input.SetOn(BTN_RMB);
 	else if (uMsg == WM_LBUTTONUP) g_input.SetOff(BTN_LMB);
 	else if (uMsg == WM_RBUTTONUP) g_input.SetOff(BTN_RMB);
+	else if (uMsg == WM_MOUSEWHEEL) g_input.SetScrollDistance(GET_WHEEL_DELTA_WPARAM(wParam));
 
 	// Keyboard
 	else if (uMsg == WM_KEYDOWN)
@@ -63,6 +64,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case 0x53: g_input.SetOn(BTN_S); break;
 		case 0x57: g_input.SetOn(BTN_W); break;
 
+		case VK_SHIFT: g_input.SetOn(BTN_SHIFT); break;
 		case VK_TAB: g_input.SetOn(BTN_TAB); break;
 		case VK_ESCAPE: g_input.SetOn(BTN_ESC); break;
 		}
@@ -89,6 +91,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case 0x53: g_input.SetOff(BTN_S); break;
 		case 0x57: g_input.SetOff(BTN_W); break;
 
+		case VK_SHIFT: g_input.SetOff(BTN_SHIFT); break;
 		case VK_TAB: g_input.SetOff(BTN_TAB); break;
 		case VK_ESCAPE: g_input.SetOff(BTN_ESC); break;
 		}
@@ -107,6 +110,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	wc.lpfnWndProc = WndProc;
 	wc.lpszClassName = L"Class";
 	RegisterClass(&wc);
+
+	// Remove cursor.
+	ShowCursor(FALSE);
 
 	// Window Dimensions
 	int width  = 1280;

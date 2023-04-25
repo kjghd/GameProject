@@ -11,6 +11,8 @@ void Input::ResetMoved()
 {
 	for (size_t i{ 0 }; i < BTN_COUNT; ++i)
 		buttons[i].moved = false;
+
+	scrollDistance = 0;
 }
 
 void Input::SetMouseLoc(D2D1_POINT_2F location)
@@ -20,6 +22,14 @@ void Input::SetMouseLoc(D2D1_POINT_2F location)
 D2D1_POINT_2F Input::GetMouseLoc()
 {
 	return mouseLoc;
+}
+void Input::SetScrollDistance(float distance)
+{
+	scrollDistance = distance;
+}
+float Input::GetScrollDistance()
+{
+	return scrollDistance / WHEEL_DELTA;
 }
 
 void Input::SetOn(size_t button)

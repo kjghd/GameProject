@@ -12,10 +12,6 @@ Camera::Camera(game::Float2* pLocation)
 {
 }
 
-void Camera::Offset(game::Float2 amount, float deltaTime)
-{
-	m_origin = m_origin + amount * (m_speed * deltaTime / 1000);
-}
 void Camera::OffsetTo(game::Float2 destination, float deltaTime)
 {
 	game::Float2 distance{ destination - (m_origin + m_offset) };
@@ -47,8 +43,8 @@ game::Float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
 	game::Float2 A{ -screenX, -screenY };
 	// WU
 	A = {
-		SU_to_WU(A.x),
-		-SU_to_WU(A.y)
+		PX_to_WU(A.x),
+		-PX_to_WU(A.y)
 	};
 
 	// Corn to Cam (SU)
@@ -58,8 +54,8 @@ game::Float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
 	};
 	// WU
 	B = {
-		SU_to_WU(B.x),
-		-SU_to_WU(B.y)
+		PX_to_WU(B.x),
+		-PX_to_WU(B.y)
 	};
 
 	// Cam to Cent (WU)
@@ -77,16 +73,16 @@ game::Float2 Camera::WorldLocToScreenLoc(float worldX, float worldY)
 	game::Float2 A{ -worldX, -worldY };
 	// SU
 	A = {
-		WU_to_SU(A.x),
-		-WU_to_SU(A.y)
+		WU_to_PX(A.x),
+		-WU_to_PX(A.y)
 	};
 
 	// Cent to Cam (WU)
 	game::Float2 B{ m_origin + m_offset };
 	// SU
 	B = {
-		WU_to_SU(B.x),
-		-WU_to_SU(B.y)
+		WU_to_PX(B.x),
+		-WU_to_PX(B.y)
 	};
 
 	// Cam to Corn (SU)
@@ -124,11 +120,11 @@ game::Rect Camera::WorldTransformToScreenRect(game::Float2 location, game::Float
 	};
 }
 
-float Camera::SU_to_WU(float screenUnit)
+float Camera::PX_to_WU(float screenUnit)
 {
 	return screenUnit / m_zoom;
 }
-float Camera::WU_to_SU(float worldUnit)
+float Camera::WU_to_PX(float worldUnit)
 {
 	return worldUnit * m_zoom;
 }

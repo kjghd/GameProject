@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "NPC.h"
 
+#include "SO_Button.h"
+
 game::Rect* SeperateSprites(game::Float2 px, game::Int2 size)
 {
 	game::Rect *pRects = new game::Rect[size.x * size.y];
@@ -83,23 +85,32 @@ void PrefabList::InitImageData()
 	imageDatas[T_Floor] = ImageData(T_Floor, { 64,64 }, 8, Floor_Rects, 8, Floor_Anims);
 	delete[] Floor_Rects;
 	Floor_Rects = nullptr;
+
+	imageDatas[T_UI_Selection] = ImageData(T_UI_Selection, { 64,64 });
+
+	imageDatas[T_UI_Cursor] = ImageData(T_UI_Cursor, { 8, 8 });
 }
 
 void PrefabList::InitGameObjects()
 {
-	prefabsWorld[PREFAB_W_Player] = new Player(100.f, 3.5f, &imageDatas[T_Guy], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 1.f, 100.f);
-	prefabsWorld[PREFAB_W_NPC] = new NPC(100.f, 100.f, 1.75f, &imageDatas[T_Guy2], SL_Object, {.6f,.6f}, {0,.6f}, .28f, true, true, 4.f, 200.f);
-	prefabsWorld[PREFAB_W_BallDynamic] = new Ball(&imageDatas[T_BallRed], SL_Object, {1.f,1.f}, {0,0}, .5f, true, true);
-	prefabsWorld[PREFAB_W_Mushroom] = new Ball(&imageDatas[T_Mushroom], SL_Object, {1.f,1.f}, {.1f,2.2f}, .65f, false, true);
-	prefabsWorld[PREFAB_W_Animation] = new WorldObject(&imageDatas[T_Animation], SL_Floor, { 1.f,1.f }, { 0,0 }, 500.f);
-	prefabsWorld[PREFAB_W_Floor] = new WorldObject(&imageDatas[T_Floor], SL_Floor, { .5f,.5f }, { 0,0 });
-}
+	prefabs[PREFAB_Player] = new Player(100.f, 3.5f, &imageDatas[T_Guy], SL_Object, { 1.f,1.f }, { 0,.6f }, .28f, true, true, 1.f, 100.f);
+	prefabs[PREFAB_NPC] = new NPC(100.f, 100.f, 1.75f, &imageDatas[T_Guy2], SL_Object, { 1.f,1.f }, { 0,.6f }, .28f, true, true, 4.f, 200.f);
+	prefabs[PREFAB_Mushroom] = new Ball(&imageDatas[T_Mushroom], SL_Object, { 2.f,2.f }, { .1f,2.2f }, .65f, false, true);
+	prefabs[PREFAB_Floor_ConcreteA] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_ConcreteB] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_ConcreteC] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_ConcreteD] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_TileA] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_TileB] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_TileC] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
+	prefabs[PREFAB_Floor_TileD] = new WorldObject(&imageDatas[T_Floor], SL_Floor);
 
-void PrefabList::InitScreenObjects()
-{
-	//prefabsScreen[PREFAB_S_Resume] = new ScreenObject(&imageDatas[T_UI_Resume], SL_UI_Front);
-	//prefabsScreen[PREFAB_S_MainMenu] = new ScreenObject(&imageDatas[T_UI_MainMenu], SL_UI_Front);
-	//prefabsScreen[PREFAB_S_Background] = new ScreenObject(&imageDatas[T_UI_BG], SL_UI_Back, {1.3f,1.f}, {0,0}, 100.f);
+
+	prefabs[PREFAB_Selection] = new WorldObject(&imageDatas[T_UI_Selection], SL_UI_Mid);
+	prefabs[PREFAB_Resume] = new SO_Button(&imageDatas[T_UI_Resume], SL_UI_Front);
+	prefabs[PREFAB_MainMenu] = new SO_Button(&imageDatas[T_UI_MainMenu], SL_UI_Front);
+	prefabs[PREFAB_Background] = new ScreenObject(&imageDatas[T_UI_BG], SL_UI_Back, { 1.3f,1.f }, { 0,0 }, 100.f);
+	prefabs[PREFAB_Cursor] = new ScreenObject(&imageDatas[T_UI_Cursor], SL_UI_Front, {1.f,1.f}, {.12f,.12f});
 }
 
 PrefabList::PrefabList()
@@ -108,31 +119,18 @@ PrefabList::PrefabList()
 {					
 	InitImageData();
 	InitGameObjects();
-	InitScreenObjects();
 }
 
 PrefabList::~PrefabList()
 {
-	for (size_t i{ 0 }; i < PREFAB_W_COUNT; ++i)
+	for (size_t i{ 0 }; i < PREFAB_COUNT; ++i)
 	{
-		delete prefabsWorld[i];
-		prefabsWorld[i] = nullptr;
+		delete prefabs[i];
+		prefabs[i] = nullptr;
 	}
-
-	for (size_t i{ 0 }; i < PREFAB_S_COUNT; ++i)
-	{
-		delete prefabsScreen[i];
-		prefabsScreen[i] = nullptr;
-	}
-
 }
 
-WorldObject* PrefabList::GetWorldObject(int prefabTag)
+GameObject* PrefabList::GetGameObject(int prefabTag)
 {
-	return prefabsWorld[prefabTag];
-}
-
-ScreenObject* PrefabList::GetScreenObject(int prefabTag)
-{
-	return prefabsScreen[prefabTag];
+	return prefabs[prefabTag];
 }

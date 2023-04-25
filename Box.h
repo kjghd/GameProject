@@ -11,7 +11,6 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
-	Box();
 	Box(
 		ImageData* sprite_pImageData,
 		int sprite_layer,

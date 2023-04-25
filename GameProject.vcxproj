@@ -151,6 +151,9 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="SO_Button.cpp" />
+    <ClCompile Include="SO_TextBox.cpp" />
     <ClCompile Include="WorldObject.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImageData.cpp" />
@@ -172,6 +175,9 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="DataTypes.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="SO_Button.h" />
+    <ClInclude Include="SO_TextBox.h" />
     <ClInclude Include="WorldObject.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ImageData.h" />

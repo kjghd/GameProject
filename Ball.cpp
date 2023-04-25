@@ -1,13 +1,6 @@
 #include "Ball.h"
 
 
-Ball::Ball()
-	:
-	WorldObject(),
-	m_collider(this)
-{
-}
-
 Ball::Ball(
 	ImageData* sprite_pImageData,
 	int sprite_layer,

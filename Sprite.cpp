@@ -1,10 +1,14 @@
 #include "Sprite.h"
+#include "GameObject.h"
 #include "WorldObject.h"
+#include "ScreenObject.h"
 
+float Sprite::pixels_per_world_unit{ 64 };
+float Sprite::pixels_per_screen_unit{ 32 };
 
 std::vector<Sprite*> Sprite::vpSpritesToRender;
 
-Sprite::Sprite(WorldObject* pOwner, ImageData* pImageData, float frameTime, int layer, game::Float2 scale, game::Float2 offset)
+Sprite::Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int layer, game::Float2 scale, game::Float2 offset)
 	:
 	pOwner(pOwner),
 	pImageData(pImageData),
@@ -17,12 +21,14 @@ Sprite::Sprite(WorldObject* pOwner, ImageData* pImageData, float frameTime, int 
 	frameTimeCurrent(0),
 	direction(1),
 	invertedX(false),
-	invertedY(false)
+	invertedY(false),
+	visible(true),
+	active(true)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
 
-Sprite::Sprite(WorldObject* pOwner, const Sprite& sprite)
+Sprite::Sprite(GameObject* pOwner, const Sprite& sprite)
 	:
 	pOwner(pOwner),
 	pImageData(sprite.pImageData),
@@ -35,57 +41,43 @@ Sprite::Sprite(WorldObject* pOwner, const Sprite& sprite)
 	frameTimeCurrent(sprite.frameTimeCurrent),
 	direction(sprite.direction),
 	invertedX(sprite.invertedX),
-	invertedY(sprite.invertedY)
+	invertedY(sprite.invertedY),
+	visible(sprite.visible),
+	active(sprite.active)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
 
 void Sprite::Update(float deltaTime)
 {
-	if (pImageData->GetAnimStartFrame(currentAnim) != pImageData->GetAnimEndFrame(currentAnim))
+	if (active)
 	{
-		frameTimeCurrent += deltaTime;
-		if (frameTimeCurrent >= frameTimeMax && direction != 0)
+		if (pImageData->GetAnimStartFrame(currentAnim) != pImageData->GetAnimEndFrame(currentAnim))
 		{
-			frameTimeCurrent = 0;
+			frameTimeCurrent += deltaTime;
+			if (frameTimeCurrent >= frameTimeMax && direction != 0)
+			{
+				frameTimeCurrent = 0;
 
-			if (currentFrame >= pImageData->GetAnimEndFrame(currentAnim) && direction == 1)
-				currentFrame = pImageData->GetAnimStartFrame(currentAnim);
+				if (currentFrame >= pImageData->GetAnimEndFrame(currentAnim) && direction == 1)
+					currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 
-			else if (currentFrame <= pImageData->GetAnimStartFrame(currentAnim) && direction == -1)
-				currentFrame = pImageData->GetAnimEndFrame(currentAnim);
+				else if (currentFrame <= pImageData->GetAnimStartFrame(currentAnim) && direction == -1)
+					currentFrame = pImageData->GetAnimEndFrame(currentAnim);
 
-			else
-				currentFrame += direction;
+				else
+					currentFrame += direction;
+			}
 		}
 	}
 
-	vpSpritesToRender.push_back(this);
+	if (visible) vpSpritesToRender.push_back(this);
 }
 
 void Sprite::Pause() { direction = 0; }
 void Sprite::PlayForwards() { direction = 1; }
 void Sprite::PlayBackwards() { direction = -1; }
 
-game::Float2 Sprite::GetLocation() { return pOwner->m_location + offset; }
-
-game::Float2 Sprite::GetSize()
-{
-	float pixelSize{ 32 };
-	game::Int2 dimensions{ pImageData->GetDimensionsPx() };
-	return { static_cast<float>(dimensions.x) / pixelSize * scale.x, static_cast<float>(dimensions.y) / pixelSize * scale.y };
-}
-
-int Sprite::GetRenderLayer() { return layer; }
-
-game::Rect Sprite::GetSourceRect() { return pImageData->GetCurrentRect(currentFrame); }
-
-int Sprite::GetBitmapIndex() { return pImageData->GetTexture(); }
-
-int Sprite::GetCurrentAnimation() { return currentAnim; }
-
-bool Sprite::CheckInvertedX() { return invertedX; }
-bool Sprite::CheckInvertedY() { return invertedY; }
 
 void Sprite::SetAnimation(int index)
 {
@@ -97,6 +89,33 @@ void Sprite::SetAnimation(int index)
 void Sprite::FlipX() { invertedX = invertedX ? false : true; };
 void Sprite::FlipY() { invertedY = invertedY ? false : true; };
 
+GameObject* Sprite::GetOwner() { return pOwner; }
+
+game::Float2 Sprite::GetLocation() { return pOwner->m_location + offset; }
+
+game::Float2 Sprite::GetSize()
+{
+	float px_per_unit{ 1.f };
+
+	if (dynamic_cast<WorldObject*>(pOwner)) px_per_unit = pixels_per_world_unit;
+	else if (dynamic_cast<ScreenObject*>(pOwner)) px_per_unit = pixels_per_screen_unit;
+
+	game::Int2 dimensions{ pImageData->GetDimensionsPx() };
+	return {
+		static_cast<float>(dimensions.x) / px_per_unit * scale.x,
+		static_cast<float>(dimensions.y) / px_per_unit * scale.y
+	};
+}
+
+int Sprite::GetRenderLayer() { return layer; }
+game::Rect Sprite::GetSourceRect() { return pImageData->GetCurrentRect(currentFrame); }
+int Sprite::GetBitmapIndex() { return pImageData->GetTexture(); }
+int Sprite::GetCurrentAnimation() { return currentAnim; }
+
+bool Sprite::CheckInvertedX() { return invertedX; }
+bool Sprite::CheckInvertedY() { return invertedY; }
+
+
 bool Sprite::CompareLayer(Sprite* pA, Sprite* pB)
 {
 	return pA->GetRenderLayer() > pB->GetRenderLayer();
@@ -104,10 +123,44 @@ bool Sprite::CompareLayer(Sprite* pA, Sprite* pB)
 
 bool Sprite::CompareAbove(Sprite* pA, Sprite* pB)
 {
-	return pA->GetLocation().y > pB->GetLocation().y;
+	return pA->pOwner->m_location.y > pB->pOwner->m_location.y;
 }
 
 bool Sprite::CompareRowAndLeftOf(Sprite* pA, Sprite* pB)
 {
-	return pA->GetLocation().y == pB->GetLocation().y && pA->GetLocation().x < pB->GetLocation().x;
+	//game::Float2 sizeA{ pA->GetSize() };
+	//game::Float2 locA{ pA->GetLocation() };
+	//
+	//game::Float2 sizeB{ pB->GetSize() };
+	//game::Float2 locB{ pB->GetLocation() };
+	//
+	//return (locA.y - sizeA.y / 2.f) == (locB.y - sizeB.y / 2.f) &&
+	//	(locA.x - sizeA.x / 2.f) < (locB.x - sizeB.x / 2.f);
+
+	//return pA->GetLocation().y == pB->GetLocation().y && pA->GetLocation().x < pB->GetLocation().x;
+
+	return pA->pOwner->m_location.y == pB->pOwner->m_location.y && pA->pOwner->m_location.x < pB->pOwner->m_location.x;
+}
+
+bool Sprite::Obstructing(Sprite* pA, Sprite* pB)
+{
+	game::Float2 sizeA{ pA->GetSize() };
+	game::Float2 locA{ pA->GetLocation() };
+	
+	game::Float2 sizeB{ pB->GetSize() };
+	game::Float2 locB{ pB->GetLocation() };
+
+	if (locA.x - sizeA.x / 2.f < locB.x + sizeB.x / 2.f && // al < br
+		locA.x + sizeA.x / 2.f > locB.x - sizeB.x / 2.f && // ar > bl
+		locA.y + sizeA.y / 2.f > locB.y - sizeB.y / 2.f && // at > bb
+		locA.y - sizeA.y / 2.f < locB.y + sizeB.y / 2.f && // ab < bt
+		CompareAbove(pB, pA) &&
+		//CompareRowAndLeftOf(pB, pA) &&
+		pA->layer == pB->layer)
+	{
+		return true;
+	}
+	else return false;
+	
+	//return locA.y - sizeA.y / 2.f > locB.y - sizeB.y / 2.f && ;
 }

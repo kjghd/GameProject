@@ -26,6 +26,8 @@ enum Buttons
 	BTN_LMB,
 	BTN_RMB,
 
+	BTN_SHIFT,
+
 	BTN_TAB,
 	BTN_ESC,
 
@@ -44,6 +46,8 @@ class Input
 
 	D2D1_POINT_2F mouseLoc;
 
+	float scrollDistance;
+
 public:
 	Input();
 
@@ -51,6 +55,8 @@ public:
 
 	void SetMouseLoc(D2D1_POINT_2F location);
 	D2D1_POINT_2F GetMouseLoc();
+	void SetScrollDistance(float distance);
+	float GetScrollDistance();
 
 	void SetOn(size_t button);
 	void SetOff(size_t button);

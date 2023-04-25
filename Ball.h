@@ -16,7 +16,6 @@ public:
 	
 	virtual void Update(float deltaTime) override;
 
-	Ball();
 	Ball(
 		ImageData* sprite_pImageData,
 		int sprite_layer,

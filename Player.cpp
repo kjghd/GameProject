@@ -46,8 +46,8 @@ void Player::Update(float deltaTime)
 	{
 		if (m_pInput)
 		{
-			if (m_pInput->CheckHeld(BTN_Q)) m_camera.DecreaseZoom(.1f);
-			if (m_pInput->CheckHeld(BTN_E)) m_camera.IncreaseZoom(.1f);
+			if (m_pInput->GetScrollDistance())
+				m_camera.IncreaseZoom(m_pInput->GetScrollDistance() * .4);
 
 			m_lookDirection = m_camera.ScreenLocToWorldLoc(m_pInput->GetMouseLoc().x, m_pInput->GetMouseLoc().y) - m_location;
 

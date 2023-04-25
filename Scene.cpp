@@ -17,31 +17,36 @@ Scene::Scene(Input* pInput)
 	state(SState_Run),
 	pInput(pInput),
 	pCurrentCamera(nullptr),
-	current_prefab(PREFAB_W_Floor),
+	current_prefab(PREFAB_Floor_ConcreteA),
 	pPlayer(nullptr),
 	prefabs()
-	//ui_background(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Background))),
-	//button_resume(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Resume))),
-	//button_mainMenu(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_MainMenu)))
 {
-	//vpScreenObjects.push_back(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Background)));
-	//vpScreenObjects.back()->SetLocation_percentage({ .5f,.5f });
-	//
-	//vpScreenObjects.push_back(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_Resume)));
-	//vpScreenObjects.back()->SetLocation_percentage({ .5f,.4f });
-	//
-	//vpScreenObjects.push_back(new ScreenObject(*prefabs.GetScreenObject(PREFAB_S_MainMenu)));
-	//vpScreenObjects.back()->SetLocation_percentage({ .5f,.6f });
+	vpGameObjects.push_back(new Player(*dynamic_cast<Player*>(prefabs.GetGameObject(PREFAB_Player))));
+	pPlayer = dynamic_cast<Player*>(vpGameObjects.back());
+	pPlayer->m_pInput = pInput;
+	pCurrentCamera = &pPlayer->m_camera;
 
-	//ui_background->SetLocation_percentage({ .5,.5 });
-	//
-	//button_resume->SetLocation_percentage({ .5,.4 });
-	//button_resume->SetInput(pInput);
-	//
-	//button_mainMenu->SetLocation_percentage({ .5,.6 });
-	//button_mainMenu->SetInput(pInput);
+	vpGameObjects.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(prefabs.GetGameObject(PREFAB_Cursor))));
+	pCursor = dynamic_cast<ScreenObject*>(vpGameObjects.back());
 
+	vpGameObjects.push_back(new WorldObject(*dynamic_cast<WorldObject*>(prefabs.GetGameObject(PREFAB_Selection))));
+	pCursorBox = dynamic_cast<WorldObject*>(vpGameObjects.back());
 
+	//vpGameObjects.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(prefabs.GetGameObject(PREFAB_Cursor))));
+	//pCursor = dynamic_cast<ScreenObject*>(vpGameObjects.back());
+
+	//vpGameObjects.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(prefabs.GetGameObject(PREFAB_Background))));
+	//dynamic_cast<ScreenObject*>(vpGameObjects.back())->SetLocation_percentage({ .5f,.5f });
+	//
+	//vpGameObjects.push_back(new SO_Button(*dynamic_cast<SO_Button*>(prefabs.GetGameObject(PREFAB_Resume))));
+	//pResume = dynamic_cast<SO_Button*>(vpGameObjects.back());
+	//pResume->SetLocation_percentage({ .5f,.4f });
+	//pResume->SetInput(pInput);
+	//
+	//vpGameObjects.push_back(new SO_Button(*dynamic_cast<SO_Button*>(prefabs.GetGameObject(PREFAB_MainMenu))));
+	//pMainMenu = dynamic_cast<SO_Button*>(vpGameObjects.back());
+	//pMainMenu->SetLocation_percentage({ .5f,.6f });
+	//pMainMenu->SetInput(pInput);
 }
 
 Scene::~Scene()
@@ -51,22 +56,6 @@ Scene::~Scene()
 		delete pGameObject;
 		pGameObject = nullptr;
 	}
-
-	for (auto& pScreenObject : vpScreenObjects)
-	{
-		delete pScreenObject;
-		pScreenObject = nullptr;
-	}
-
-
-	//delete ui_background;
-	//ui_background = nullptr;
-	//
-	//delete button_resume;
-	//button_resume = nullptr;
-	//
-	//delete button_mainMenu;
-	//button_mainMenu = nullptr;
 }
 
 void Scene::Collision()
@@ -124,6 +113,12 @@ Input& Scene::GetInput()
 	return *pInput;
 }
 
+Player& Scene::GetPlayer()
+{
+	return *pPlayer;
+}
+
+
 
 void Scene::Update(float deltaTime)
 {
@@ -132,43 +127,7 @@ void Scene::Update(float deltaTime)
 	case SState_Run:
 	{
 		DestroyObjects();
-
-		// Check if a player exists.
-		if (!pPlayer)
-		{
-			bool playerExists{ false };
-
-			for (const auto& pGameObject : vpGameObjects)
-				if (dynamic_cast<Player*>(pGameObject))
-					playerExists = true;
-
-			for (const auto& pSpawnObject : vpSpawnQueue)
-				if (dynamic_cast<Player*>(pSpawnObject))
-					playerExists = true;
-
-			if (!playerExists)
-				QueueToSpawn(PREFAB_W_Player);
-		}
-
 		SpawnObjects();
-
-		// Assign current player
-		if (!pPlayer)
-		{
-			for (const auto& pGameObject : vpGameObjects)
-				if (dynamic_cast<Player*>(pGameObject))
-				{
-					pPlayer = dynamic_cast<Player*>(pGameObject);
-					pPlayer->m_pInput = pInput;
-				}
-		}
-
-		// Assign current camera
-		if (!pCurrentCamera && pPlayer)
-		{
-			pCurrentCamera = &pPlayer->m_camera;
-		}
-
 
 		/* Player Controls */
 		if (pInput->CheckPressed(BTN_ESC))
@@ -190,56 +149,84 @@ void Scene::Update(float deltaTime)
 			size_t i{};
 			for (auto& pGameObject : vpGameObjects)
 			{
-				game::Float2 tileLocRounded{
-					roundf(pGameObject->m_location.x),
-					roundf(pGameObject->m_location.y)
-				};
-				if (tileLocRounded == locRounded)
+				if (pGameObject != pPlayer && pGameObject != pCursorBox)
 				{
-					if (dynamic_cast<Character*>(pGameObject))
+					game::Float2 tileLocRounded{
+						roundf(pGameObject->m_location.x),
+						roundf(pGameObject->m_location.y)
+					};
+					if (tileLocRounded == locRounded)
 					{
-						Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
-						if (pCharacter->m_health > 0)
+						if (dynamic_cast<Character*>(pGameObject))
 						{
-							pCharacter->m_health = 0;
+							Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
+							if (pCharacter->m_health > 0)
+							{
+								pCharacter->m_health = 0;
+							}
+							else
+								QueueToDestroy(i);
 						}
 						else
 							QueueToDestroy(i);
 					}
-					else
-						QueueToDestroy(i);
 				}
 				++i;
 			}
 
 		}
 
-		// Object spawn controls.
-		if (pInput->CheckPressed(BTN_LMB))
+		if (pInput->CheckHeld(BTN_SHIFT))
 		{
+			pCursorBox->m_sprite.visible = true;
+
 			game::Float2 loc{
 				pCurrentCamera->ScreenLocToWorldLoc(
-						pInput->GetMouseLoc().x,
-						pInput->GetMouseLoc().y
-					)
+				pInput->GetMouseLoc().x,
+				pInput->GetMouseLoc().y
+				)
 			};
 			game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
+			pCursorBox->m_location = locRounded;
+			pCursorBox->Update(deltaTime);
 
-			bool canSpawn{ true };
-			for (auto& pGameObject : vpGameObjects)
-				if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object) canSpawn = false;
+			// Object spawn controls.
+			if (pInput->CheckPressed(BTN_LMB))
+			{
+				game::Float2 loc{
+					pCurrentCamera->ScreenLocToWorldLoc(
+							pInput->GetMouseLoc().x,
+							pInput->GetMouseLoc().y
+						)
+				};
+				game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
 
-			if (canSpawn)
-				QueueToSpawn(current_prefab, locRounded);
+				bool canSpawn{ true };
+				for (auto& pGameObject : vpGameObjects)
+					if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object && pGameObject != pCursorBox) canSpawn = false;
+
+				if (canSpawn)
+					QueueToSpawn(current_prefab, locRounded);
+			}
 		}
+		else
+			pCursorBox->m_sprite.visible = false;
+		if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
+		if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Floor_ConcreteA;
+		if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
 
-		if (pInput->CheckPressed(BTN_1)) current_prefab = PREFAB_W_BallDynamic;
-		if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_W_Mushroom;
-		if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_W_Floor;
-		if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_W_NPC;
-
+		// Pause
+		//if (pInput->CheckPressed(BTN_ESC)) state = SState_Pause;
 
 		Collision();
+
+		// Cursor
+
+
+
+
+		game::Float2 loc_px{ pInput->GetMouseLoc().x, pInput->GetMouseLoc().y };
+		pCursor->SetLocaion_px(loc_px);
 
 		// Update
 		for (auto& pGameObject : vpGameObjects)
@@ -249,12 +236,14 @@ void Scene::Update(float deltaTime)
 	}
 	case SState_Pause:
 	{
-		//if (pInput->CheckPressed(BTN_ESC)) state = SState_Run;
-		//if (button_resume->Pressed()) state = SState_Run;
-		//
-		//ui_background->Update(deltaTime);
-		//button_resume->Update(deltaTime);
-		//button_mainMenu->Update(deltaTime);
+		// Resume
+		if (pInput->CheckPressed(BTN_ESC) || pResume->Pressed()) state = SState_Run;
+
+		if (pMainMenu->Pressed()) {}
+
+		// Update
+		for (auto& pGameObject : vpGameObjects)
+			pGameObject->Update(deltaTime);
 
 		break;
 	}
@@ -264,7 +253,7 @@ void Scene::Update(float deltaTime)
 
 void Scene::QueueToSpawn(int prefab, game::Float2 location)
 {
-	WorldObject* pPrefab{ prefabs.GetWorldObject(prefab) };
+	GameObject* pPrefab{ prefabs.GetGameObject(prefab) };
 	if (dynamic_cast<Player*>(pPrefab))
 	{
 		vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
@@ -290,9 +279,14 @@ void Scene::QueueToSpawn(int prefab, game::Float2 location)
 		vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pPrefab)));
 		vpSpawnQueue.back()->m_location = location;
 	}
+	else if (dynamic_cast<WorldObject*>(pPrefab))
+	{
+		vpSpawnQueue.push_back(new WorldObject(*dynamic_cast<WorldObject*>(pPrefab)));
+		vpSpawnQueue.back()->m_location = location;
+	}
 	else
 	{
-		vpSpawnQueue.push_back(new WorldObject(*pPrefab));
+		vpSpawnQueue.push_back(new GameObject(*pPrefab));
 		vpSpawnQueue.back()->m_location = location;
 	}
 }

@@ -4,110 +4,68 @@
 game::Float2 ScreenObject::screenRes = { 1280,720 };
 float ScreenObject::px_per_su = 64.f;
 
-//ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset, float frameTime)
-//	:
-//	location{ 0,0 },
-//	//sprite(&location, pImageData, frameTime, layer, scale, offset),
-//	pInput(nullptr)
-//{
-//}
-//ScreenObject::ScreenObject(const ScreenObject& screenObject)
-//	:
-//	location(screenObject.location),
-//	//sprite(&location, screenObject.sprite),
-//	pInput(screenObject.pInput)
-//{
-//}
+ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset, float frameTime)
+	:
+	GameObject(pImageData, layer, scale, offset, frameTime)
+{
+}
+ScreenObject::ScreenObject(const ScreenObject& screenObject)
+	:
+	GameObject(screenObject)
+{
+}
 
 void ScreenObject::Update(float deltaTime)
 {
-	if (pInput)
-	{
-		Hovered();
-	}
-	sprite.Update(deltaTime);
+	m_sprite.Update(deltaTime);
 }
 
-bool ScreenObject::Hovered()
-{
-	game::Float2 size{ sprite.GetSize() };
-
-	if (pInput->GetMouseLoc().x / px_per_su > location.x - size.x / 2.f &&
-		pInput->GetMouseLoc().y / px_per_su > location.y - size.y / 2.f &&
-		pInput->GetMouseLoc().x / px_per_su < location.x + size.x / 2.f &&
-		pInput->GetMouseLoc().y / px_per_su < location.y + size.y / 2.f)
-	{
-		sprite.SetAnimation(1);
-		return true;
-	}
-	else
-	{
-		sprite.SetAnimation(0);
-		return false;
-	}
-}
-bool ScreenObject::Pressed()
-{
-	if (Hovered() && pInput->CheckPressed(BTN_LMB))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void ScreenObject::SetInput(Input* input)
-{
-	pInput = input;
-}
 void ScreenObject::SetLocaion_px(game::Float2 pixels)
 {
-	location.x = pixels.x / px_per_su;
-	location.y = pixels.y / px_per_su;
+	m_location.x = pixels.x / px_per_su;
+	m_location.y = pixels.y / px_per_su;
 }
 void ScreenObject::SetLocaion_su(game::Float2 screenUnits)
 {
-	location = screenUnits;
+	m_location = screenUnits;
 }
 void ScreenObject::SetLocation_percentage(game::Float2 percentage)
 {
-	location.x = screenRes.x * percentage.x / px_per_su;
-	location.y = screenRes.y * percentage.y / px_per_su;
+	m_location.x = screenRes.x * percentage.x / px_per_su;
+	m_location.y = screenRes.y * percentage.y / px_per_su;
 }
 
 int ScreenObject::GetBitmapIndex()
 {
-	return sprite.GetBitmapIndex();
+	return m_sprite.GetBitmapIndex();
 }
 int ScreenObject::GetRenderLayer()
 {
-	return sprite.GetRenderLayer();
+	return m_sprite.GetRenderLayer();
 }
 game::Rect ScreenObject::GetSourceRect()
 {
-	return sprite.GetSourceRect();
+	return m_sprite.GetSourceRect();
 }
 game::Rect ScreenObject::GetScreenRect()
 {
-	game::Float2 size{ sprite.GetSize() };
+	game::Float2 size{ m_sprite.GetSize() };
 
 	return{
-		(location.x - size.x / 2) * px_per_su,
-		(location.y - size.y / 2) * px_per_su,
-		(location.x + size.x / 2) * px_per_su,
-		(location.y + size.y / 2) * px_per_su
+		(m_location.x - size.x / 2) * px_per_su,
+		(m_location.y - size.y / 2) * px_per_su,
+		(m_location.x + size.x / 2) * px_per_su,
+		(m_location.y + size.y / 2) * px_per_su
 	};
 }
 
 bool ScreenObject::InvertedX()
 {
-	return sprite.CheckInvertedX();
+	return m_sprite.CheckInvertedX();
 }
 bool ScreenObject::InvertedY()
 {
-	return sprite.CheckInvertedY();
+	return m_sprite.CheckInvertedY();
 }
 
 bool ScreenObject::CompareRenderOrder_Under(ScreenObject* screenObjectA, ScreenObject* screenObjectB)

@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "ScreenObject.h"
+#include "SO_Button.h"
 #include "Input.h"
 #include "Prefabs.h"
 
@@ -20,37 +21,38 @@ class Scene
 {
 	Input* pInput;
 	Camera* pCurrentCamera;
-	std::vector<WorldObject*> vpSpawnQueue;
+	std::vector<GameObject*> vpSpawnQueue;
 	std::vector<size_t> vDestroyQueue;
+	std::vector<GameObject*> vpGameObjects;
 
-
-	void Collision();
-
-
-public:
 	int state;
 
 	int current_prefab;
 	PrefabList prefabs;
 
-	std::vector<WorldObject*> vpGameObjects;
-	std::vector<ScreenObject*> vpScreenObjects;
 	Player* pPlayer;
-	//ScreenObject* ui_background;
-	//ScreenObject* button_resume;
-	//ScreenObject* button_mainMenu;
+	ScreenObject* pCursor;
+	GameObject* pCursorBox;
+	SO_Button* pResume;
+	SO_Button* pMainMenu;
+	ScreenObject* pCurrentPrefab;
 
+
+	void Collision();
+
+	void QueueToSpawn(int prefab, game::Float2 location = { 0,0 });
+	void QueueToDestroy(size_t tileIndex);
+
+	void SpawnObjects();
+	void DestroyObjects();
+
+public:
 	Scene(Input* pInput);
 	~Scene();
 
 	Camera& GetCamera();
 	Input& GetInput();
+	Player& GetPlayer();
 
 	void Update(float deltaTime);
-
-	void QueueToSpawn(int prefab, game::Float2 location = {0,0});
-	void QueueToDestroy(size_t tileIndex);
-
-	void SpawnObjects();
-	void DestroyObjects();
 };

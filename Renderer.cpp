@@ -29,28 +29,51 @@ void Renderer::Render()
 	m_pGraphics->ClearScreen();
 
 	m_pCamera = &m_pScene->GetCamera();
+
+	/* sorting */
+
+	std::vector<Sprite*> vpUnsorted{ Sprite::vpSpritesToRender };
+
+	// Screen sorting.
+	std::vector<Sprite*> vpSOSorted;
 	
+	bool worldOnly{ false };
+	while (!worldOnly)
+	{
+		int position{ 0 };
+		bool found{ false };
+		for (auto& pSprite : vpUnsorted)
+		{
+			if (dynamic_cast<ScreenObject*>(pSprite->GetOwner()))
+			{
+				found = true;
+				vpSOSorted.push_back(pSprite);
+				vpUnsorted.erase(vpUnsorted.begin() + position);
+				break;
+			}
+			++position;
+		}
 
-	/* World Objects */
+		if (!found) worldOnly = true;
+	}
 
-	// Sort for rendering.
-	std::vector<Sprite*> vpWOUnsorted{ Sprite::vpSpritesToRender };
+	std::sort(vpSOSorted.begin(), vpSOSorted.end(), Sprite::CompareLayer);
+
+	// World sorting.
 	std::vector<Sprite*> vpWOSorted;
-	while (!vpWOUnsorted.empty())
+
+	while (!vpUnsorted.empty())
 	{
 		// Find lowest sprite.
 		Sprite* pLowestFound{ nullptr };
-		for (auto& pSprite : vpWOUnsorted)
+		for (auto& pSprite : vpUnsorted)
 		{
 			if (!pLowestFound)
 				pLowestFound = pSprite;
 
 			else if (pSprite != pLowestFound)
 			{
-				if (Sprite::CompareLayer(pSprite, pLowestFound))
-					pLowestFound = pSprite;
-
-				else if (Sprite::CompareAbove(pSprite, pLowestFound))
+				if (Sprite::CompareAbove(pSprite, pLowestFound))
 					pLowestFound = pSprite;
 
 				else if (Sprite::CompareRowAndLeftOf(pSprite, pLowestFound))
@@ -63,11 +86,11 @@ void Renderer::Render()
 		{
 			// Remove from unsorted.
 			int i{ 0 };
-			for (auto& pSprite : vpWOUnsorted)
+			for (auto& pSprite : vpUnsorted)
 			{
 				if (pSprite == pLowestFound)
 				{
-					vpWOUnsorted.erase(vpWOUnsorted.begin() + i);
+					vpUnsorted.erase(vpUnsorted.begin() + i);
 					break;
 				}
 
@@ -79,7 +102,9 @@ void Renderer::Render()
 		}
 	}
 
-	// Render
+
+	/* World Objects */
+
 	for (size_t i = SL_COUNT; i > 0 ; --i)
 		for (auto& pSprite : vpWOSorted)
 			if (pSprite->GetRenderLayer() == i)
@@ -93,112 +118,48 @@ void Renderer::Render()
 
 				game::Rect region{ pSprite->GetSourceRect() };
 
+				float opacity{ 1.f };
+				//if (pSprite != &m_pScene->GetPlayer().m_sprite && Sprite::Obstructing(pSprite, &m_pScene->GetPlayer().m_sprite))
+				//	opacity = .2f;
+
 				m_pGraphics->DrawBitmapRegion(
 					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
 					pSprite->GetBitmapIndex(),
 					D2D1::RectF(region.l, region.t, region.r, region.b),
-					1,
+					opacity,
 					pSprite->CheckInvertedX(),
 					pSprite->CheckInvertedY()
 				);
 			}
 
-	Sprite::vpSpritesToRender.clear();
-
 
 	/* User Interface */
 
-	//if (m_pScene->state == SState_Pause)
-	//{
-	//	// Sort for rendering.
-	//	std::vector<ScreenObject*> vpSOUnsorted{ m_pScene->vpScreenObjects };
-	//	std::vector<ScreenObject*> vpSOSorted;
-	//	while (!vpSOUnsorted.empty())
-	//	{
-	//		// Find lowest sprite.
-	//		ScreenObject* pLowestFound{ nullptr };
-	//		for (auto& pScreenObject : vpSOUnsorted)
-	//		{
-	//			if (!pLowestFound)
-	//				pLowestFound = pScreenObject;
-	//
-	//			else if (pScreenObject != pLowestFound)
-	//			{
-	//				if (ScreenObject::CompareRenderOrder_Under(pScreenObject, pLowestFound))
-	//					pLowestFound = pScreenObject;
-	//			}
-	//		}
-	//
-	//		// Update Lists.
-	//		if (pLowestFound)
-	//		{
-	//			// Remove from unsorted.
-	//			int i{ 0 };
-	//			for (auto& pScreenObject : vpSOUnsorted)
-	//			{
-	//				if (pScreenObject == pLowestFound)
-	//				{
-	//					vpSOUnsorted.erase(vpSOUnsorted.begin() + i);
-	//					break;
-	//				}
-	//
-	//				++i;
-	//			}
-	//
-	//			// Add to sorted.
-	//			vpSOSorted.push_back(pLowestFound);
-	//		}
-	//	}
-	//
-	//	// Render
-	//	for (size_t i = SL_COUNT; i > 0; --i)
-	//		for (auto& pScreenObject : vpSOSorted)
-	//			if (pScreenObject->GetRenderLayer() == i)
-	//			{
-	//				game::Rect screen{ pScreenObject->GetScreenRect() };
-	//
-	//				game::Rect region{ pScreenObject->GetSourceRect() };
-	//
-	//				m_pGraphics->DrawBitmapRegion(
-	//					D2D1::RectF(screen.l, screen.t, screen.r, screen.b),
-	//					pScreenObject->GetBitmapIndex(),
-	//					D2D1::RectF(region.l, region.t, region.r, region.b),
-	//					1,
-	//					pScreenObject->InvertedX(),
-	//					pScreenObject->InvertedY()
-	//				);
-	//			}
-	//}
-	//else if (m_pScene->state == SState_Run)
-	//{
-	//	// Block preview
-	//	game::Rect region{ m_pScene->prefabs.GetWorldObject(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
-	//
-	//	m_pGraphics->DrawBitmapRegion(
-	//		D2D1::RectF(0, 0, 60, 60),
-	//		m_pScene->prefabs.GetWorldObject(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
-	//		D2D1::RectF(region.l, region.t, region.r, region.b)
-	//);
-	
-	// Cursor
-	game::Float2 loc{
-	m_pCamera->ScreenLocToWorldLoc(
-			m_pScene->GetInput().GetMouseLoc().x,
-			m_pScene->GetInput().GetMouseLoc().y
-		)
-	};
-	game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
-	
-	game::Float2 locScreen{
-	m_pCamera->WorldLocToScreenLoc(
-			locRounded.x,
-			locRounded.y
-		)
-	};
-	
-	m_pGraphics->DebugCircle({ locScreen.x, locScreen.y }, m_pCamera->WU_to_SU(.5f));
+	for (auto& pSprite : vpSOSorted)
+	{
+		
+		game::Float2 location{ pSprite->GetLocation() };
+		game::Float2 size{ pSprite->GetSize() };
+		game::Rect rect{
+			location.x * ScreenObject::px_per_su - size.x / 2.f * ScreenObject::px_per_su,
+			location.y * ScreenObject::px_per_su + size.y / 2.f * ScreenObject::px_per_su,
+			location.x * ScreenObject::px_per_su + size.x / 2.f * ScreenObject::px_per_su,
+			location.y * ScreenObject::px_per_su - size.y / 2.f * ScreenObject::px_per_su
+		};
+		game::Rect sourceRect{ pSprite->GetSourceRect() };
 
-	//}
+		m_pGraphics->DrawBitmapRegion(
+			D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+			pSprite->GetBitmapIndex(),
+			D2D1::RectF(sourceRect.l, sourceRect.t, sourceRect.r, sourceRect.b),
+			1,
+			pSprite->CheckInvertedX(),
+			pSprite->CheckInvertedY()
+		);
+	}
+
+
+	Sprite::vpSpritesToRender.clear();
 
 	m_pGraphics->EndDraw();
 

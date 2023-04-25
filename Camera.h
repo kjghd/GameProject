@@ -8,7 +8,6 @@ class Camera
 public:
 	Camera(game::Float2* pLocation);
 
-	void Offset(game::Float2 amount, float deltaTime);
 	void OffsetTo(game::Float2 destination, float deltaTime);
 
 	void SetZoom(float amount);
@@ -21,14 +20,14 @@ public:
 	game::Float2 WorldLocToScreenLoc(float worldX, float worldY);
 	game::Rect WorldTransformToScreenRect(game::Float2 location, game::Float2 size);
 
-	float SU_to_WU(float screenUnit);
-	float WU_to_SU(float worldUnit);
+	float PX_to_WU(float pixels);
+	float WU_to_PX(float worldUnits);
 
 	static game::Int2 m_screenResolution;
 
 protected:
 	game::Float2& m_origin;
 	game::Float2 m_offset;
-	float m_zoom;
+	float m_zoom; // Pixels per world unit.
 	float m_speed;
 };

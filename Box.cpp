@@ -1,14 +1,6 @@
 #include "Box.h"
 
 
-Box::Box()
-	:
-	WorldObject(),
-	m_collider(this)
-{
-}
-
-
 Box::Box(ImageData* sprite_pImageData,
 	int sprite_layer,
 	game::Float2 sprite_scale,

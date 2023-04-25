@@ -18,6 +18,7 @@ public:
 
 	game::Float2 moveBuffer;
 
+
 	Collider(WorldObject* pOwner, bool dynamic = true, bool block = true, bool trigger = false);
 
 	void Update();

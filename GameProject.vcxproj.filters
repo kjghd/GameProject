@@ -87,6 +87,15 @@
     <ClCompile Include="ScreenObject.cpp">
       <Filter>Objects\Source</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Objects\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SO_Button.cpp">
+      <Filter>Objects\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SO_TextBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
@@ -148,6 +157,15 @@
     </ClInclude>
     <ClInclude Include="ScreenObject.h">
       <Filter>Objects\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SO_Button.h">
+      <Filter>Objects\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Objects\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SO_TextBox.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
