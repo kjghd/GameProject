@@ -2,7 +2,11 @@
 #include "Renderer.h"
 #include "Timer.h"
 #include "Input.h"
-#include "Scene.h"
+//#include "Scene.h"
+#include "SceneManager.h"
+
+#include "ImageDataList.h"
+#include "Prefabs.h"
 
 #include <Windows.h>
 #include <Windowsx.h>
@@ -13,7 +17,8 @@ static Graphics g_graphics;
 static Renderer g_renderer;
 static Timer g_timer;
 static Input g_input;
-static Scene g_scene(&g_input);
+//static Scene g_scene(&g_input);
+static SceneController g_SceneController;
 
 // Window Procedure.
 LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -115,8 +120,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ShowCursor(FALSE);
 
 	// Window Dimensions
-	int width  = 1280;
-	int height = 720;
+	float width  = 1280.f;
+	float height = 720.f;
 	RECT wndRect{ 0,0, width, height };
 	AdjustWindowRect(&wndRect, WS_CAPTION, FALSE);
 
@@ -136,9 +141,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	);
 	ShowWindow(hWnd, nCmdShow);
 
+
+	ImageDataList::Initialise();
+	PrefabList::Initialise();
+	//g_scene.Initialise();
+	g_SceneController.Intialise(&g_input);
+
 	// Start timer
 	g_graphics.Init(hWnd);
-	g_renderer.Init(&g_graphics, &g_scene);
+	g_renderer.Init(&g_graphics, &g_SceneController);
 	g_timer.Start();
 	Camera::m_screenResolution = { width,height };
 
@@ -155,7 +166,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 
-		g_scene.Update(static_cast<float>(g_timer.deltaTime));
+		g_SceneController.Update(static_cast<float>(g_timer.deltaTime));
 
 		g_renderer.Render();
 	}

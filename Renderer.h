@@ -1,21 +1,18 @@
 #pragma once
-
 #include "Graphics.h"
-#include "Scene.h"
-
+#include "SceneManager.h"
 
 class Renderer
 {
 	Graphics* m_pGraphics;
-	Scene* m_pScene;
-	Camera* m_pCamera;
+	SceneController* m_pSceneController;
 	bool m_debug;
 
 public:
 
 	Renderer();
 
-	void Init(Graphics* pGraphics, Scene* pScene);
+	void Init(Graphics* pGraphics, SceneController* pSceneController);
 
 	void Render();
 };

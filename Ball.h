@@ -19,8 +19,8 @@ public:
 	Ball(
 		ImageData* sprite_pImageData,
 		int sprite_layer,
-		game::Float2 sprite_scale,
-		game::Float2 sprite_offset,
+		game::float2 sprite_scale,
+		game::float2 sprite_offset,
 		float collider_radius,
 		bool collider_dynamic,
 		bool collider_block,
@@ -28,5 +28,7 @@ public:
 	);
 	Ball(const Ball& ball);
 	Ball(const Sprite& sprite, const Collider_Circle& collider);
+
+	virtual std::string Serialise() override;
 };
 

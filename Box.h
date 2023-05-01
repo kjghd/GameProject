@@ -14,9 +14,9 @@ public:
 	Box(
 		ImageData* sprite_pImageData,
 		int sprite_layer,
-		game::Float2 sprite_scale,
-		game::Float2 sprite_offset,
-		game::Float2 collider_size,
+		game::float2 sprite_scale,
+		game::float2 sprite_offset,
+		game::float2 collider_size,
 		bool collider_dynamic,
 		bool collider_block,
 		float sprite_frameTime = 1000.f
@@ -24,4 +24,6 @@ public:
 	Box(const Box& box);
 
 	Box(const Sprite& sprite, const Collider_Box& collider);
+
+	virtual std::string Serialise() override;
 };

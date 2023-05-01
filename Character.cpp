@@ -19,8 +19,8 @@ Character::Character(
 	float speed,
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float collider_radius,
 	bool collider_dynamic,
 	bool collider_block,
@@ -71,7 +71,7 @@ void Character::Update(float deltaTime)
 	m_sprite.Update(deltaTime);
 }
 
-void Character::Move(game::Float2 direction)
+void Character::Move(game::float2 direction)
 {
 	m_moveBuffer += direction;
 }
@@ -80,7 +80,7 @@ void Character::ApplyMovement(float deltaTime)
 {
 	if (m_moveBuffer.x != 0 || m_moveBuffer.y != 0)
 	{
-		game::Float2 direction{
+		game::float2 direction{
 			std::clamp<float>(m_moveBuffer.x, -1.f, 1.f),
 			std::clamp<float>(m_moveBuffer.y, -1.f, 1.f)
 		};
@@ -164,7 +164,7 @@ void Character::ApplyMovement(float deltaTime)
 	}
 	else if (m_lookDirection.x != 0 && m_lookDirection.y != 0)
 	{
-		game::Float2 direction{
+		game::float2 direction{
 			std::clamp<float>(m_lookDirection.x, -1.f, 1.f),
 			std::clamp<float>(m_lookDirection.y, -1.f, 1.f)
 		};
@@ -203,3 +203,15 @@ void Character::ApplyMovement(float deltaTime)
 		m_sprite.SetAnimation(Anim_Idle_Down);
 }
 	
+std::string Character::Serialise()
+{
+	std::string str;
+
+	//str += Ball::Serialise();
+	//str += game::DataToString<float>(m_health);
+	//str += game::DataToString<float>(m_speed);
+	//str += game::DataToString<game::float2>(m_lookDirection);
+	//str += m_viewRange.Serialise();
+
+	return str;
+}

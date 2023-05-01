@@ -8,7 +8,7 @@ float Sprite::pixels_per_screen_unit{ 32 };
 
 std::vector<Sprite*> Sprite::vpSpritesToRender;
 
-Sprite::Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int layer, game::Float2 scale, game::Float2 offset)
+Sprite::Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int layer, game::float2 scale, game::float2 offset)
 	:
 	pOwner(pOwner),
 	pImageData(pImageData),
@@ -27,7 +27,6 @@ Sprite::Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int l
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
-
 Sprite::Sprite(GameObject* pOwner, const Sprite& sprite)
 	:
 	pOwner(pOwner),
@@ -47,6 +46,7 @@ Sprite::Sprite(GameObject* pOwner, const Sprite& sprite)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 }
+
 
 void Sprite::Update(float deltaTime)
 {
@@ -91,16 +91,16 @@ void Sprite::FlipY() { invertedY = invertedY ? false : true; };
 
 GameObject* Sprite::GetOwner() { return pOwner; }
 
-game::Float2 Sprite::GetLocation() { return pOwner->m_location + offset; }
+game::float2 Sprite::GetLocation() { return pOwner->m_location + offset; }
 
-game::Float2 Sprite::GetSize()
+game::float2 Sprite::GetSize()
 {
 	float px_per_unit{ 1.f };
 
 	if (dynamic_cast<WorldObject*>(pOwner)) px_per_unit = pixels_per_world_unit;
 	else if (dynamic_cast<ScreenObject*>(pOwner)) px_per_unit = pixels_per_screen_unit;
 
-	game::Int2 dimensions{ pImageData->GetDimensionsPx() };
+	game::int2 dimensions{ pImageData->GetDimensionsPx() };
 	return {
 		static_cast<float>(dimensions.x) / px_per_unit * scale.x,
 		static_cast<float>(dimensions.y) / px_per_unit * scale.y
@@ -108,7 +108,7 @@ game::Float2 Sprite::GetSize()
 }
 
 int Sprite::GetRenderLayer() { return layer; }
-game::Rect Sprite::GetSourceRect() { return pImageData->GetCurrentRect(currentFrame); }
+game::rect Sprite::GetSourceRect() { return pImageData->GetCurrentRect(currentFrame); }
 int Sprite::GetBitmapIndex() { return pImageData->GetTexture(); }
 int Sprite::GetCurrentAnimation() { return currentAnim; }
 
@@ -144,11 +144,11 @@ bool Sprite::CompareRowAndLeftOf(Sprite* pA, Sprite* pB)
 
 bool Sprite::Obstructing(Sprite* pA, Sprite* pB)
 {
-	game::Float2 sizeA{ pA->GetSize() };
-	game::Float2 locA{ pA->GetLocation() };
+	game::float2 sizeA{ pA->GetSize() };
+	game::float2 locA{ pA->GetLocation() };
 	
-	game::Float2 sizeB{ pB->GetSize() };
-	game::Float2 locB{ pB->GetLocation() };
+	game::float2 sizeB{ pB->GetSize() };
+	game::float2 locB{ pB->GetLocation() };
 
 	if (locA.x - sizeA.x / 2.f < locB.x + sizeB.x / 2.f && // al < br
 		locA.x + sizeA.x / 2.f > locB.x - sizeB.x / 2.f && // ar > bl
@@ -163,4 +163,23 @@ bool Sprite::Obstructing(Sprite* pA, Sprite* pB)
 	else return false;
 	
 	//return locA.y - sizeA.y / 2.f > locB.y - sizeB.y / 2.f && ;
+}
+
+std::string Sprite::Serialise()
+{
+	std::string str;
+
+	//str += game::DataToString<game::float2>(offset);
+	//str += game::DataToString<game::float2>(scale);
+	//str += game::DataToString<int>(layer);
+	//str += game::DataToString<int>(pImageData->GetTexture()); // Determine image data from place in texture array
+	//str += game::DataToString<int>(currentFrame);
+	//str += game::DataToString<int>(currentAnim);
+	//str += game::DataToString<float>(frameTimeMax);
+	//str += game::DataToString<float>(frameTimeCurrent);
+	//str += game::DataToString<int>(direction);
+	//str += game::DataToString<bool>(invertedX);
+	//str += game::DataToString<bool>(invertedY);
+
+	return str;
 }

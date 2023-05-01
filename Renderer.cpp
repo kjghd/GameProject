@@ -6,21 +6,23 @@
 
 #include "Sprite.h"
 
+#include "Camera.h"
+
+
 #include <algorithm>
 
 Renderer::Renderer()
 	:
 	m_pGraphics(nullptr),
-	m_pScene(nullptr),
-	m_pCamera(nullptr),
+	m_pSceneController(nullptr),
 	m_debug(false)
 {
 }
 
-void Renderer::Init(Graphics* pGraphics, Scene* pScene)
+void Renderer::Init(Graphics* pGraphics, SceneController* pSceneController)
 {
-	m_pScene = pScene;
 	m_pGraphics = pGraphics;
+	m_pSceneController = pSceneController;
 }
 
 void Renderer::Render()
@@ -28,7 +30,10 @@ void Renderer::Render()
 	m_pGraphics->BeginDraw();
 	m_pGraphics->ClearScreen();
 
-	m_pCamera = &m_pScene->GetCamera();
+
+
+	Camera* pCamera{ m_pSceneController->GetActive()->GetCamera() };
+
 
 	/* sorting */
 
@@ -109,18 +114,16 @@ void Renderer::Render()
 		for (auto& pSprite : vpWOSorted)
 			if (pSprite->GetRenderLayer() == i)
 			{
-				game::Rect rect{
-					m_pCamera->WorldTransformToScreenRect(
-					pSprite->GetLocation(),
-					pSprite->GetSize()
+				game::rect rect{
+					pCamera->WorldTransformToScreenRect(
+						pSprite->GetLocation(),
+						pSprite->GetSize()
 					)
 				};
 
-				game::Rect region{ pSprite->GetSourceRect() };
+				game::rect region{ pSprite->GetSourceRect() };
 
 				float opacity{ 1.f };
-				//if (pSprite != &m_pScene->GetPlayer().m_sprite && Sprite::Obstructing(pSprite, &m_pScene->GetPlayer().m_sprite))
-				//	opacity = .2f;
 
 				m_pGraphics->DrawBitmapRegion(
 					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
@@ -138,15 +141,15 @@ void Renderer::Render()
 	for (auto& pSprite : vpSOSorted)
 	{
 		
-		game::Float2 location{ pSprite->GetLocation() };
-		game::Float2 size{ pSprite->GetSize() };
-		game::Rect rect{
+		game::float2 location{ pSprite->GetLocation() + Camera::m_screenResolution / ScreenObject::px_per_su / 2.f};
+		game::float2 size{ pSprite->GetSize() };
+		game::rect rect{
 			location.x * ScreenObject::px_per_su - size.x / 2.f * ScreenObject::px_per_su,
 			location.y * ScreenObject::px_per_su + size.y / 2.f * ScreenObject::px_per_su,
 			location.x * ScreenObject::px_per_su + size.x / 2.f * ScreenObject::px_per_su,
 			location.y * ScreenObject::px_per_su - size.y / 2.f * ScreenObject::px_per_su
 		};
-		game::Rect sourceRect{ pSprite->GetSourceRect() };
+		game::rect sourceRect{ pSprite->GetSourceRect() };
 
 		m_pGraphics->DrawBitmapRegion(
 			D2D1::RectF(rect.l, rect.t, rect.r, rect.b),

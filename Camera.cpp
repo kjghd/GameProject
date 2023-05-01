@@ -1,20 +1,22 @@
 #include "Camera.h"
+#include "GameObject.h"
 
+game::float2 Camera::m_screenResolution = { 1280,720 };
 
-game::Int2 Camera::m_screenResolution = { 1280,720 };
-
-Camera::Camera(game::Float2* pLocation)
+Camera::Camera(GameObject* pOwner)
 	:
+	pOwner(pOwner),
 	m_zoom(64.f),
 	m_speed(4.f),
-	m_origin(*pLocation),
-	m_offset{0,0}
+	m_offset{ 0,0 }
 {
 }
 
-void Camera::OffsetTo(game::Float2 destination, float deltaTime)
+void Camera::OffsetTo(game::float2 destination, float deltaTime)
 {
-	game::Float2 distance{ destination - (m_origin + m_offset) };
+	game::float2 origin{ pOwner ? pOwner->m_location : game::float2{0,0} };
+
+	game::float2 distance = destination - (origin + m_offset);
 
 	m_offset += distance * (m_speed * deltaTime / 1000);
 }
@@ -37,10 +39,12 @@ float Camera::GetZoom()
 	return m_zoom;
 }
 
-game::Float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
+game::float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
 {
+	game::float2 origin{ pOwner ? pOwner->m_location : game::float2{0,0} };
+
 	// Loc to Corn (SU)
-	game::Float2 A{ -screenX, -screenY };
+	game::float2 A{ -screenX, -screenY };
 	// WU
 	A = {
 		PX_to_WU(A.x),
@@ -48,7 +52,7 @@ game::Float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
 	};
 
 	// Corn to Cam (SU)
-	game::Float2 B{
+	game::float2 B{
 		m_screenResolution.x / 2,
 		m_screenResolution.y / 2
 	};
@@ -59,18 +63,20 @@ game::Float2 Camera::ScreenLocToWorldLoc(float screenX, float screenY)
 	};
 
 	// Cam to Cent (WU)
-	game::Float2 C{ -(m_origin + m_offset) };
+	game::float2 C{ -(origin + m_offset) };
 
 	// Loc to Cent
-	game::Float2 D{ A + B + C };
+	game::float2 D{ A + B + C };
 
 	// Cent to Loc
 	return -D;
 }
-game::Float2 Camera::WorldLocToScreenLoc(float worldX, float worldY)
+game::float2 Camera::WorldLocToScreenLoc(float worldX, float worldY)
 {
+	game::float2 origin{ pOwner ? pOwner->m_location : game::float2{0,0} };
+
 	// Loc to Cent (WU)
-	game::Float2 A{ -worldX, -worldY };
+	game::float2 A{ -worldX, -worldY };
 	// SU
 	A = {
 		WU_to_PX(A.x),
@@ -78,7 +84,7 @@ game::Float2 Camera::WorldLocToScreenLoc(float worldX, float worldY)
 	};
 
 	// Cent to Cam (WU)
-	game::Float2 B{ m_origin + m_offset };
+	game::float2 B{ origin + m_offset };
 	// SU
 	B = {
 		WU_to_PX(B.x),
@@ -86,26 +92,26 @@ game::Float2 Camera::WorldLocToScreenLoc(float worldX, float worldY)
 	};
 
 	// Cam to Corn (SU)
-	game::Float2 C{
+	game::float2 C{
 		-m_screenResolution.x / 2,
 		-m_screenResolution.y / 2
 	};
 
 	// Loc to Corn
-	game::Float2 D{ A + B + C };
+	game::float2 D{ A + B + C };
 
 	// Corn to Loc
 	return -D;
 }
-game::Rect Camera::WorldTransformToScreenRect(game::Float2 location, game::Float2 size)
+game::rect Camera::WorldTransformToScreenRect(game::float2 location, game::float2 size)
 {
-	game::Float2 bottom_left{
+	game::float2 bottom_left{
 		WorldLocToScreenLoc(
 			location.x - size.x / 2,
 			location.y - size.y / 2
 		)
 	};
-	game::Float2 top_right{
+	game::float2 top_right{
 		WorldLocToScreenLoc(
 			location.x + size.x / 2,
 			location.y + size.y / 2
@@ -127,4 +133,17 @@ float Camera::PX_to_WU(float screenUnit)
 float Camera::WU_to_PX(float worldUnit)
 {
 	return worldUnit * m_zoom;
+}
+
+std::string Camera::Serialise()
+{
+	std::string str;
+
+	//str += game::DataToString<game::int2>(m_screenResolution);
+	//str += game::DataToString<game::float2>(m_origin);
+	//str += game::DataToString<game::float2>(m_offset);
+	//str += game::DataToString<float>(m_zoom);
+	//str += game::DataToString<float>(m_speed);
+
+	return str;
 }

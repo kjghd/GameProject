@@ -2,13 +2,14 @@
 
 #include "DataTypes.h"
 
+class GameObject;
 
 class Camera
 {
 public:
-	Camera(game::Float2* pLocation);
+	Camera(GameObject* pOwner);
 
-	void OffsetTo(game::Float2 destination, float deltaTime);
+	void OffsetTo(game::float2 destination, float deltaTime);
 
 	void SetZoom(float amount);
 	void DecreaseZoom(float factor);
@@ -16,18 +17,20 @@ public:
 
 	float GetZoom();
 
-	game::Float2 ScreenLocToWorldLoc(float screenX, float screenY);
-	game::Float2 WorldLocToScreenLoc(float worldX, float worldY);
-	game::Rect WorldTransformToScreenRect(game::Float2 location, game::Float2 size);
+	game::float2 ScreenLocToWorldLoc(float screenX, float screenY);
+	game::float2 WorldLocToScreenLoc(float worldX, float worldY);
+	game::rect WorldTransformToScreenRect(game::float2 location, game::float2 size);
 
 	float PX_to_WU(float pixels);
 	float WU_to_PX(float worldUnits);
 
-	static game::Int2 m_screenResolution;
+	static game::float2 m_screenResolution;
+
+	virtual std::string Serialise();
 
 protected:
-	game::Float2& m_origin;
-	game::Float2 m_offset;
+	GameObject* pOwner;
+	game::float2 m_offset;
 	float m_zoom; // Pixels per world unit.
 	float m_speed;
 };

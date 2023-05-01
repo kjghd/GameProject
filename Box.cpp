@@ -3,9 +3,9 @@
 
 Box::Box(ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
-	game::Float2 collider_size,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
+	game::float2 collider_size,
 	bool collider_dynamic,
 	bool collider_block,
 	float sprite_frameTime)
@@ -33,4 +33,14 @@ void Box::Update(float deltaTime)
 {
 	m_collider.Update();
 	m_sprite.Update(deltaTime);
+}
+
+std::string Box::Serialise()
+{
+	std::string str;
+
+	//str += WorldObject::Serialise();
+	//str += m_collider.Serialise();
+
+	return str;
 }

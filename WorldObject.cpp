@@ -5,8 +5,8 @@
 WorldObject::WorldObject(
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float sprite_frameTime
 )
 	:
@@ -44,4 +44,13 @@ bool WorldObject::CompareRenderOrder_RowAndLeftOf(WorldObject* gameObjectA, Worl
 void WorldObject::Update(float deltaTime)
 {
 	m_sprite.Update(deltaTime);
+}
+
+std::string WorldObject::Serialise()
+{
+	std::string str;
+
+	//str += GameObject::Serialise();
+
+	return str;
 }

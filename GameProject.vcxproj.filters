@@ -96,6 +96,12 @@
     <ClCompile Include="SO_TextBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageDataList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
@@ -165,6 +171,12 @@
       <Filter>Objects\Header</Filter>
     </ClInclude>
     <ClInclude Include="SO_TextBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageDataList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

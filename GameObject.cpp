@@ -4,8 +4,8 @@
 GameObject::GameObject(
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float sprite_frameTime
 )
 	:
@@ -30,7 +30,30 @@ GameObject::GameObject(const Sprite& sprite)
 {
 }
 
+//GameObject::GameObject(std::ifstream& file)
+//	:
+//	m_location{(float)file.get(), (float)file.get()}
+//{
+//
+//}
+
 void GameObject::Update(float deltaTime)
 {
 	m_sprite.Update(deltaTime);
+}
+
+void GameObject::Update_SpriteOnly()
+{
+	m_sprite.Pause();
+	m_sprite.Update(0);
+}
+
+std::string GameObject::Serialise()
+{
+	std::string str;
+	
+	//str += game::DataToString<game::float2>(m_location);
+	//str += m_sprite.Serialise();
+	
+	return str;
 }

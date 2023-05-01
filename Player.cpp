@@ -5,8 +5,8 @@ Player::Player(float health,
 	float speed,
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float collider_radius,
 	bool collider_dynamic,
 	bool collider_block,
@@ -26,19 +26,17 @@ Player::Player(float health,
 		view_radius,
 		sprite_frameTime),
 	m_pInput(nullptr),
-	m_camera(&m_location)
+	m_camera(this)
 {
 }
-
 
 Player::Player(const Player& player)
 	:
 	Character(player.m_sprite, player.m_collider, player.m_viewRange, player.m_health, player.m_speed),
 	m_pInput(player.m_pInput),
-	m_camera(&m_location)
+	m_camera(this)
 {
 }
-
 
 void Player::Update(float deltaTime)
 {	
@@ -51,7 +49,7 @@ void Player::Update(float deltaTime)
 
 			m_lookDirection = m_camera.ScreenLocToWorldLoc(m_pInput->GetMouseLoc().x, m_pInput->GetMouseLoc().y) - m_location;
 
-			game::Float2 direction{ 0,0 };
+			game::float2 direction{ 0,0 };
 
 			if (m_pInput->CheckHeld(BTN_W)) direction.y += 1.f;
 			if (m_pInput->CheckHeld(BTN_S)) direction.y -= 1.f;
@@ -79,4 +77,14 @@ void Player::Update(float deltaTime)
 	m_collider.Update();
 	m_viewRange.Update();
 	m_sprite.Update(deltaTime);
+}
+
+std::string Player::Serialise()
+{
+	std::string str;
+
+	//str += Character::Serialise();
+	//str += m_camera.Serialise();
+
+	return str;
 }

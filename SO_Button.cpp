@@ -1,7 +1,7 @@
 #include "SO_Button.h"
 
 
-SO_Button::SO_Button(ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset, float frameTime)
+SO_Button::SO_Button(ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
 	:
 	ScreenObject(pImageData, layer, scale, offset, frameTime),
 	m_pInput(nullptr)
@@ -25,7 +25,7 @@ void SO_Button::Update(float deltaTime)
 
 bool SO_Button::Hovered()
 {
-	game::Float2 size{ m_sprite.GetSize() };
+	game::float2 size{ m_sprite.GetSize() };
 
 	if (m_pInput->GetMouseLoc().x / px_per_su > m_location.x - size.x / 2.f &&
 		m_pInput->GetMouseLoc().y / px_per_su > m_location.y - size.y / 2.f &&

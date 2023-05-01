@@ -8,23 +8,23 @@ private:
 	//struct FrameRange { int start, end; };
 
 	int m_texture;
-	game::Int2 m_dimensions_px;
+	game::int2 m_dimensions_px;
 
 	int m_frames;
-	game::Rect* m_frameRectArray;
+	game::rect* m_frameRectArray;
 
 	int m_animCount;
-	game::Int2* m_animRangeArray;
+	game::int2* m_animRangeArray;
 
 public:
 	ImageData();
-	ImageData(int texture, game::Int2 dimensions_px, int frames, game::Rect* frameRectArray, int animCount, game::Int2* animRangeArray);
-	ImageData(int texture, game::Int2 dimensions_px);
+	ImageData(int texture, game::int2 dimensions_px, int frames, game::rect* frameRectArray, int animCount, game::int2* animRangeArray);
+	ImageData(int texture, game::int2 dimensions_px);
 	~ImageData();
 
 	int GetTexture();
-	game::Int2 GetDimensionsPx();
-	game::Rect GetCurrentRect(int currentFrame);
+	game::int2 GetDimensionsPx();
+	game::rect GetCurrentRect(int currentFrame);
 	int GetAnimStartFrame(int currentAnim);
 	int GetAnimEndFrame(int currentAnim);
 
@@ -36,14 +36,14 @@ public:
 		m_frames = imageData.m_frames;
 	
 		delete[] m_frameRectArray;
-		m_frameRectArray = new game::Rect[imageData.m_frames];
+		m_frameRectArray = new game::rect[imageData.m_frames];
 		for (size_t i{ 0 }; i < imageData.m_frames; ++i)
 			m_frameRectArray[i] = imageData.m_frameRectArray[i];
 	
 		m_animCount = imageData.m_animCount;
 	
 		delete[] m_animRangeArray;
-		m_animRangeArray = new game::Int2[imageData.m_animCount];
+		m_animRangeArray = new game::int2[imageData.m_animCount];
 		for (size_t i{ 0 }; i < imageData.m_animCount; ++i)
 			m_animRangeArray[i] = imageData.m_animRangeArray[i];
 	

@@ -11,7 +11,3 @@ public:
 	std::vector<Sprite> letters;
 };
 
-class SO_Window : public ScreenObject
-{
-	
-};

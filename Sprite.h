@@ -5,6 +5,7 @@
 #include "Camera.h"
 
 #include <vector>
+#include <string>
 
 class GameObject;
 
@@ -23,59 +24,12 @@ enum SpriteLayers
 	SL_COUNT
 };
 
-struct RenderData
-{
-	RenderData(game::Float2 location, game::Float2 size, int bitmapIndex, int layer, game::Rect sourceRect, bool invertX, bool invertY);
-
-private:
-
-	GameObject* pOwner;
-
-	game::Float2 location;
-	game::Float2 size;
-
-	int bitmapIndex;
-	int layer;
-	game::Rect sourceRect;
-	bool invertX;
-	bool invertY;
-
-public:
-	static std::vector<RenderData> vRenderList;
-
-	void Add(game::Float2 location, game::Float2 size, int bitmapIndex, int layer, game::Rect sourceRect, bool invertX, bool invertY)
-	{
-		vRenderList.push_back(RenderData(location, size, bitmapIndex, layer, sourceRect, invertX, invertY));
-	}
-
-	game::Rect GetRect(Camera* pCamera)
-	{
-		if (pCamera)
-		{
-			game::Rect rect{
-				pCamera->WorldTransformToScreenRect(location, size)
-			};
-			return rect;
-		}
-		else
-		{
-			game::Rect rect{
-				//location.x * pixels_per_screen_unit - size.x,
-				//location.y * pixels_per_screen_unit - size.y,
-				//location.x * pixels_per_screen_unit + size.x,
-				//location.y * pixels_per_screen_unit + size.y
-			};
-			return rect;
-		}
-	}
-};
-
 class Sprite
 {
 protected:
 	GameObject* pOwner;
-	game::Float2 offset;
-	game::Float2 scale;
+	game::float2 offset;
+	game::float2 scale;
 
 	int layer;
 	ImageData* pImageData;
@@ -96,8 +50,9 @@ public:
 	bool active;
 
 
-	Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::Float2 scale = { 1,1 }, game::Float2 offset = { 0,0 });
+	Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::float2 scale = { 1,1 }, game::float2 offset = { 0,0 });
 	Sprite(GameObject* pOwner, const Sprite& sprite);
+	//Sprite(GameObject* pOwner, std::ifstream& fstream);
 
 	void Update(float deltaTime);
 
@@ -107,11 +62,11 @@ public:
 
 	GameObject* GetOwner();
 
-	game::Float2 GetLocation();
-	game::Float2 GetSize();
+	game::float2 GetLocation();
+	game::float2 GetSize();
 
 	int GetRenderLayer();
-	game::Rect GetSourceRect();
+	game::rect GetSourceRect();
 	int GetBitmapIndex();
 	int GetCurrentAnimation();
 	bool CheckInvertedX();
@@ -125,4 +80,6 @@ public:
 	static bool CompareAbove(Sprite* pA, Sprite* pB);
 	static bool CompareRowAndLeftOf(Sprite* gameObjectA, Sprite* gameObjectB);
 	static bool Obstructing(Sprite* pA, Sprite* pB);
+
+	std::string Serialise();
 };
