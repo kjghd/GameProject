@@ -1,19 +1,24 @@
 #include "Scene.h"
-#include "Prefabs.h"
 
+#include "Input.h"
+#include "Prefabs.h"
+#include "GameObject.h"
+#include "WorldObject.h"
 #include "Box.h"
 #include "Ball.h"
 #include "Character.h"
 #include "NPC.h"
+#include "Player.h"
+#include "ScreenObject.h"
+#include "SO_Button.h"
 
 #include <algorithm>
 
 
-Scene::Scene(Input* pInput, bool show)
+Scene::Scene(bool show)
 	:
 	show(show),
 	active(false),
-	pInput(pInput),
 	pCurrentCamera(nullptr),
 	defaultCamera(nullptr)
 {
@@ -23,7 +28,6 @@ Scene::Scene(const Scene& scene)
 	:
 	show(scene.show),
 	active(scene.active),
-	pInput(scene.pInput),
 	pCurrentCamera(nullptr),
 	vpSpawnQueue(),
 	defaultCamera(nullptr)
@@ -66,15 +70,13 @@ void Scene::Initialise()
 }
 
 
-void Scene::Activate(Input* pInp)
+void Scene::Activate()
 {
 	active = true;
-	pInput = pInp;
 }
 void Scene::Dectivate()
 {
 	active = false;
-	pInput = nullptr;
 }
 bool Scene::CheckActive()
 {
@@ -131,10 +133,6 @@ Camera* Scene::GetCamera()
 	return pCurrentCamera ? pCurrentCamera : &defaultCamera;
 }
 
-Input& Scene::GetInput()
-{
-	return *pInput;
-}
 
 
 
@@ -153,14 +151,14 @@ SceneMessage Scene::Update(float deltaTime)
 		DestroyObjects();
 		SpawnObjects();
 
-		if (pInput->CheckPressed(BTN_ESC))
+		if (Input::CheckPressed(BTN_ESC))
 		{
 			msg.id = SMID_Pop;
 		}
 
 
 		// Cursor
-		game::float2 loc_px{ pInput->GetMouseLoc().x, pInput->GetMouseLoc().y };
+		game::float2 loc_px{ Input::GetMouseLoc().x, Input::GetMouseLoc().y };
 		pCursor->SetLocaion_px(loc_px);
 
 		// Update
@@ -364,7 +362,6 @@ void Scene_World::Initialise()
 			if (dynamic_cast<Player*>(pObject))
 			{
 				pPlayer = dynamic_cast<Player*>(pObject);
-				pPlayer->m_pInput = pInput;
 				pCurrentCamera = &pPlayer->m_camera;
 			}
 
@@ -372,7 +369,6 @@ void Scene_World::Initialise()
 		{
 			vpGameObjects.push_back(new Player(*dynamic_cast<Player*>(PrefabList::Get(PREFAB_Player))));
 			pPlayer = dynamic_cast<Player*>(vpGameObjects.back());
-			pPlayer->m_pInput = pInput;
 			pCurrentCamera = &pPlayer->m_camera;
 		}
 	}
@@ -393,9 +389,9 @@ void Scene_World::Initialise()
 
 }
 
-Scene_World::Scene_World(Input* pInput, bool show)
+Scene_World::Scene_World(bool show)
 	:
-	Scene(pInput, show),
+	Scene(show),
 	current_prefab(PREFAB_Floor_ConcreteA),
 	pPlayer(nullptr)
 {
@@ -426,24 +422,23 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 		if (pPlayer)
 		{
-			if (!pPlayer->m_pInput) pPlayer->m_pInput = pInput;
 			if (!pCurrentCamera) pCurrentCamera = &pPlayer->m_camera;
 		}
 
 		/* Player Controls */
-		if (pInput->CheckPressed(BTN_ESC))
+		if (Input::CheckPressed(BTN_ESC))
 		{
 			msg.id = SMID_New;
 			msg.indexPrefabs = SCENE_Pause;
 		}
 
 		// Object delete controls
-		if (pInput->CheckPressed(BTN_RMB))
+		if (Input::CheckPressed(BTN_RMB))
 		{
 			game::float2 loc{
 				pCurrentCamera->ScreenLocToWorldLoc(
-						pInput->GetMouseLoc().x,
-						pInput->GetMouseLoc().y
+						Input::GetMouseLoc().x,
+						Input::GetMouseLoc().y
 					)
 			};
 			game::float2 locRounded{ roundf(loc.x), roundf(loc.y) };
@@ -478,14 +473,14 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 		}
 
-		if (pInput->CheckHeld(BTN_SHIFT))
+		if (Input::CheckHeld(BTN_SHIFT))
 		{
 			pCursorBox->m_sprite.visible = true;
 
 			game::float2 loc{
 				pCurrentCamera->ScreenLocToWorldLoc(
-				pInput->GetMouseLoc().x,
-				pInput->GetMouseLoc().y
+				Input::GetMouseLoc().x,
+				Input::GetMouseLoc().y
 				)
 			};
 			game::float2 locRounded{ roundf(loc.x), roundf(loc.y) };
@@ -493,12 +488,12 @@ SceneMessage Scene_World::Update(float deltaTime)
 			pCursorBox->Update(deltaTime);
 
 			// Object spawn controls.
-			if (pInput->CheckPressed(BTN_LMB))
+			if (Input::CheckPressed(BTN_LMB))
 			{
 				game::float2 loc{
 					pCurrentCamera->ScreenLocToWorldLoc(
-							pInput->GetMouseLoc().x,
-							pInput->GetMouseLoc().y
+							Input::GetMouseLoc().x,
+							Input::GetMouseLoc().y
 						)
 				};
 				game::float2 locRounded{ roundf(loc.x), roundf(loc.y) };
@@ -513,9 +508,9 @@ SceneMessage Scene_World::Update(float deltaTime)
 		}
 		else
 			pCursorBox->m_sprite.visible = false;
-		if (pInput->CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
-		if (pInput->CheckPressed(BTN_3)) current_prefab = PREFAB_Floor_ConcreteA;
-		if (pInput->CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
+		if (Input::CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
+		if (Input::CheckPressed(BTN_3)) current_prefab = PREFAB_Floor_ConcreteA;
+		if (Input::CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
 
 		// Pause
 		//if (pInput->CheckPressed(BTN_ESC)) state = SState_Pause;
@@ -523,7 +518,7 @@ SceneMessage Scene_World::Update(float deltaTime)
 		Collision();
 
 		// Cursor
-		game::float2 loc_px{ pInput->GetMouseLoc().x, pInput->GetMouseLoc().y };
+		game::float2 loc_px{ Input::GetMouseLoc().x, Input::GetMouseLoc().y };
 		pCursor->SetLocaion_px(loc_px);
 
 		// Update

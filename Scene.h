@@ -2,13 +2,13 @@
 
 #include "DataTypes.h"
 #include "Camera.h"
-#include "Player.h"
-#include "ScreenObject.h"
-#include "SO_Button.h"
-#include "Input.h"
-
 #include <vector>
 #include <string>
+
+class GameObject;
+class Player;
+class ScreenObject;
+
 
 enum ScenePrefabs
 {
@@ -39,14 +39,13 @@ protected:
 	bool show;
 	bool active;
 
-	Input* pInput;
 	Camera* pCurrentCamera;
 	Camera defaultCamera;
+	ScreenObject* pCursor;
+
 	std::vector<GameObject*> vpSpawnQueue;
 	std::vector<size_t> vDestroyQueue;
 	std::vector<GameObject*> vpGameObjects;
-
-	ScreenObject* pCursor;
 
 	void Collision();
 
@@ -56,18 +55,17 @@ protected:
 	void DestroyObjects();
 
 public:
-	Scene(Input* pInput, bool show);
+	Scene(bool show);
 	Scene(const Scene& scene);
 	~Scene();
 
 	virtual void Initialise();
 
-	void Activate(Input* pInput);
+	void Activate();
 	void Dectivate();
 	bool CheckActive();
 
 	Camera* GetCamera();
-	Input& GetInput();
 
 	void QueueToSpawn(int prefab, game::float2 location = { 0,0 });
 	void QueueToSpawn(GameObject* pObject);
@@ -86,7 +84,7 @@ class Scene_World : public Scene
 	virtual void SpawnObjects() override;
 
 public:
-	Scene_World(Input* pInput, bool show);
+	Scene_World(bool show);
 	Scene_World(const Scene_World& scene);
 	virtual void Initialise() override;
 	virtual SceneMessage Update(float deltaTime) override;

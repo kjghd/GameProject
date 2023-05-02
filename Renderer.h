@@ -5,14 +5,14 @@
 class Renderer
 {
 	Graphics* m_pGraphics;
-	SceneController* m_pSceneController;
+	SceneManager* m_pSceneController;
 	bool m_debug;
 
 public:
 
 	Renderer();
 
-	void Init(Graphics* pGraphics, SceneController* pSceneController);
+	void Init(Graphics* pGraphics, SceneManager* pSceneController);
 
 	void Render();
 };

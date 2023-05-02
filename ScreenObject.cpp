@@ -1,8 +1,8 @@
 #include "ScreenObject.h"
 
 
-game::float2 ScreenObject::screenRes = { 1280,720 };
-float ScreenObject::px_per_su = 64.f;
+game::float2 ScreenObject::screenRes;
+float ScreenObject::px_per_su;
 
 ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
 	:

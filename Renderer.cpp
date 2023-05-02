@@ -1,15 +1,12 @@
 #include "Renderer.h"
-#include "Prefabs.h"
 
-#include "Box.h"
-#include "Ball.h"
-
+#include "WorldObject.h"
+#include "ScreenObject.h"
 #include "Sprite.h"
-
 #include "Camera.h"
 
-
 #include <algorithm>
+
 
 Renderer::Renderer()
 	:
@@ -19,7 +16,7 @@ Renderer::Renderer()
 {
 }
 
-void Renderer::Init(Graphics* pGraphics, SceneController* pSceneController)
+void Renderer::Init(Graphics* pGraphics, SceneManager* pSceneController)
 {
 	m_pGraphics = pGraphics;
 	m_pSceneController = pSceneController;

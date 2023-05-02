@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "GameObject.h"
 
-game::float2 Camera::m_screenResolution = { 1280,720 };
+game::float2 Camera::m_screenResolution;
 
 Camera::Camera(GameObject* pOwner)
 	:

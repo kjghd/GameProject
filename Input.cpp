@@ -1,9 +1,16 @@
 #include "Input.h"
 
+struct Button
+{
+	bool on = false;
+	bool moved = false;
+};
+
+Button Input::buttons[BTN_COUNT];
+D2D1_POINT_2F Input::mouseLoc{ 0,0 };
+float Input::scrollDistance;
 
 Input::Input()
-	:
-	mouseLoc{ 0,0 }
 {
 }
 

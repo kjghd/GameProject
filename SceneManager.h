@@ -1,24 +1,28 @@
 #pragma once
+
 #include "Scene.h"
 #include "Input.h"
+
 #include <vector>
 
-class SceneController
+class Camera;
+class ScreenObject;
+
+class SceneManager
 {
-	Input* pInput;
 	static std::vector<Scene*> prefabs;	// Will be replaced with files.
 	static std::vector<Scene*> store;	// Will be replaced with files.
 	std::vector<Scene*> stack;
-	Scene* pActive;
-
 	std::vector<Scene*> deleteQueue;
+	Scene* pActive;
+	Camera* pCamera;
+	ScreenObject* pCursor;
 
 public:
-	void Intialise(Input* pInput);
+	SceneManager();
+	~SceneManager();
 	
-	SceneController();
-
-	~SceneController();
+	void Initialise();
 
 	void Update(float deltaTime);
 	void SetActive(int index);

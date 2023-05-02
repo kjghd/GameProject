@@ -1,16 +1,16 @@
 #include "SceneManager.h"
+
 #include "Prefabs.h"
 #include "PrefabTags.h"
 
-std::vector<Scene*> SceneController::prefabs;
-std::vector<Scene*> SceneController::store;
 
-void SceneController::Intialise(Input* pInp)
+std::vector<Scene*> SceneManager::prefabs;
+std::vector<Scene*> SceneManager::store;
+
+void SceneManager::Initialise()
 {
-	pInput = pInp;
-
 	// Level 1
-	Scene_World* pLevel1{ new Scene_World(pInput, true) };
+	Scene_World* pLevel1{ new Scene_World(true) };
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 0,5 });
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 1,5 });
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 2,5 });
@@ -19,29 +19,20 @@ void SceneController::Intialise(Input* pInp)
 	prefabs.push_back(pLevel1);
 
 	// Pause
-	Scene* pPause{ new Scene(pInput, false) };
+	Scene* pPause{ new Scene(false) };
 	pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
 	pPause->QueueToSpawn(PREFAB_Resume, { 0,1 });
 	pPause->QueueToSpawn(PREFAB_MainMenu, { 0,-1 });
 	prefabs.push_back(pPause);
-
-
-	//// Cursor
-	//Scene* pPause{ new Scene(pInput, false) };
-	//pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
-	//pPause->QueueToSpawn(PREFAB_Resume, { 0,1 });
-	//pPause->QueueToSpawn(PREFAB_MainMenu, { 0,-1 });
-	//prefabs.push_back(pPause);
 }
 
-SceneController::SceneController()
+SceneManager::SceneManager()
 	:
-	pInput(nullptr),
 	pActive(nullptr)
 {
 }
 
-SceneController::~SceneController()
+SceneManager::~SceneManager()
 {
 	for (auto& pScene : stack)
 	{
@@ -62,7 +53,7 @@ SceneController::~SceneController()
 	}
 }
 
-void SceneController::Update(float deltaTime)
+void SceneManager::Update(float deltaTime)
 {
 	while (!deleteQueue.empty())
 	{
@@ -92,7 +83,7 @@ void SceneController::Update(float deltaTime)
 					stack.back()->Dectivate();
 					deleteQueue.push_back(stack.back());
 					stack.pop_back();
-					stack.back()->Activate(pInput);
+					stack.back()->Activate();
 					pActive = stack.back();
 					break;
 				}
@@ -101,7 +92,7 @@ void SceneController::Update(float deltaTime)
 					stack.back()->Dectivate();
 					store.push_back(pActive);
 					stack.pop_back();
-					stack.back()->Activate(pInput);
+					stack.back()->Activate();
 					//pActive = stack.back();
 					break;
 				}
@@ -110,7 +101,7 @@ void SceneController::Update(float deltaTime)
 					stack.back()->Dectivate();
 					stack.push_back(store.at(sm.indexStore));
 					store.erase(store.begin() + sm.indexStore);
-					stack.back()->Activate(pInput);
+					stack.back()->Activate();
 					//pActive = stack.back();
 					break;
 				}
@@ -126,7 +117,7 @@ void SceneController::Update(float deltaTime)
 						stack.push_back(new Scene(*prefabs.at(sm.indexPrefabs)));
 					}
 					stack.back()->Initialise();
-					stack.back()->Activate(pInput);
+					stack.back()->Activate();
 					pActive = stack.back();
 					break;
 				}
@@ -135,16 +126,16 @@ void SceneController::Update(float deltaTime)
 	}
 }
 
-void SceneController::SetActive(int index)
+void SceneManager::SetActive(int index)
 {
 	for (auto& pScene : stack)
 		pScene->Dectivate();
 
-	stack.at(index)->Activate(pInput);
+	stack.at(index)->Activate();
 	pActive = stack.at(index);
 }
 
-Scene* SceneController::GetActive()
+Scene* SceneManager::GetActive()
 {
 	return pActive;
 }

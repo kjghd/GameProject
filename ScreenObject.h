@@ -4,9 +4,8 @@
 
 class ScreenObject : public GameObject
 {
-	static game::float2 screenRes;
-
 public:
+	static game::float2 screenRes;
 	static float px_per_su;
 
 	ScreenObject(ImageData* sprite_pImageData, int sprite_layer, game::float2 sprite_scale = { 1.f,1.f }, game::float2 sprite_offset = { 0,0 }, float sprite_frameTime = 0);
