@@ -105,6 +105,10 @@ void Graphics::ClearScreen(D2D1_COLOR_F colour)
 {
 	pRenderTarget->Clear(colour);
 }
+void Graphics::ClearScreen(float r, float g, float b, float alpha)
+{
+	pRenderTarget->Clear(D2D1::ColorF(r,g,b,alpha));
+}
 
 void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity, bool invertX, bool invertY)
 {

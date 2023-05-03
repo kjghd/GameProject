@@ -4,8 +4,36 @@
 #include "PrefabTags.h"
 
 
-std::vector<Scene*> SceneManager::prefabs;
-std::vector<Scene*> SceneManager::store;
+std::vector<Scene*> SceneManager::pScenePrefabs;
+std::vector<Scene*> SceneManager::pSceneStore;
+
+
+SceneManager::SceneManager()
+	:
+	pFocused(nullptr),
+	defaultCamera(nullptr)
+{
+}
+SceneManager::~SceneManager()
+{
+	for (auto& pScene : pSceneStack)
+	{
+		delete pScene;
+		pScene = nullptr;
+	}
+
+	for (auto& pScene : pScenePrefabs)
+	{
+		delete pScene;
+		pScene = nullptr;
+	}
+
+	for (auto& pScene : pSceneStore)
+	{
+		delete pScene;
+		pScene = nullptr;
+	}
+}
 
 void SceneManager::Initialise()
 {
@@ -16,41 +44,17 @@ void SceneManager::Initialise()
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 2,5 });
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 3,5 });
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 4,5 });
-	prefabs.push_back(pLevel1);
+	pScenePrefabs.push_back(pLevel1);
 
 	// Pause
 	Scene* pPause{ new Scene(false) };
 	pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
 	pPause->QueueToSpawn(PREFAB_Resume, { 0,1 });
 	pPause->QueueToSpawn(PREFAB_MainMenu, { 0,-1 });
-	prefabs.push_back(pPause);
-}
+	pScenePrefabs.push_back(pPause);
 
-SceneManager::SceneManager()
-	:
-	pActive(nullptr)
-{
-}
-
-SceneManager::~SceneManager()
-{
-	for (auto& pScene : stack)
-	{
-		delete pScene;
-		pScene = nullptr;
-	}
-
-	for (auto& pScene : prefabs)
-	{
-		delete pScene;
-		pScene = nullptr;
-	}
-
-	for (auto& pScene : store)
-	{
-		delete pScene;
-		pScene = nullptr;
-	}
+	NewScene(0);
+	pFocused = pSceneStack.back();
 }
 
 void SceneManager::Update(float deltaTime)
@@ -62,80 +66,90 @@ void SceneManager::Update(float deltaTime)
 		deleteQueue.pop_back();
 	}
 
-	if (stack.empty())
-	{
-		stack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(prefabs.at(0))));
-		
-		stack.back()->Initialise();
-		SetActive(0);
-	}
-
-	for (const auto& pScene : stack)
+	for (const auto& pScene : pSceneStack)
 	{
 		SceneMessage sm{ pScene->Update(deltaTime) };
-		if (pScene == pActive)
+
+		if (pScene == pFocused)
 		{
 			switch (sm.id)
 			{
-				case SMID_Null: break;
-				case SMID_Pop:
-				{
-					stack.back()->Dectivate();
-					deleteQueue.push_back(stack.back());
-					stack.pop_back();
-					stack.back()->Activate();
-					pActive = stack.back();
-					break;
-				}
-				case SMID_Store:
-				{
-					stack.back()->Dectivate();
-					store.push_back(pActive);
-					stack.pop_back();
-					stack.back()->Activate();
-					//pActive = stack.back();
-					break;
-				}
-				case SMID_Load:
-				{
-					stack.back()->Dectivate();
-					stack.push_back(store.at(sm.indexStore));
-					store.erase(store.begin() + sm.indexStore);
-					stack.back()->Activate();
-					//pActive = stack.back();
-					break;
-				}
-				case SMID_New:
-				{
-					stack.back()->Dectivate();
-					if (dynamic_cast<Scene_World*>(prefabs.at(sm.indexPrefabs)))
-					{
-						stack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(prefabs.at(sm.indexPrefabs))));
-					}
-					else
-					{
-						stack.push_back(new Scene(*prefabs.at(sm.indexPrefabs)));
-					}
-					stack.back()->Initialise();
-					stack.back()->Activate();
-					pActive = stack.back();
-					break;
-				}
+			case SMID_Null: break;
+			case SMID_Pop: PopScene(); break;
+			case SMID_Store: SaveScene(); break;
+			case SMID_Load: LoadScene(sm.indexStore); break;
+			case SMID_New: NewScene(sm.indexPrefabs);  break;
 			}
 		}
+	}
+
+	if (pMainScene)
+		pCamera = pMainScene->GetCamera();
+	else
+		pCamera = &defaultCamera;
+
+}
+
+void SceneManager::LoadScene(size_t storeIndex)
+{
+	if (dynamic_cast<Scene_World*>(pSceneStore.at(storeIndex)))
+	{
+		pSceneStack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(pSceneStore.at(storeIndex))));
+		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
+	}
+	else
+		pSceneStack.push_back(pSceneStore.at(storeIndex));
+
+	pSceneStack.back()->Initialise();
+	pSceneStack.back()->Activate();
+	pFocused = pSceneStack.back();
+
+}
+void SceneManager::NewScene(size_t prefabIndex)
+{
+	if (dynamic_cast<Scene_World*>(pScenePrefabs.at(prefabIndex)))
+	{
+		pSceneStack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(pScenePrefabs.at(prefabIndex))));
+		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
+	}
+	else
+		pSceneStack.push_back(pScenePrefabs.at(prefabIndex));
+
+	pSceneStack.back()->Initialise();
+	pSceneStack.back()->Activate();
+	pFocused = pSceneStack.back();
+}
+void SceneManager::SaveScene()
+{
+	pSceneStore.push_back(pMainScene);
+}
+void SceneManager::PopScene()
+{
+	if (!pSceneStack.empty())
+	{
+		deleteQueue.push_back(pSceneStack.back());
+		pSceneStack.pop_back();
+
+		if (!pSceneStack.empty())
+			pFocused = pSceneStack.back();
+		else
+			pFocused = nullptr;
 	}
 }
 
 void SceneManager::SetActive(int index)
 {
-	for (auto& pScene : stack)
-		pScene->Dectivate();
+	//for (auto& pScene : pMenuStack)
+	//	pScene->Deactivate();
 
-	stack.at(index)->Activate();
-	pActive = stack.at(index);
+	pSceneStack.at(index)->Activate();
+	pFocused = pSceneStack.at(index);
 }
-
-Scene* SceneManager::GetActive()
+//Scene* SceneManager::GetActive()
+//{
+//	return pFocused;
+//}
+Camera* SceneManager::GetCamera()
 {
-	return pActive;
+	return pCamera;
 }

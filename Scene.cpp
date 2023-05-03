@@ -17,20 +17,16 @@
 
 Scene::Scene(bool show)
 	:
-	show(show),
-	active(false),
-	pCurrentCamera(nullptr),
-	defaultCamera(nullptr)
+	isVisible(show),
+	canUpdate(false)
 {
 }
 
 Scene::Scene(const Scene& scene)
 	:
-	show(scene.show),
-	active(scene.active),
-	pCurrentCamera(nullptr),
-	vpSpawnQueue(),
-	defaultCamera(nullptr)
+	isVisible(scene.isVisible),
+	canUpdate(scene.canUpdate),
+	vpSpawnQueue()
 {
 	for (const auto& pObject : scene.vpGameObjects)
 	{
@@ -72,15 +68,17 @@ void Scene::Initialise()
 
 void Scene::Activate()
 {
-	active = true;
+	canUpdate = true;
+	isVisible = true;
 }
-void Scene::Dectivate()
+void Scene::Deactivate(bool show)
 {
-	active = false;
+	canUpdate = false;
+	isVisible = show;
 }
 bool Scene::CheckActive()
 {
-	return active;
+	return canUpdate;
 }
 
 void Scene::Collision()
@@ -128,23 +126,16 @@ void Scene::Collision()
 
 }
 
-Camera* Scene::GetCamera()
-{
-	return pCurrentCamera ? pCurrentCamera : &defaultCamera;
-}
-
-
-
 
 SceneMessage Scene::Update(float deltaTime)
 {
-	if (!active && show)
+	if (!canUpdate && isVisible)
 	{
 		pCursor->SetLocation_percentage({ 100.f,100.f });
 		for (auto& pGameObject : vpGameObjects)
 			pGameObject->Update_SpriteOnly();
 	}
-	else if (active)
+	else if (canUpdate)
 	{
 		SceneMessage msg{ SMID_Null, 0 };
 
@@ -326,7 +317,7 @@ std::string Scene::Serialise()
 	std::string str;
 
 	// Show
-	str += std::to_string(show);
+	str += std::to_string(isVisible);
 
 	// GameObjects
 	for (const auto& pGameObject : vpGameObjects)
@@ -393,7 +384,8 @@ Scene_World::Scene_World(bool show)
 	:
 	Scene(show),
 	current_prefab(PREFAB_Floor_ConcreteA),
-	pPlayer(nullptr)
+	pPlayer(nullptr),
+	pCurrentCamera(nullptr)
 {
 }
 
@@ -401,19 +393,20 @@ Scene_World::Scene_World(const Scene_World& scene)
 	:
 	Scene(scene),
 	current_prefab(PREFAB_Floor_ConcreteA),
-	pPlayer(nullptr)
+	pPlayer(nullptr),
+	pCurrentCamera(nullptr)
 {
 }
 
 
 SceneMessage Scene_World::Update(float deltaTime)
 {
-	if (!active && show)
+	if (!canUpdate && isVisible)
 	{
 		for (auto& pGameObject : vpGameObjects)
 			pGameObject->Update_SpriteOnly();
 	}
-	else if (active)
+	else if (canUpdate)
 	{
 		SceneMessage msg;
 
@@ -425,14 +418,12 @@ SceneMessage Scene_World::Update(float deltaTime)
 			if (!pCurrentCamera) pCurrentCamera = &pPlayer->m_camera;
 		}
 
-		/* Player Controls */
 		if (Input::CheckPressed(BTN_ESC))
 		{
 			msg.id = SMID_New;
 			msg.indexPrefabs = SCENE_Pause;
 		}
 
-		// Object delete controls
 		if (Input::CheckPressed(BTN_RMB))
 		{
 			game::float2 loc{
@@ -512,9 +503,6 @@ SceneMessage Scene_World::Update(float deltaTime)
 		if (Input::CheckPressed(BTN_3)) current_prefab = PREFAB_Floor_ConcreteA;
 		if (Input::CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
 
-		// Pause
-		//if (pInput->CheckPressed(BTN_ESC)) state = SState_Pause;
-
 		Collision();
 
 		// Cursor
@@ -540,4 +528,9 @@ void Scene_World::SpawnObjects()
 		if (dynamic_cast<Player*>(vpGameObjects.back()))
 			pPlayer = dynamic_cast<Player*>(vpGameObjects.back());
 	}
+}
+
+Camera* Scene_World::GetCamera()
+{
+	return pCurrentCamera ? pCurrentCamera : nullptr;
 }

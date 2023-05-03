@@ -40,6 +40,7 @@ public:
 	void EndDraw();
 
 	void ClearScreen(D2D1_COLOR_F colour = { 0,0,0,1 });
+	void ClearScreen(float r, float g, float b, float alpha = 1.f);
 
 	void DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity = 1.f, bool invertX = false, bool invertY = false);
 	void DrawBitmapRegion(D2D1_RECT_F rectf, unsigned int texture, D2D1_RECT_F region, FLOAT opacity = 1.f, bool invertX = false, bool invertY = false);

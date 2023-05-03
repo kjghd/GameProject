@@ -36,16 +36,13 @@ struct SceneMessage
 class Scene
 {
 protected:
-	bool show;
-	bool active;
-
-	Camera* pCurrentCamera;
-	Camera defaultCamera;
-	ScreenObject* pCursor;
+	bool isVisible;
+	bool canUpdate;
 
 	std::vector<GameObject*> vpSpawnQueue;
 	std::vector<size_t> vDestroyQueue;
 	std::vector<GameObject*> vpGameObjects;
+	ScreenObject* pCursor;
 
 	void Collision();
 
@@ -55,28 +52,28 @@ protected:
 	void DestroyObjects();
 
 public:
-	Scene(bool show);
+	Scene(bool visible);
 	Scene(const Scene& scene);
 	~Scene();
 
 	virtual void Initialise();
 
-	void Activate();
-	void Dectivate();
-	bool CheckActive();
+	virtual SceneMessage Update(float deltaTime);
 
-	Camera* GetCamera();
+	void Activate();
+	void Deactivate(bool visible = false);
+	bool CheckActive();
 
 	void QueueToSpawn(int prefab, game::float2 location = { 0,0 });
 	void QueueToSpawn(GameObject* pObject);
-
-	virtual SceneMessage Update(float deltaTime);
 
 	std::string Serialise();
 };
 
 class Scene_World : public Scene
 {
+protected:
+	Camera* pCurrentCamera;
 	int current_prefab;
 	Player* pPlayer;
 	GameObject* pCursorBox;
@@ -86,10 +83,12 @@ class Scene_World : public Scene
 public:
 	Scene_World(bool show);
 	Scene_World(const Scene_World& scene);
+
+	Camera* GetCamera();
+
 	virtual void Initialise() override;
+
 	virtual SceneMessage Update(float deltaTime) override;
-
-
 };
 
 class Scene_Menu : public Scene

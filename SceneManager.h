@@ -10,13 +10,23 @@ class ScreenObject;
 
 class SceneManager
 {
-	static std::vector<Scene*> prefabs;	// Will be replaced with files.
-	static std::vector<Scene*> store;	// Will be replaced with files.
-	std::vector<Scene*> stack;
+	Scene_World* pMainScene;
+	static std::vector<Scene*> pScenePrefabs;	// Will be replaced with files.
+	static std::vector<Scene*> pSceneStore;	// Will be replaced with files.
+	std::vector<Scene*> pSceneStack;
 	std::vector<Scene*> deleteQueue;
-	Scene* pActive;
+	Scene* pFocused;
 	Camera* pCamera;
+	Camera defaultCamera;
 	ScreenObject* pCursor;
+
+	void LoadScene(size_t index);
+	void NewScene(size_t index);
+	void SaveScene();
+	void PopScene();
+
+	void FocusWorld();
+	void FocusMenu();
 
 public:
 	SceneManager();
@@ -25,6 +35,9 @@ public:
 	void Initialise();
 
 	void Update(float deltaTime);
+
 	void SetActive(int index);
-	Scene* GetActive();
+	//Scene* GetActive();
+	Camera* GetCamera();
+
 };
