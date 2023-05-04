@@ -98,7 +98,7 @@ void SceneManager::LoadScene(size_t storeIndex)
 		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 	}
 	else
-		pSceneStack.push_back(pSceneStore.at(storeIndex));
+		pSceneStack.push_back(new Scene(*pSceneStore.at(storeIndex)));
 
 	pSceneStack.back()->Initialise();
 	pSceneStack.back()->Activate();
@@ -113,7 +113,7 @@ void SceneManager::NewScene(size_t prefabIndex)
 		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 	}
 	else
-		pSceneStack.push_back(pScenePrefabs.at(prefabIndex));
+		pSceneStack.push_back(new Scene(*pScenePrefabs.at(prefabIndex)));
 
 	pSceneStack.back()->Initialise();
 	pSceneStack.back()->Activate();

@@ -51,6 +51,11 @@ Scene::~Scene()
 		delete pGameObject;
 		pGameObject = nullptr;
 	}
+	for (auto& pGameObject : vpSpawnQueue)
+	{
+		delete pGameObject;
+		pGameObject = nullptr;
+	}
 }
 
 
