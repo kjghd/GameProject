@@ -22,6 +22,8 @@ public:
 	int GetRenderLayer();
 	game::rect GetSourceRect();
 	game::rect GetScreenRect();
+	game::rect GetRectPx();
+
 
 	bool InvertedX();
 	bool InvertedY();

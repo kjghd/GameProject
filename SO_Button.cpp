@@ -1,36 +1,39 @@
 #include "SO_Button.h"
 
+#include "Input.h"
+
 
 SO_Button::SO_Button(ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
 	:
-	ScreenObject(pImageData, layer, scale, offset, frameTime),
-	m_pInput(nullptr)
+	ScreenObject(pImageData, layer, scale, offset, frameTime)
 {
 }
 SO_Button::SO_Button(const SO_Button& button)
 	:
-	ScreenObject(button),
-	m_pInput(button.m_pInput)
+	ScreenObject(button)
 {
 }
 
 void SO_Button::Update(float deltaTime)
 {
-	if (m_pInput)
-	{
-		Hovered();
-	}
+	Hovered();
 	m_sprite.Update(deltaTime);
 }
 
 bool SO_Button::Hovered()
 {
 	game::float2 size{ m_sprite.GetSize() };
+	game::rect rc{ GetScreenRect() };
 
-	if (m_pInput->GetMouseLoc().x / px_per_su > m_location.x - size.x / 2.f &&
-		m_pInput->GetMouseLoc().y / px_per_su > m_location.y - size.y / 2.f &&
-		m_pInput->GetMouseLoc().x / px_per_su < m_location.x + size.x / 2.f &&
-		m_pInput->GetMouseLoc().y / px_per_su < m_location.y + size.y / 2.f)
+	game::float2 mouseLoc{
+		(Input::GetMouseLoc().x - screenRes.x) / px_per_su,
+		-((Input::GetMouseLoc().y - screenRes.y) / px_per_su)
+	};
+
+	if (mouseLoc.x > rc.l &&
+		mouseLoc.y > rc.b &&
+		mouseLoc.x < rc.r &&
+		mouseLoc.y < rc.t)
 	{
 		m_sprite.SetAnimation(1);
 		return true;
@@ -43,7 +46,7 @@ bool SO_Button::Hovered()
 }
 bool SO_Button::Pressed()
 {
-	if (Hovered() && m_pInput->CheckPressed(BTN_LMB))
+	if (Hovered() && Input::CheckPressed(BTN_LMB))
 	{
 		return true;
 	}
@@ -51,9 +54,4 @@ bool SO_Button::Pressed()
 	{
 		return false;
 	}
-}
-
-void SO_Button::SetInput(Input* input)
-{
-	m_pInput = input;
 }

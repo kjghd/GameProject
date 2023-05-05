@@ -58,11 +58,21 @@ game::rect ScreenObject::GetScreenRect()
 	game::float2 size{ m_sprite.GetSize() };
 
 	return{
-		(m_location.x - size.x / 2) * px_per_su,
-		(m_location.y - size.y / 2) * px_per_su,
-		(m_location.x + size.x / 2) * px_per_su,
-		(m_location.y + size.y / 2) * px_per_su
+		(m_location.x - size.x / 2), // * px_per_su,
+		(m_location.y - size.y / 2), // * px_per_su,
+		(m_location.x + size.x / 2), // * px_per_su,
+		(m_location.y + size.y / 2)  // * px_per_su
 	};
+}
+
+game::rect ScreenObject::GetRectPx()
+{
+	// Broken
+	game::float2 size{ m_sprite.GetSize() };
+
+	m_location.x = (screenRes.x / 2) / px_per_su;
+
+	return { 0,0,0,0 };
 }
 
 bool ScreenObject::InvertedX()
@@ -90,8 +100,8 @@ std::string ScreenObject::Serialise()
 	return str;
 }
 
-/* Preview */
 
+/* Preview */
 
 SO_Preview::SO_Preview(game::float2 size, ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
 	:

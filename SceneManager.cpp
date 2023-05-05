@@ -87,7 +87,6 @@ void SceneManager::Update(float deltaTime)
 		pCamera = pMainScene->GetCamera();
 	else
 		pCamera = &defaultCamera;
-
 }
 
 void SceneManager::LoadScene(size_t storeIndex)
@@ -100,9 +99,7 @@ void SceneManager::LoadScene(size_t storeIndex)
 	else
 		pSceneStack.push_back(new Scene(*pSceneStore.at(storeIndex)));
 
-	pSceneStack.back()->Initialise();
-	pSceneStack.back()->Activate();
-	pFocused = pSceneStack.back();
+	SetActive(pSceneStack.back());
 
 }
 void SceneManager::NewScene(size_t prefabIndex)
@@ -116,8 +113,7 @@ void SceneManager::NewScene(size_t prefabIndex)
 		pSceneStack.push_back(new Scene(*pScenePrefabs.at(prefabIndex)));
 
 	pSceneStack.back()->Initialise();
-	pSceneStack.back()->Activate();
-	pFocused = pSceneStack.back();
+	SetActive(pSceneStack.back());
 }
 void SceneManager::SaveScene()
 {
@@ -131,7 +127,7 @@ void SceneManager::PopScene()
 		pSceneStack.pop_back();
 
 		if (!pSceneStack.empty())
-			pFocused = pSceneStack.back();
+			SetActive(pSceneStack.back());
 		else
 			pFocused = nullptr;
 	}
@@ -139,16 +135,16 @@ void SceneManager::PopScene()
 
 void SceneManager::SetActive(int index)
 {
-	//for (auto& pScene : pMenuStack)
-	//	pScene->Deactivate();
-
+	if (pFocused) pFocused->Deactivate();
 	pSceneStack.at(index)->Activate();
 	pFocused = pSceneStack.at(index);
 }
-//Scene* SceneManager::GetActive()
-//{
-//	return pFocused;
-//}
+void SceneManager::SetActive(Scene* pScene)
+{
+	if (pFocused) pFocused->Deactivate();
+	pScene->Activate();
+	pFocused = pScene;
+}
 Camera* SceneManager::GetCamera()
 {
 	return pCamera;

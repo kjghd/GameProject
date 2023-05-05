@@ -37,7 +37,8 @@ public:
 	void Update(float deltaTime);
 
 	void SetActive(int index);
-	//Scene* GetActive();
+	void SetActive(Scene* pScene);
+
 	Camera* GetCamera();
 
 };
