@@ -7,22 +7,21 @@
 // Functions
 struct CollisionInfo
 {
-	game::Float2 vec;
+	game::float2 vec;
 	float overlap;
 	float length;
 };
 
 CollisionInfo BoxVsBox(Collider_Box* pA, Collider_Box* pB)
 {
-	float at = pA->origin.y + pA->size.y / 2;
-	float ab = pA->origin.y - pA->size.y / 2;
-	float al = pA->origin.x - pA->size.x / 2;
-	float ar = pA->origin.x + pA->size.x / 2;
-
-	float bt = pB->origin.y + pB->size.y / 2;
-	float bb = pB->origin.y - pB->size.y / 2;
-	float bl = pB->origin.x - pB->size.x / 2;
-	float br = pB->origin.x + pB->size.x / 2;
+	float at = pA->pOwner->m_location.y + pA->size.y / 2;
+	float ab = pA->pOwner->m_location.y - pA->size.y / 2;
+	float al = pA->pOwner->m_location.x - pA->size.x / 2;
+	float ar = pA->pOwner->m_location.x + pA->size.x / 2;
+	float bt = pB->pOwner->m_location.y + pB->size.y / 2;
+	float bb = pB->pOwner->m_location.y - pB->size.y / 2;
+	float bl = pB->pOwner->m_location.x - pB->size.x / 2;
+	float br = pB->pOwner->m_location.x + pB->size.x / 2;
 
 	// Overlap
 	float t = at - bb;
@@ -35,7 +34,7 @@ CollisionInfo BoxVsBox(Collider_Box* pA, Collider_Box* pB)
 	float shortest_x = l < r ? l : r;
 	float shortest = shortest_x < shortest_y ? shortest_x : shortest_y;
 
-	game::Float2 vec;
+	game::float2 vec;
 	if (t == shortest) vec = {  0,  1 };
 	if (b == shortest) vec = {  0, -1 };
 	if (l == shortest) vec = { -1,  0 };
@@ -46,7 +45,7 @@ CollisionInfo BoxVsBox(Collider_Box* pA, Collider_Box* pB)
 CollisionInfo CircleVsCircle(Collider_Circle* pA, Collider_Circle* pB)
 {
 	float total_radii = pA->radius + pB->radius;
-	game::Float2 vec{ pB->origin - pA->origin };
+	game::float2 vec{ pB->pOwner->m_location - pA->pOwner->m_location };
 	float distance = std::sqrtf(std::powf(vec.x, 2.f) + std::powf(vec.y, 2.f));
 	float overlap = total_radii - distance;
 
@@ -54,20 +53,20 @@ CollisionInfo CircleVsCircle(Collider_Circle* pA, Collider_Circle* pB)
 }
 CollisionInfo CircleVsBox(Collider_Circle* pCircle, Collider_Box* pBox, bool invert)
 {
-	game::Float2 clamped_point{
+	game::float2 clamped_point{
 		std::clamp<float>(
-			pCircle->origin.x,
-			pBox->origin.x - pBox->size.x / 2,
-			pBox->origin.x + pBox->size.x / 2
+			pCircle->pOwner->m_location.x,
+			pBox->pOwner->m_location.x - pBox->size.x / 2,
+			pBox->pOwner->m_location.x + pBox->size.x / 2
 		),
 		std::clamp<float>(
-			pCircle->origin.y,
-			pBox->origin.y - pBox->size.y / 2,
-			pBox->origin.y + pBox->size.y / 2
+			pCircle->pOwner->m_location.y,
+			pBox->pOwner->m_location.y - pBox->size.y / 2,
+			pBox->pOwner->m_location.y + pBox->size.y / 2
 		),
 	};
 
-	game::Float2 vec{ clamped_point - pCircle->origin };
+	game::float2 vec{ clamped_point - pCircle->pOwner->m_location };
 	float distance = std::sqrtf(std::powf(vec.x, 2.f) + std::powf(vec.y, 2.f));
 	float overlap = pCircle->radius - distance;
 
@@ -78,7 +77,7 @@ void DetermineCollision(Collider* pA, Collider* pB, CollisionInfo col_info)
 {
 	if (col_info.overlap >= 0)
 	{
-		pA->pCollisions.push_back(pB);
+		if (pA->trigger) pA->pCollisions.push_back(pB);
 		if (pA->block && pB->block && pA->dynamic)
 		{
 			if ((pA->moving && pB->moving) || (!pA->moving && !pB->moving) || (!pB->dynamic))
@@ -95,10 +94,9 @@ void DetermineCollision(Collider* pA, Collider* pB, CollisionInfo col_info)
 
 
 // Collider
-Collider::Collider(GameObject* pOwner, bool dynamic, bool block, bool trigger)
+Collider::Collider(WorldObject* pOwner, bool dynamic, bool block, bool trigger)
 	:
 	pOwner(pOwner),
-	origin(pOwner->m_location),
 	dynamic(dynamic),
 	block(block),
 	trigger(trigger),
@@ -115,21 +113,32 @@ void Collider::CheckCollision(Collider* pCollider)
 void Collider::Update()
 {
 	moving = false;
-	origin += moveBuffer;
+	pOwner->m_location += moveBuffer;
 	moveBuffer = { 0,0 };
 	pCollisions.clear();
 }
 
+std::string Collider::Serialise()
+{
+	std::string str;
+
+	//str += game::DataToString<bool>(dynamic);
+	//str += game::DataToString<bool>(block);
+	//str += game::DataToString<bool>(moving);
+	//str += game::DataToString<bool>(trigger);
+
+	return str;
+}
 
 
 // Collider Box
-Collider_Box::Collider_Box(GameObject* pOwner, game::Float2 sz, bool dyn, bool blck, bool trigger)
+Collider_Box::Collider_Box(WorldObject* pOwner, game::float2 sz, bool dyn, bool blck, bool trigger)
 	:
 	Collider(pOwner, dyn, blck, trigger),
 	size(sz)
 {
 }
-Collider_Box::Collider_Box(GameObject* pOwner, const Collider_Box& collider)
+Collider_Box::Collider_Box(WorldObject* pOwner, const Collider_Box& collider)
 	:
 	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	size(collider.size)
@@ -156,15 +165,25 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 	}
 };
 
+std::string Collider_Box::Serialise()
+{
+	std::string str;
+
+	//str += Collider::Serialise();
+	//str += game::DataToString<game::float2>(size);
+
+	return str;
+}
+
 
 // Collider Circle
-Collider_Circle::Collider_Circle(GameObject* pOwner, float radius, bool dynamic, bool block, bool trigger)
+Collider_Circle::Collider_Circle(WorldObject* pOwner, float radius, bool dynamic, bool block, bool trigger)
 	:
 	Collider(pOwner, dynamic, block, trigger),
 	radius(radius)
 {
 }
-Collider_Circle::Collider_Circle(GameObject* pOwner, const Collider_Circle& collider)
+Collider_Circle::Collider_Circle(WorldObject* pOwner, const Collider_Circle& collider)
 	:
 	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	radius(collider.radius)
@@ -190,3 +209,13 @@ void Collider_Circle::CheckCollision(Collider* pCollider)
 		DetermineCollision(this, pBox, collisionInfo);
 	}
 };
+
+std::string Collider_Circle::Serialise()
+{
+	std::string str;
+
+	//str += Collider::Serialise();
+	//str += game::DataToString<float>(radius);
+
+	return str;
+}

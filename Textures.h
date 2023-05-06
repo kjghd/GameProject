@@ -12,6 +12,8 @@ enum Textures
 	T_Guy,
 	T_Guy2,
 
+	T_Font,
+
 	T_Blue,
 	T_Green,
 	T_Red,
@@ -19,6 +21,16 @@ enum Textures
 	T_BallBlue,
 	T_BallGreen,
 	T_BallRed,
+
+	T_Floor,
+
+	T_UI_Cursor,
+	T_UI_CursorBlinking,
+	T_UI_Selection,
+	T_UI_Resume,
+	T_UI_MainMenu,
+	T_UI_BG,
+
 
 	T_COUNT
 };

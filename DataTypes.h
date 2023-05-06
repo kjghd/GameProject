@@ -1,57 +1,84 @@
 #pragma once
-
+#include <string>
+#include <fstream>
 
 namespace game
 {
-	struct Int2
+	struct int2
 	{
 		int x = 0, y = 0;
 	};
 
-	struct Float2
+	struct float2
 	{
 		float x = 0, y = 0;
 
-		Float2 operator *(float f)
+		float2 operator *(float f)
 		{
 			return { x * f, y * f };
 		}
-		
-		Float2 operator /(float f)
+
+		float2 operator /(float f)
 		{
 			return { x / f, y / f };
 		}
 		
-		Float2 operator +(float f)
+		float2 operator +(float f)
 		{
 			return { x + f, y + f };
 		}
-		Float2 operator +(Float2 ff)
+		float2 operator +(float2 ff)
 		{
 			return { x + ff.x, y + ff.y };
 		}
 		
-		Float2 operator -()
+		float2 operator -()
 		{
 			return { -x, -y };
 		}
-		Float2 operator -(Float2 ff)
-		{
-			return { x - ff.x, y - ff.y };
-		}
-		Float2 operator -(float f)
+		float2 operator -(float f)
 		{
 			return { x - f, y - f };
 		}
+		float2 operator -(float2 ff)
+		{
+			return { x - ff.x, y - ff.y };
+		}
 
-		bool operator ==(Float2 ff) { return x == ff.x && y == ff.y ? true : false; }
+		bool operator ==(float2 ff) { return x == ff.x && y == ff.y ? true : false; }
 
-		void operator +=(Float2 ff) { x += ff.x; y += ff.y; };
-		void operator -=(Float2 ff) { x -= ff.x; y -= ff.y; };
+		void operator +=(float2 ff) { x += ff.x; y += ff.y; };
+		void operator -=(float2 ff) { x -= ff.x; y -= ff.y; };
 	};
 
-	struct Rect
+	struct rect
 	{
 		float l, t, r, b;
 	};
+
+	//template<class T>
+	//std::string DataToString(T data)
+	//{
+	//	std::string str;
+	//	char bytes[sizeof(T)]{};
+	//
+	//	char* address{ (char*)&data };
+	//
+	//	for (size_t i{ 0 }; i < sizeof(T); ++i)
+	//	{
+	//		str.push_back(*(address + i));
+	//	}
+	//
+	//	return str;
+	//}
+	//
+	//template<class T>
+	//T GetBytes(std::ifstream& file)
+	//{
+	//	char buff[sizeof(T)]{};
+	//	file.read(buff, sizeof(T));
+	//
+	//	return (T)buff;
+	//}
+
 }

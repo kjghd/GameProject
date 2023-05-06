@@ -1,59 +1,59 @@
 #include "GameObject.h"
 
-
-GameObject::GameObject()
-	:
-	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, nullptr, 0))
-{
-}
-
-// Used in prefabs
+// Used to create prefabs.
 GameObject::GameObject(
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float sprite_frameTime
 )
 	:
 	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, sprite_pImageData, sprite_frameTime, sprite_layer, sprite_scale, sprite_offset))
+	m_sprite(this, sprite_pImageData, sprite_frameTime, sprite_layer, sprite_scale, sprite_offset)
 {
 }
 
-// Used in scene
+// Used when spawing from a prefab in a scene.
 GameObject::GameObject(const GameObject& gameObject)
 	:
-	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, gameObject.m_sprite))
+	m_location(gameObject.m_location),
+	m_sprite(this, gameObject.m_sprite)
 {
 }
 
-// Used by derived classes
+// Used by derived classes.
 GameObject::GameObject(const Sprite& sprite)
 	:
 	m_location{ 0,0 },
-	m_sprite(Sprite(&m_location, sprite))
+	m_sprite(this, sprite)
 {
 }
+
+//GameObject::GameObject(std::ifstream& file)
+//	:
+//	m_location{(float)file.get(), (float)file.get()}
+//{
+//
+//}
 
 void GameObject::Update(float deltaTime)
 {
 	m_sprite.Update(deltaTime);
 }
 
-bool GameObject::CompareRenderOrder_Under(GameObject* gameObjectA, GameObject* gameObjectB)
+void GameObject::Update_SpriteOnly()
 {
-	return gameObjectA->m_sprite.GetRenderLayer() > gameObjectB->m_sprite.GetRenderLayer();
+	m_sprite.Pause();
+	m_sprite.Update(0);
 }
 
-bool GameObject::CompareRenderOrder_Above(GameObject* gameObjectA, GameObject* gameObjectB)
+std::string GameObject::Serialise()
 {
-	return gameObjectA->m_location.y > gameObjectB->m_location.y;
-}
-
-bool GameObject::CompareRenderOrder_RowAndLeftOf(GameObject* gameObjectA, GameObject* gameObjectB)
-{
-	return gameObjectA->m_location.y == gameObjectB->m_location.y && gameObjectA->m_location.x < gameObjectB->m_location.x;
+	std::string str;
+	
+	//str += game::DataToString<game::float2>(m_location);
+	//str += m_sprite.Serialise();
+	
+	return str;
 }

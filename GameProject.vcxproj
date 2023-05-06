@@ -152,6 +152,11 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ImageDataList.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SO_Button.cpp" />
+    <ClCompile Include="SO_TextBox.cpp" />
+    <ClCompile Include="WorldObject.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImageData.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -162,6 +167,7 @@
     <ClCompile Include="Prefabs.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="ScreenObject.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -172,6 +178,11 @@
     <ClInclude Include="Collider.h" />
     <ClInclude Include="DataTypes.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ImageDataList.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SO_Button.h" />
+    <ClInclude Include="SO_TextBox.h" />
+    <ClInclude Include="WorldObject.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ImageData.h" />
     <ClInclude Include="Input.h" />
@@ -182,6 +193,7 @@
     <ClInclude Include="PrefabTags.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScreenObject.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="Box.h" />

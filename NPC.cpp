@@ -6,8 +6,8 @@ NPC::NPC(float damage,
 	float speed,
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float collider_radius,
 	bool collider_dynamic,
 	bool collider_block,
@@ -33,6 +33,7 @@ NPC::NPC(float damage,
 	wanderCooldown(0),
 	wanderTime(0)
 {
+	m_collider.trigger = true;
 }
 
 NPC::NPC(const NPC& npc)
@@ -57,6 +58,7 @@ void NPC::Update(float deltaTime)
 				Character* pCharacter{ dynamic_cast<Character*>(pViewTarget->pOwner) };
 				if (!dynamic_cast<NPC*>(pViewTarget->pOwner) && pCharacter->m_health > 0)
 				{
+					m_lookDirection = pCharacter->m_location - m_location;
 					Move(pCharacter->m_location - m_location);
 					targeting = true;
 					wanderTime = 0;
@@ -81,14 +83,13 @@ void NPC::Update(float deltaTime)
 
 		ApplyMovement(deltaTime);
 	}
-	else if (m_sprite.GetCurrentAnimation() != 2)
-		m_sprite.SetAnimation(2);
+	else if (m_sprite.GetCurrentAnimation() != 3)
+		m_sprite.SetAnimation(3);
 
 	m_sprite.Update(deltaTime);
 	m_collider.Update();
 	m_viewRange.Update();
 }
-
 
 void NPC::Wander(float deltaTime)
 {
@@ -104,6 +105,9 @@ void NPC::Wander(float deltaTime)
 
 			wanderDirection = { x, y };
 
+			m_lookDirection = { x, y };
+
+
 			wanderTime = 10000 * (x >= 0 ? x : -x);
 			wanderCooldown = 10000 * (y >= 0 ? y : -y);
 		}
@@ -114,4 +118,16 @@ void NPC::Wander(float deltaTime)
 		wanderTime -= deltaTime;
 	}
 
+}
+
+std::string NPC::Serialise()
+{
+	std::string str;
+
+	//str += Character::Serialise();
+	//str += game::DataToString<game::float2>(wanderDirection);
+	//str += game::DataToString<float>(wanderCooldown);
+	//str += game::DataToString<float>(wanderTime);
+	
+	return str;
 }

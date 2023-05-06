@@ -26,34 +26,37 @@ enum Buttons
 	BTN_LMB,
 	BTN_RMB,
 
+	BTN_SHIFT,
+
+	BTN_TAB,
+	BTN_ESC,
+
 	BTN_COUNT,
 };
 
+struct Button;
+
 class Input
 {
-	struct Button
-	{
-		bool on = false;
-		bool moved = false;
-	};
+	static Button buttons[BTN_COUNT];
+	static D2D1_POINT_2F mouseLoc;
+	static float scrollDistance;
 
-	Button buttons[BTN_COUNT];
-
-	D2D1_POINT_2F mouseLoc;
-
-public:
 	Input();
 
-	void ResetMoved();
+public:
+	static void ResetMoved();
 
-	void SetMouseLoc(D2D1_POINT_2F location);
-	D2D1_POINT_2F GetMouseLoc();
+	static void SetMouseLoc(D2D1_POINT_2F location);
+	static D2D1_POINT_2F GetMouseLoc();
+	static void SetScrollDistance(float distance);
+	static float GetScrollDistance();
 
-	void SetOn(size_t button);
-	void SetOff(size_t button);
+	static void SetOn(size_t button);
+	static void SetOff(size_t button);
 
-	bool CheckPressed(size_t button);
-	bool CheckHeld(size_t button);
-	bool CheckReleased(size_t button);
+	static bool CheckPressed(size_t button);
+	static bool CheckHeld(size_t button);
+	static bool CheckReleased(size_t button);
 };
 

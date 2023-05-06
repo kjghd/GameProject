@@ -1,14 +1,15 @@
 #pragma once
 
 #include "DataTypes.h"
-#include "GameObject.h"
+#include "WorldObject.h"
 #include <vector>
+#include <string>
+
 
 class Collider
 {
 public:
-	GameObject* pOwner;
-	game::Float2& origin;
+	WorldObject* pOwner;
 	bool dynamic;
 	bool block;
 	bool moving;
@@ -16,53 +17,38 @@ public:
 
 	std::vector<Collider*> pCollisions;
 
-	game::Float2 moveBuffer;
+	game::float2 moveBuffer;
 
-	Collider(GameObject* pOwner, bool dynamic = true, bool block = true, bool trigger = false);
+
+	Collider(WorldObject* pOwner, bool dynamic = true, bool block = true, bool trigger = false);
 
 	void Update();
 
 	virtual void CheckCollision(Collider* pCollider);
+
+	virtual std::string Serialise();
 };
 class Collider_Box : public Collider
 {
 public:
-	game::Float2 size;
+	game::float2 size;
 
-	Collider_Box(GameObject* pOwner, game::Float2 size = { 1,1 }, bool dynamic = true, bool block = true, bool trigger = false);
-	Collider_Box(GameObject* pOwner, const Collider_Box& collider);
+	Collider_Box(WorldObject* pOwner, game::float2 size = { 1,1 }, bool dynamic = true, bool block = true, bool trigger = false);
+	Collider_Box(WorldObject* pOwner, const Collider_Box& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;
 
-	Collider_Box& operator =(const Collider_Box& collider)
-	{
-		pOwner = collider.pOwner;
-		origin = collider.origin;
-		dynamic = collider.dynamic;
-		block = collider.block;
-		trigger = collider.trigger;
-		size = collider.size;
-		return *this;
-	}
+	virtual std::string Serialise() override;
 };
 class Collider_Circle : public Collider
 {
 public:
 	float radius;
 
-	Collider_Circle(GameObject* pOwner, float radius = 1.f, bool dynamic = true, bool block = true, bool trigger = false);
-	Collider_Circle(GameObject* pOwner, const Collider_Circle& collider);
+	Collider_Circle(WorldObject* pOwner, float radius = 1.f, bool dynamic = true, bool block = true, bool trigger = false);
+	Collider_Circle(WorldObject* pOwner, const Collider_Circle& collider);
 
 	virtual void CheckCollision(Collider* pCollider) override;
 
-	Collider_Circle& operator =(const Collider_Circle& collider)
-	{
-		pOwner = collider.pOwner;
-		origin = collider.origin;
-		dynamic = collider.dynamic;
-		block = collider.block;
-		trigger = collider.trigger;
-		radius = collider.radius;
-		return *this;
-	}
+	virtual std::string Serialise() override;
 };
