@@ -1,24 +1,25 @@
 #include "Renderer.h"
-#include "Prefabs.h"
 
-#include "Box.h"
-#include "Ball.h"
+#include "WorldObject.h"
+#include "ScreenObject.h"
+#include "Sprite.h"
+#include "Camera.h"
 
 #include <algorithm>
+
 
 Renderer::Renderer()
 	:
 	m_pGraphics(nullptr),
-	m_pScene(nullptr),
-	m_pCamera(nullptr),
+	m_pSceneController(nullptr),
 	m_debug(false)
 {
 }
 
-void Renderer::Init(Graphics* pGraphics, Scene* pScene)
+void Renderer::Init(Graphics* pGraphics, SceneManager* pSceneController)
 {
-	m_pScene = pScene;
 	m_pGraphics = pGraphics;
+	m_pSceneController = pSceneController;
 }
 
 void Renderer::Render()
@@ -26,189 +27,152 @@ void Renderer::Render()
 	m_pGraphics->BeginDraw();
 	m_pGraphics->ClearScreen();
 
-	m_pCamera = &m_pScene->GetCamera();
-	
-
-	/* World Objects */
-
-	// Sort for rendering.
-	std::vector<WorldObject*> vpUnsorted{ m_pScene->vpGameObjects };
-	std::vector<WorldObject*> vpSorted;
-	while (!vpUnsorted.empty())
+	if (m_pSceneController->GetCamera())
 	{
-		// Find lowest sprite.
-		WorldObject* pLowestFound{ nullptr };
-		for (auto& pGameObject : vpUnsorted)
+		Camera* pCamera{ m_pSceneController->GetCamera() };
+
+		/* sorting */
+		std::vector<Sprite*> vpUnsorted{ Sprite::vpSpritesToRender };
+
+		// Screen sorting.
+		std::vector<Sprite*> vpSOSorted;
+
+		bool worldOnly{ false };
+		while (!worldOnly)
 		{
-			if (!pLowestFound)
-				pLowestFound = pGameObject;
-
-			else if (pGameObject != pLowestFound)
+			int position{ 0 };
+			bool found{ false };
+			for (auto& pSprite : vpUnsorted)
 			{
-				if (WorldObject::CompareRenderOrder_Under(pGameObject, pLowestFound))
-					pLowestFound = pGameObject;
-
-				else if (WorldObject::CompareRenderOrder_Above(pGameObject, pLowestFound))
-					pLowestFound = pGameObject;
-
-				else if (WorldObject::CompareRenderOrder_RowAndLeftOf(pGameObject, pLowestFound))
-					pLowestFound = pGameObject;
-			}
-		}
-
-		// Update Lists.
-		if (pLowestFound)
-		{
-			// Remove from unsorted.
-			int i{ 0 };
-			for (auto& pGameObject : vpUnsorted)
-			{
-				if (pGameObject == pLowestFound)
+				if (dynamic_cast<ScreenObject*>(pSprite->GetOwner()))
 				{
-					vpUnsorted.erase(vpUnsorted.begin() + i);
+					found = true;
+					vpSOSorted.push_back(pSprite);
+					vpUnsorted.erase(vpUnsorted.begin() + position);
 					break;
 				}
-
-				++i;
+				++position;
 			}
 
-			// Add to sorted.
-			vpSorted.push_back(pLowestFound);
+			if (!found) worldOnly = true;
 		}
-	}
 
-	// Render
-	for (size_t i = SL_COUNT; i > 0 ; --i)
-		for (auto& pGameObject : vpSorted)
-			if (pGameObject->m_sprite.GetRenderLayer() == i)
-			{
-				game::Rect rect{
-					m_pCamera->WorldTransformToScreenRect(
-					pGameObject->m_sprite.GetLocation(),
-					pGameObject->m_sprite.GetSize()
-					)
-				};
+		std::sort(vpSOSorted.begin(), vpSOSorted.end(), Sprite::CompareLayer);
 
-				game::Rect region{ pGameObject->m_sprite.GetSourceRect() };
-
-				m_pGraphics->DrawBitmapRegion(
-					D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
-					pGameObject->m_sprite.GetBitmapIndex(),
-					D2D1::RectF(region.l, region.t, region.r, region.b),
-					1,
-					pGameObject->m_sprite.CheckInvertedX(),
-					pGameObject->m_sprite.CheckInvertedY()
-				);
-			}
-
-	// Collision Debug
-	if (m_debug)
-	{
-		for (auto& pGameObject : vpSorted)
+		// World sorting.
+		std::vector<Sprite*> vpWOSorted;
+		while (!vpUnsorted.empty())
 		{
-			if (dynamic_cast<Box*>(pGameObject))
+			// Find lowest sprite.
+			Sprite* pLowestFound{ nullptr };
+			for (auto& pSprite : vpUnsorted)
 			{
-				Box* pTile{ dynamic_cast<Box*>(pGameObject) };
+				if (!pLowestFound)
+					pLowestFound = pSprite;
 
-				game::Float2 topRight{
-					m_pCamera->WorldLocToScreenLoc(
-						pTile->m_location.x + pTile->m_collider.size.x / 2,
-						pTile->m_location.y + pTile->m_collider.size.y / 2
-					)
-				};
-				game::Float2 bottomLeft{
-					m_pCamera->WorldLocToScreenLoc(
-						pTile->m_location.x - pTile->m_collider.size.x / 2,
-						pTile->m_location.y - pTile->m_collider.size.y / 2
-					)
-				};
-
-				m_pGraphics->DebugBox(D2D1::RectF(bottomLeft.x, topRight.y, topRight.x, bottomLeft.y));
-			}
-			else if (dynamic_cast<Ball*>(pGameObject))
-			{
-				Ball* pBall{ dynamic_cast<Ball*>(pGameObject) };
-
-				game::Float2 loc_collider{ m_pCamera->WorldLocToScreenLoc(pBall->m_collider.origin.x, pBall->m_collider.origin.y) };
-				float radius_collider{ m_pCamera->WU_to_SU(pBall->m_collider.radius) };
-
-				m_pGraphics->DebugCircle(D2D1::Point2F(loc_collider.x, loc_collider.y), radius_collider);
-
-				if (dynamic_cast<Character*>(pGameObject))
+				else if (pSprite != pLowestFound)
 				{
-					Character* pCharacter{ dynamic_cast<Character*>(pGameObject) };
+					if (Sprite::CompareAbove(pSprite, pLowestFound))
+						pLowestFound = pSprite;
 
-					game::Float2 loc_view{ m_pCamera->WorldLocToScreenLoc(pCharacter->m_viewRange.origin.x, pCharacter->m_viewRange.origin.y) };
-					float radius_view{ m_pCamera->WU_to_SU(pCharacter->m_viewRange.radius) };
-
-					m_pGraphics->DebugCircle(D2D1::Point2F(loc_view.x, loc_view.y), radius_view);
+					else if (Sprite::CompareRowAndLeftOf(pSprite, pLowestFound))
+						pLowestFound = pSprite;
 				}
 			}
+
+			// Update Lists.
+			if (pLowestFound)
+			{
+				// Remove from unsorted.
+				int i{ 0 };
+				for (auto& pSprite : vpUnsorted)
+				{
+					if (pSprite == pLowestFound)
+					{
+						vpUnsorted.erase(vpUnsorted.begin() + i);
+						break;
+					}
+
+					++i;
+				}
+
+				// Add to sorted.
+				vpWOSorted.push_back(pLowestFound);
+			}
 		}
 
+
+		/* World Objects */
+		for (size_t i = SL_COUNT; i > 0; --i)
+			for (auto& pSprite : vpWOSorted)
+				if (pSprite->GetRenderLayer() == i)
+				{
+					game::rect rect{
+						pCamera->WorldTransformToScreenRect(
+							pSprite->GetLocation(),
+							pSprite->GetSize()
+						)
+					};
+
+					game::rect region{ pSprite->GetSourceRect() };
+
+					float opacity{ 1.f };
+
+					m_pGraphics->DrawBitmapRegion(
+						D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+						pSprite->GetBitmapIndex(),
+						D2D1::RectF(region.l, region.t, region.r, region.b),
+						opacity,
+						pSprite->CheckInvertedX(),
+						pSprite->CheckInvertedY()
+					);
+
+					if (m_debug)
+					{
+						m_pGraphics->DebugBox(D2D1::RectF(rect.l, rect.t, rect.r, rect.b));
+					}
+				}
+
+
+		/* User Interface */
+
+		for (auto& pSprite : vpSOSorted)
+		{
+			game::float2 location{ pSprite->GetLocation() };
+			game::float2 locationPx{
+				location.x * ScreenObject::px_per_su + ScreenObject::screenRes.x / 2.f,
+				-location.y * ScreenObject::px_per_su + ScreenObject::screenRes.y / 2.f
+			};
+			game::float2 size{ pSprite->GetSize() };
+			game::float2 sizePx{ size.x * ScreenObject::px_per_su, size.y * ScreenObject::px_per_su };
+
+			game::rect rect{
+				locationPx.x - sizePx.x / 2.f,
+				locationPx.y - sizePx.y / 2.f,
+				locationPx.x + sizePx.x / 2.f,
+				locationPx.y + sizePx.y / 2.f
+			};
+			game::rect sourceRect{ pSprite->GetSourceRect() };
+
+			m_pGraphics->DrawBitmapRegion(
+				D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+				pSprite->GetBitmapIndex(),
+				D2D1::RectF(sourceRect.l, sourceRect.t, sourceRect.r, sourceRect.b),
+				1,
+				pSprite->CheckInvertedX(),
+				pSprite->CheckInvertedY()
+			);
+
+			if (m_debug)
+			{
+				m_pGraphics->DebugBox(D2D1::RectF(rect.l, rect.t, rect.r, rect.b));
+			}
+		}
 	}
+	else
+		m_pGraphics->ClearScreen(1.f, 0, 0);
 
-
-	/* User Interface */
-
-	if (m_pScene->state == SState_Pause)
-	{
-		game::Rect bg_source{ m_pScene->ui_background->GetSourceRect() };
-		game::Rect bg_screen{ m_pScene->ui_background->GetScreenRect() };
-
-		m_pGraphics->DrawBitmapRegion(
-			{ bg_screen.l, bg_screen.t, bg_screen.r, bg_screen.b },
-			m_pScene->ui_background->GetBitmapIndex(),
-			{ bg_source.l, bg_source.t, bg_source.r, bg_source.b }
-		);
-
-		game::Rect resume_source{ m_pScene->button_resume->GetSourceRect() };
-		game::Rect resume_screen{ m_pScene->button_resume->GetScreenRect() };
-
-		m_pGraphics->DrawBitmapRegion(
-			{ resume_screen.l, resume_screen.t, resume_screen.r, resume_screen.b },
-			m_pScene->button_resume->GetBitmapIndex(),
-			{resume_source.l, resume_source.t, resume_source.r, resume_source.b}
-		);
-
-		game::Rect mainMenu_source{ m_pScene->button_mainMenu->GetSourceRect() };
-		game::Rect mainMenu_screen{ m_pScene->button_mainMenu->GetScreenRect() };
-
-		m_pGraphics->DrawBitmapRegion(
-			{ mainMenu_screen.l, mainMenu_screen.t, mainMenu_screen.r, mainMenu_screen.b },
-			m_pScene->button_mainMenu->GetBitmapIndex(),
-			{ mainMenu_source.l, mainMenu_source.t, mainMenu_source.r, mainMenu_source.b }
-		);
-	}
-	else if (m_pScene->state == SState_Run)
-	{
-		// Block preview
-		game::Rect region{ m_pScene->prefabs.GetWorldObject(m_pScene->current_prefab)->m_sprite.GetSourceRect() };
-
-		m_pGraphics->DrawBitmapRegion(
-			D2D1::RectF(0, 0, 60, 60),
-			m_pScene->prefabs.GetWorldObject(m_pScene->current_prefab)->m_sprite.GetBitmapIndex(),
-			D2D1::RectF(region.l, region.t, region.r, region.b)
-		);
-
-		// Cursor
-		game::Float2 loc{
-		m_pCamera->ScreenLocToWorldLoc(
-				m_pScene->GetInput().GetMouseLoc().x,
-				m_pScene->GetInput().GetMouseLoc().y
-			)
-		};
-		game::Float2 locRounded{ roundf(loc.x), roundf(loc.y) };
-
-		game::Float2 locScreen{
-		m_pCamera->WorldLocToScreenLoc(
-				locRounded.x,
-				locRounded.y
-			)
-		};
-
-		m_pGraphics->DebugCircle({ locScreen.x, locScreen.y }, m_pCamera->WU_to_SU(.5f));
-	}
+	Sprite::vpSpritesToRender.clear();
 
 	m_pGraphics->EndDraw();
 

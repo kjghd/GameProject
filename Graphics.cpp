@@ -48,6 +48,9 @@ void Graphics::Init(HWND hWnd)
 
 	LoadImageFromFile(L"Data/Textures/shopping_floor.png", T_Floor);
 
+	LoadImageFromFile(L"Data/Textures/Cursor.png", T_UI_Cursor);
+	LoadImageFromFile(L"Data/Textures/CursorBlinking.png", T_UI_CursorBlinking);
+	LoadImageFromFile(L"Data/Textures/TileSelection.png", T_UI_Selection);
 	LoadImageFromFile(L"Data/Textures/Resume.png", T_UI_Resume);
 	LoadImageFromFile(L"Data/Textures/MainMenu.png", T_UI_MainMenu);
 	LoadImageFromFile(L"Data/Textures/BG.png", T_UI_BG);
@@ -102,6 +105,10 @@ void Graphics::EndDraw()
 void Graphics::ClearScreen(D2D1_COLOR_F colour)
 {
 	pRenderTarget->Clear(colour);
+}
+void Graphics::ClearScreen(float r, float g, float b, float alpha)
+{
+	pRenderTarget->Clear(D2D1::ColorF(r,g,b,alpha));
 }
 
 void Graphics::DrawBitmap(D2D1_RECT_F rectf, unsigned int texture, FLOAT opacity, bool invertX, bool invertY)

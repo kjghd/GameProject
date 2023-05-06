@@ -6,8 +6,8 @@ NPC::NPC(float damage,
 	float speed,
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float collider_radius,
 	bool collider_dynamic,
 	bool collider_block,
@@ -91,7 +91,6 @@ void NPC::Update(float deltaTime)
 	m_viewRange.Update();
 }
 
-
 void NPC::Wander(float deltaTime)
 {
 	if (wanderTime <= 0)
@@ -119,4 +118,16 @@ void NPC::Wander(float deltaTime)
 		wanderTime -= deltaTime;
 	}
 
+}
+
+std::string NPC::Serialise()
+{
+	std::string str;
+
+	//str += Character::Serialise();
+	//str += game::DataToString<game::float2>(wanderDirection);
+	//str += game::DataToString<float>(wanderCooldown);
+	//str += game::DataToString<float>(wanderTime);
+	
+	return str;
 }

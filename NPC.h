@@ -3,7 +3,7 @@
 
 class NPC : public Character
 {
-	game::Float2 wanderDirection;
+	game::float2 wanderDirection;
 	float wanderCooldown;
 	float wanderTime;
 
@@ -16,8 +16,8 @@ public:
 		float speed,
 		ImageData* sprite_pImageData,
 		int sprite_layer,
-		game::Float2 sprite_scale,
-		game::Float2 sprite_offset,
+		game::float2 sprite_scale,
+		game::float2 sprite_offset,
 		float collider_radius,
 		bool collider_dynamic,
 		bool collider_block,
@@ -31,5 +31,5 @@ public:
 
 	void Wander(float deltaTime);
 
+	virtual std::string Serialise() override;
 };
-

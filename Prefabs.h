@@ -1,29 +1,17 @@
 #pragma once
 
-#include "WorldObject.h"
-#include "ScreenObject.h"
-#include "ImageData.h"
+#include "GameObject.h"
 #include "PrefabTags.h"
-#include "Textures.h"
 
 #include <vector>
 
 
 class PrefabList
 {
-	void InitImageData();
-	void InitGameObjects();
-	void InitScreenObjects();
-
-	ImageData imageDatas[T_COUNT];
-	WorldObject* prefabsWorld[PREFAB_W_COUNT];
-	ScreenObject* prefabsScreen[PREFAB_S_COUNT];
+	static GameObject* prefabs[PREFAB_COUNT];
 
 public:
-	PrefabList();
-
+	static void Initialise();
 	~PrefabList();
-
-	WorldObject* GetWorldObject(int prefabTag);
-	ScreenObject* GetScreenObject(int prefabTag);
+	static GameObject* Get(int prefabTag);
 };

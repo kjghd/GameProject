@@ -1,18 +1,11 @@
 #include "Ball.h"
 
 
-Ball::Ball()
-	:
-	WorldObject(),
-	m_collider(this)
-{
-}
-
 Ball::Ball(
 	ImageData* sprite_pImageData,
 	int sprite_layer,
-	game::Float2 sprite_scale,
-	game::Float2 sprite_offset,
+	game::float2 sprite_scale,
+	game::float2 sprite_offset,
 	float collider_radius,
 	bool collider_dynamic,
 	bool collider_block,
@@ -42,4 +35,14 @@ void Ball::Update(float deltaTime)
 {
 	m_collider.Update();
 	m_sprite.Update(deltaTime);
+}
+
+std::string Ball::Serialise()
+{
+	std::string str;
+   //
+	//str += WorldObject::Serialise();
+	//str += m_collider.Serialise();
+   //
+	return str;
 }

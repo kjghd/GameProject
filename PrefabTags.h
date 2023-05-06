@@ -1,32 +1,23 @@
 #pragma once
 
-enum PrefabTag_World
+enum PrefabTag
 {
-	PREFAB_W_Player,
-	PREFAB_W_NPC,
+	PREFAB_Player,
+	PREFAB_NPC,
+	PREFAB_Floor_ConcreteA,
+	PREFAB_Floor_ConcreteB,
+	PREFAB_Floor_ConcreteC,
+	PREFAB_Floor_ConcreteD,
+	PREFAB_Floor_TileA,
+	PREFAB_Floor_TileB,
+	PREFAB_Floor_TileC,
+	PREFAB_Floor_TileD,
+	PREFAB_Mushroom,
+	PREFAB_Cursor,
+	PREFAB_Selection,
+	PREFAB_Resume,
+	PREFAB_MainMenu,
+	PREFAB_Background,
 
-	PREFAB_W_Block_Dynamic,
-	PREFAB_W_Block_Wall,
-	PREFAB_W_Block_Floor,
-
-	PREFAB_W_BallStatic,
-	PREFAB_W_BallDynamic,
-
-	PREFAB_W_Floor,
-
-	PREFAB_W_Mushroom,
-
-	PREFAB_W_Animation,
-
-
-	PREFAB_W_COUNT
-};
-
-enum PrefabTag_Screen
-{
-	PREFAB_S_Resume,
-	PREFAB_S_MainMenu,
-	PREFAB_S_Background,
-
-	PREFAB_S_COUNT
+	PREFAB_COUNT
 };

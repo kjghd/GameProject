@@ -1,102 +1,163 @@
 #include "ScreenObject.h"
 
 
-game::Float2 ScreenObject::screenRes = { 1280,720 };
-float ScreenObject::px_per_su = 64.f;
+game::float2 ScreenObject::screenRes;
+float ScreenObject::px_per_su;
 
-ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::Float2 scale, game::Float2 offset, float frameTime)
+ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
 	:
-	location{ 0,0 },
-	sprite(&location, pImageData, frameTime, layer, scale, offset),
-	pInput(nullptr)
+	GameObject(pImageData, layer, scale, offset, frameTime)
 {
 }
 ScreenObject::ScreenObject(const ScreenObject& screenObject)
 	:
-	location(screenObject.location),
-	sprite(&location, screenObject.sprite),
-	pInput(screenObject.pInput)
+	GameObject(screenObject)
+{
+}
+ScreenObject::ScreenObject(const Sprite& sprite)
+	:
+	GameObject(sprite)
 {
 }
 
 void ScreenObject::Update(float deltaTime)
 {
-	if (pInput)
-	{
-		Hovered();
-	}
-	sprite.Update(deltaTime);
+	m_sprite.Update(deltaTime);
 }
 
-bool ScreenObject::Hovered()
+void ScreenObject::SetLocaion_px(game::float2 pixels)
 {
-	game::Float2 size{ sprite.GetSize() };
-
-	if (pInput->GetMouseLoc().x / px_per_su > location.x - size.x / 2.f &&
-		pInput->GetMouseLoc().y / px_per_su > location.y - size.y / 2.f &&
-		pInput->GetMouseLoc().x / px_per_su < location.x + size.x / 2.f &&
-		pInput->GetMouseLoc().y / px_per_su < location.y + size.y / 2.f)
-	{
-		sprite.SetAnimation(1);
-		return true;
-	}
-	else
-	{
-		sprite.SetAnimation(0);
-		return false;
-	}
+	m_location.x = (pixels.x - screenRes.x / 2) / px_per_su;
+	m_location.y = -(pixels.y - screenRes.y / 2) / px_per_su;
 }
-bool ScreenObject::Pressed()
+void ScreenObject::SetLocaion_su(game::float2 screenUnits)
 {
-	if (Hovered() && pInput->CheckPressed(BTN_LMB))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	m_location = screenUnits;
 }
-
-void ScreenObject::SetInput(Input* input)
+void ScreenObject::SetLocation_percentage(game::float2 percentage)
 {
-	pInput = input;
-}
-void ScreenObject::SetLocaion_px(game::Float2 pixels)
-{
-	location.x = pixels.x / px_per_su;
-	location.y = pixels.y / px_per_su;
-}
-void ScreenObject::SetLocaion_su(game::Float2 screenUnits)
-{
-	location = screenUnits;
-}
-void ScreenObject::SetLocation_percentage(game::Float2 percentage)
-{
-	location.x = screenRes.x * percentage.x / px_per_su;
-	location.y = screenRes.y * percentage.y / px_per_su;
+	// Broken
+	m_location.x = screenRes.x * percentage.x / px_per_su ;
+	m_location.y = screenRes.y * percentage.y / px_per_su ;
 }
 
 int ScreenObject::GetBitmapIndex()
 {
-	return sprite.GetBitmapIndex();
+	return m_sprite.GetBitmapIndex();
 }
 int ScreenObject::GetRenderLayer()
 {
-	return sprite.GetRenderLayer();
+	return m_sprite.GetRenderLayer();
 }
-game::Rect ScreenObject::GetSourceRect()
+game::rect ScreenObject::GetSourceRect()
 {
-	return sprite.GetSourceRect();
+	return m_sprite.GetSourceRect();
 }
-game::Rect ScreenObject::GetScreenRect()
+game::rect ScreenObject::GetScreenRect()
 {
-	game::Float2 size{ sprite.GetSize() };
+	game::float2 size{ m_sprite.GetSize() };
 
 	return{
-		(location.x - size.x / 2) * px_per_su,
-		(location.y - size.y / 2) * px_per_su,
-		(location.x + size.x / 2) * px_per_su,
-		(location.y + size.y / 2) * px_per_su
+		(m_location.x - size.x / 2),
+		(m_location.y + size.y / 2),
+		(m_location.x + size.x / 2),
+		(m_location.y - size.y / 2) 
 	};
+}
+
+game::rect ScreenObject::GetRectPx()
+{
+	// Broken
+	game::float2 size{ m_sprite.GetSize() };
+
+	m_location.x = (screenRes.x / 2) / px_per_su;
+
+	return { 0,0,0,0 };
+}
+
+bool ScreenObject::InvertedX()
+{
+	return m_sprite.CheckInvertedX();
+}
+bool ScreenObject::InvertedY()
+{
+	return m_sprite.CheckInvertedY();
+}
+
+bool ScreenObject::CompareRenderOrder_Under(ScreenObject* screenObjectA, ScreenObject* screenObjectB)
+{
+	return screenObjectA->GetRenderLayer() > screenObjectB->GetRenderLayer();
+}
+
+std::string ScreenObject::Serialise()
+{
+	std::string str;
+
+	//str += GameObject::Serialise();
+	//str += game::DataToString<game::float2>(screenRes);
+	//str += game::DataToString<float>(px_per_su);
+
+	return str;
+}
+
+
+/* Preview */
+
+SO_Preview::SO_Preview(game::float2 size, ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
+	:
+	ScreenObject(pImageData, layer, scale, offset, frameTime),
+	pPreviewed(nullptr),
+	previewSize(size)
+{
+}
+SO_Preview::SO_Preview(const SO_Preview& box)
+	:
+	ScreenObject(box),
+	pPreviewed(new Sprite(*box.pPreviewed)),
+	previewSize(box.previewSize)
+{
+}
+SO_Preview::SO_Preview(const Sprite& sprite, game::float2 size)
+	:
+	ScreenObject(sprite),
+	pPreviewed(nullptr),
+	previewSize(size)
+{
+}
+SO_Preview::~SO_Preview()
+{
+	delete pPreviewed;
+	pPreviewed = nullptr;
+}
+
+void SO_Preview::Update(float deltaTime)
+{
+	m_sprite.Update(deltaTime);
+	pPreviewed->Update(deltaTime);
+}
+
+void SO_Preview::SetPreviewed(Sprite* pSprite)
+{
+	game::float2 newSize{};
+	if (pSprite->GetSize().x / pSprite->GetSize().y < 1.f)
+	{
+		float xRatio{ pSprite->GetSize().x / pSprite->GetSize().y };
+		newSize.x = xRatio * previewSize.x;
+		newSize.y = previewSize.y;
+	}
+	else if (pSprite->GetSize().y / pSprite->GetSize().x < 1.f)
+	{
+		float yRatio{ pSprite->GetSize().y / pSprite->GetSize().x };
+		newSize.x = previewSize.x;
+		newSize.y = yRatio * previewSize.y;
+	}
+	else
+	{
+		newSize = pSprite->GetSize();
+	}
+
+
+	//Sprite* s{ new Sprite(this, ) };
+
+	pPreviewed = pSprite;
 }
