@@ -85,6 +85,14 @@ void ImageDataList::Initialise()
 	list[T_UI_Selection] = ImageData(T_UI_Selection, { 64,64 });
 
 	list[T_UI_Cursor] = ImageData(T_UI_Cursor, { 8, 8 });
+
+	game::rect* Blink_Rects{ SeperateSprites({4,4}, {2,1}) };
+	game::int2 Blink_Anims[1] = {
+		{ 0,1 }
+	};
+	list[T_UI_CursorBlinking] = ImageData(T_UI_CursorBlinking, { 8, 8 }, 2, Blink_Rects, 1, Blink_Anims);
+	delete Blink_Rects;
+	Blink_Rects = nullptr;
 }
 
 ImageData* ImageDataList::Get(size_t index)

@@ -30,7 +30,7 @@ void PrefabList::Initialise()
 	prefabs[PREFAB_Resume] = new SO_Button(ImageDataList::Get(T_UI_Resume), SL_UI_Mid);
 	prefabs[PREFAB_MainMenu] = new SO_Button(ImageDataList::Get(T_UI_MainMenu), SL_UI_Mid);
 	prefabs[PREFAB_Background] = new ScreenObject(ImageDataList::Get(T_UI_BG), SL_UI_Back, { 1.3f,1.f }, { 0,0 }, 100.f);
-	prefabs[PREFAB_Cursor] = new ScreenObject(ImageDataList::Get(T_UI_Cursor), SL_UI_Front, {1.f,1.f}, {.12f,.12f});
+	prefabs[PREFAB_Cursor] = new ScreenObject(ImageDataList::Get(T_UI_CursorBlinking), SL_UI_Front, {1.f,1.f}, {0,0}, 400.f);
 }
 
 PrefabList::~PrefabList()

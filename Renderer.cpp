@@ -126,6 +126,11 @@ void Renderer::Render()
 						pSprite->CheckInvertedX(),
 						pSprite->CheckInvertedY()
 					);
+
+					if (m_debug)
+					{
+						m_pGraphics->DebugBox(D2D1::RectF(rect.l, rect.t, rect.r, rect.b));
+					}
 				}
 
 
@@ -133,14 +138,19 @@ void Renderer::Render()
 
 		for (auto& pSprite : vpSOSorted)
 		{
-
-			game::float2 location{ pSprite->GetLocation() + Camera::m_screenResolution / ScreenObject::px_per_su / 2.f };
+			game::float2 location{ pSprite->GetLocation() };
+			game::float2 locationPx{
+				location.x * ScreenObject::px_per_su + ScreenObject::screenRes.x / 2.f,
+				-location.y * ScreenObject::px_per_su + ScreenObject::screenRes.y / 2.f
+			};
 			game::float2 size{ pSprite->GetSize() };
+			game::float2 sizePx{ size.x * ScreenObject::px_per_su, size.y * ScreenObject::px_per_su };
+
 			game::rect rect{
-				location.x * ScreenObject::px_per_su - size.x / 2.f * ScreenObject::px_per_su,
-				location.y * ScreenObject::px_per_su + size.y / 2.f * ScreenObject::px_per_su,
-				location.x * ScreenObject::px_per_su + size.x / 2.f * ScreenObject::px_per_su,
-				location.y * ScreenObject::px_per_su - size.y / 2.f * ScreenObject::px_per_su
+				locationPx.x - sizePx.x / 2.f,
+				locationPx.y - sizePx.y / 2.f,
+				locationPx.x + sizePx.x / 2.f,
+				locationPx.y + sizePx.y / 2.f
 			};
 			game::rect sourceRect{ pSprite->GetSourceRect() };
 
@@ -152,9 +162,12 @@ void Renderer::Render()
 				pSprite->CheckInvertedX(),
 				pSprite->CheckInvertedY()
 			);
+
+			if (m_debug)
+			{
+				m_pGraphics->DebugBox(D2D1::RectF(rect.l, rect.t, rect.r, rect.b));
+			}
 		}
-
-
 	}
 	else
 		m_pGraphics->ClearScreen(1.f, 0, 0);

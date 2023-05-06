@@ -25,6 +25,7 @@ enum Textures
 	T_Floor,
 
 	T_UI_Cursor,
+	T_UI_CursorBlinking,
 	T_UI_Selection,
 	T_UI_Resume,
 	T_UI_MainMenu,

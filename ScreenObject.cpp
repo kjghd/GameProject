@@ -28,7 +28,7 @@ void ScreenObject::Update(float deltaTime)
 void ScreenObject::SetLocaion_px(game::float2 pixels)
 {
 	m_location.x = (pixels.x - screenRes.x / 2) / px_per_su;
-	m_location.y = (pixels.y - screenRes.y / 2) / px_per_su;
+	m_location.y = -(pixels.y - screenRes.y / 2) / px_per_su;
 }
 void ScreenObject::SetLocaion_su(game::float2 screenUnits)
 {
@@ -58,10 +58,10 @@ game::rect ScreenObject::GetScreenRect()
 	game::float2 size{ m_sprite.GetSize() };
 
 	return{
-		(m_location.x - size.x / 2), // * px_per_su,
-		(m_location.y - size.y / 2), // * px_per_su,
-		(m_location.x + size.x / 2), // * px_per_su,
-		(m_location.y + size.y / 2)  // * px_per_su
+		(m_location.x - size.x / 2),
+		(m_location.y + size.y / 2),
+		(m_location.x + size.x / 2),
+		(m_location.y - size.y / 2) 
 	};
 }
 

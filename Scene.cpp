@@ -61,12 +61,6 @@ Scene::~Scene()
 
 void Scene::Initialise()
 {
-	if (!pCursor)
-	{
-		vpGameObjects.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(PrefabList::Get(PREFAB_Cursor))));
-		pCursor = dynamic_cast<ScreenObject*>(vpGameObjects.back());
-	}
-
 	SpawnObjects();
 }
 
@@ -79,7 +73,7 @@ void Scene::Activate()
 void Scene::Deactivate(bool show)
 {
 	canUpdate = false;
-	isVisible = show;
+	//isVisible = show;
 }
 bool Scene::CheckActive()
 {
@@ -347,6 +341,10 @@ std::string Scene::Serialise()
 	return str;
 }
 
+void Scene::SetCursor(ScreenObject* pC)
+{
+	pCursor = pC;
+}
 
 
 
@@ -367,12 +365,6 @@ void Scene_World::Initialise()
 			pPlayer = dynamic_cast<Player*>(vpGameObjects.back());
 			pCurrentCamera = &pPlayer->m_camera;
 		}
-	}
-
-	if (!pCursor)
-	{
-		vpGameObjects.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(PrefabList::Get(PREFAB_Cursor))));
-		pCursor = dynamic_cast<ScreenObject*>(vpGameObjects.back());
 	}
 
 	if (!pCursorBox)
@@ -510,6 +502,8 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 		Collision();
 
+
+
 		// Cursor
 		game::float2 loc_px{ Input::GetMouseLoc().x, Input::GetMouseLoc().y };
 		pCursor->SetLocaion_px(loc_px);
@@ -538,4 +532,70 @@ void Scene_World::SpawnObjects()
 Camera* Scene_World::GetCamera()
 {
 	return pCurrentCamera ? pCurrentCamera : nullptr;
+}
+
+
+
+Scene_Pause::Scene_Pause(bool visible)
+	:
+	Scene(visible),
+	pResume(nullptr),
+	pMainMenu(nullptr)
+{
+}
+Scene_Pause::Scene_Pause(const Scene_Pause& scene)
+	:
+	Scene(scene),
+	pResume(scene.pResume),
+	pMainMenu(scene.pMainMenu)
+{
+}
+
+void Scene_Pause::Initialise()
+{
+	pResume = nullptr;
+	QueueToSpawn(PREFAB_Resume, { 0, 1 });
+	pResume = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+
+	pMainMenu = nullptr;
+	QueueToSpawn(PREFAB_MainMenu, { 0, -1 });
+	pMainMenu = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+
+	SpawnObjects();
+}
+
+SceneMessage Scene_Pause::Update(float deltaTime)
+{
+	if (!canUpdate && isVisible)
+	{
+		pCursor->SetLocation_percentage({ 100.f,100.f });
+		for (auto& pGameObject : vpGameObjects)
+			pGameObject->Update_SpriteOnly();
+	}
+	else if (canUpdate)
+	{
+		SceneMessage msg{ SMID_Null, 0 };
+
+		DestroyObjects();
+		SpawnObjects();
+
+		if (Input::CheckPressed(BTN_ESC))
+		{
+			msg.id = SMID_Pop;
+		}
+		if (pResume->IsPressed())
+		{
+			msg.id = SMID_Pop;
+		}
+
+		// Cursor
+		game::float2 loc_px{ Input::GetMouseLoc().x, Input::GetMouseLoc().y };
+		pCursor->SetLocaion_px(loc_px);
+
+		// Update
+		for (auto& pGameObject : vpGameObjects)
+			pGameObject->Update(deltaTime);
+
+		return msg;
+	}
 }

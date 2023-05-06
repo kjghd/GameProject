@@ -8,7 +8,7 @@
 class GameObject;
 class Player;
 class ScreenObject;
-
+class SO_Button;
 
 enum ScenePrefabs
 {
@@ -64,6 +64,8 @@ public:
 	void Deactivate(bool visible = false);
 	bool CheckActive();
 
+	void SetCursor(ScreenObject* pCursor);
+
 	void QueueToSpawn(int prefab, game::float2 location = { 0,0 });
 	void QueueToSpawn(GameObject* pObject);
 
@@ -77,6 +79,7 @@ protected:
 	int current_prefab;
 	Player* pPlayer;
 	GameObject* pCursorBox;
+	ScreenObject* pPreview;
 
 	virtual void SpawnObjects() override;
 
@@ -91,7 +94,13 @@ public:
 	virtual SceneMessage Update(float deltaTime) override;
 };
 
-class Scene_Menu : public Scene
+class Scene_Pause : public Scene
 {
-
+	SO_Button* pResume;
+	SO_Button* pMainMenu;
+public:
+	Scene_Pause(bool visible);
+	Scene_Pause(const Scene_Pause& scene);
+	virtual void Initialise() override;
+	virtual SceneMessage Update(float deltaTime) override;
 };

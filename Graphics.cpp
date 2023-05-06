@@ -49,6 +49,7 @@ void Graphics::Init(HWND hWnd)
 	LoadImageFromFile(L"Data/Textures/shopping_floor.png", T_Floor);
 
 	LoadImageFromFile(L"Data/Textures/Cursor.png", T_UI_Cursor);
+	LoadImageFromFile(L"Data/Textures/CursorBlinking.png", T_UI_CursorBlinking);
 	LoadImageFromFile(L"Data/Textures/TileSelection.png", T_UI_Selection);
 	LoadImageFromFile(L"Data/Textures/Resume.png", T_UI_Resume);
 	LoadImageFromFile(L"Data/Textures/MainMenu.png", T_UI_MainMenu);

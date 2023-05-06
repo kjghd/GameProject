@@ -5,29 +5,37 @@
 
 SO_Button::SO_Button(ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
 	:
-	ScreenObject(pImageData, layer, scale, offset, frameTime)
+	ScreenObject(pImageData, layer, scale, offset, frameTime),
+	hovered(false),
+	pressed(false)
 {
 }
 SO_Button::SO_Button(const SO_Button& button)
 	:
-	ScreenObject(button)
+	ScreenObject(button),
+	hovered(false),
+	pressed(false)
 {
 }
 
 void SO_Button::Update(float deltaTime)
 {
-	Hovered();
+	hovered = false;
+	SetHovered();
+
+	pressed = false;
+	SetPressed();
+
 	m_sprite.Update(deltaTime);
 }
 
-bool SO_Button::Hovered()
+void SO_Button::SetHovered()
 {
-	game::float2 size{ m_sprite.GetSize() };
 	game::rect rc{ GetScreenRect() };
 
 	game::float2 mouseLoc{
-		(Input::GetMouseLoc().x - screenRes.x) / px_per_su,
-		-((Input::GetMouseLoc().y - screenRes.y) / px_per_su)
+		(Input::GetMouseLoc().x - ScreenObject::screenRes.x / 2.f) / ScreenObject::px_per_su,
+		-(Input::GetMouseLoc().y - ScreenObject::screenRes.y / 2.f) / ScreenObject::px_per_su
 	};
 
 	if (mouseLoc.x > rc.l &&
@@ -36,22 +44,32 @@ bool SO_Button::Hovered()
 		mouseLoc.y < rc.t)
 	{
 		m_sprite.SetAnimation(1);
-		return true;
+		hovered = true;
 	}
 	else
 	{
 		m_sprite.SetAnimation(0);
-		return false;
+		hovered = false;
 	}
 }
-bool SO_Button::Pressed()
+void SO_Button::SetPressed()
 {
-	if (Hovered() && Input::CheckPressed(BTN_LMB))
+	if (hovered && Input::CheckPressed(BTN_LMB))
 	{
-		return true;
+		pressed = true;
 	}
 	else
 	{
-		return false;
+		pressed = false;
 	}
+}
+
+bool SO_Button::IsPressed()
+{
+	return pressed;
+}
+
+bool SO_Button::IsHovered()
+{
+	return hovered;
 }

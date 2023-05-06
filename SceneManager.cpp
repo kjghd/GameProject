@@ -2,7 +2,7 @@
 
 #include "Prefabs.h"
 #include "PrefabTags.h"
-
+#include "ScreenObject.h"
 
 std::vector<Scene*> SceneManager::pScenePrefabs;
 std::vector<Scene*> SceneManager::pSceneStore;
@@ -37,24 +37,28 @@ SceneManager::~SceneManager()
 
 void SceneManager::Initialise()
 {
+	pCursor = new ScreenObject(*dynamic_cast<ScreenObject*>(PrefabList::Get(PREFAB_Cursor)));
+
 	// Level 1
 	Scene_World* pLevel1{ new Scene_World(true) };
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 0,5 });
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 1,5 });
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 2,5 });
+	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 1,2 });
+	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 4,-6 });
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 3,5 });
 	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 4,5 });
 	pScenePrefabs.push_back(pLevel1);
 
 	// Pause
-	Scene* pPause{ new Scene(false) };
+	Scene_Pause* pPause{ new Scene_Pause(false) };
 	pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
-	pPause->QueueToSpawn(PREFAB_Resume, { 0,1 });
-	pPause->QueueToSpawn(PREFAB_MainMenu, { 0,-1 });
+	//pPause->QueueToSpawn(PREFAB_Resume, { 0,1 });
+	//pPause->QueueToSpawn(PREFAB_MainMenu, { 0,-1 });
 	pScenePrefabs.push_back(pPause);
 
+	// 
 	NewScene(0);
 	pFocused = pSceneStack.back();
+	pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 }
 
 void SceneManager::Update(float deltaTime)
@@ -65,6 +69,7 @@ void SceneManager::Update(float deltaTime)
 		deleteQueue.back() = nullptr;
 		deleteQueue.pop_back();
 	}
+
 
 	for (const auto& pScene : pSceneStack)
 	{
@@ -83,6 +88,8 @@ void SceneManager::Update(float deltaTime)
 		}
 	}
 
+	pCursor->Update(deltaTime);
+
 	if (pMainScene)
 		pCamera = pMainScene->GetCamera();
 	else
@@ -99,6 +106,7 @@ void SceneManager::LoadScene(size_t storeIndex)
 	else
 		pSceneStack.push_back(new Scene(*pSceneStore.at(storeIndex)));
 
+	pSceneStack.back()->SetCursor(pCursor);
 	SetActive(pSceneStack.back());
 
 }
@@ -109,10 +117,15 @@ void SceneManager::NewScene(size_t prefabIndex)
 		pSceneStack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(pScenePrefabs.at(prefabIndex))));
 		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 	}
+	else if (dynamic_cast<Scene_Pause*>(pScenePrefabs.at(prefabIndex)))
+	{
+		pSceneStack.push_back(new Scene_Pause(*dynamic_cast<Scene_Pause*>(pScenePrefabs.at(prefabIndex))));
+	}
 	else
 		pSceneStack.push_back(new Scene(*pScenePrefabs.at(prefabIndex)));
 
 	pSceneStack.back()->Initialise();
+	pSceneStack.back()->SetCursor(pCursor);
 	SetActive(pSceneStack.back());
 }
 void SceneManager::SaveScene()
@@ -135,15 +148,19 @@ void SceneManager::PopScene()
 
 void SceneManager::SetActive(int index)
 {
-	if (pFocused) pFocused->Deactivate();
+	for (auto& pScene : pSceneStack)
+		pScene->Deactivate();
+
 	pSceneStack.at(index)->Activate();
 	pFocused = pSceneStack.at(index);
 }
-void SceneManager::SetActive(Scene* pScene)
+void SceneManager::SetActive(Scene* pTargetScene)
 {
-	if (pFocused) pFocused->Deactivate();
-	pScene->Activate();
-	pFocused = pScene;
+	for (auto& pScene : pSceneStack)
+		pScene->Deactivate();
+
+	pTargetScene->Activate();
+	pFocused = pTargetScene;
 }
 Camera* SceneManager::GetCamera()
 {
