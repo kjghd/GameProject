@@ -12,7 +12,7 @@ public:
 
 	Renderer();
 
-	void Init(Graphics* pGraphics, SceneManager* pSceneController);
+	void Init(SceneManager* pSM);
 
 	void Render();
 };

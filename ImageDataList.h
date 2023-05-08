@@ -5,9 +5,12 @@
 
 class ImageDataList
 {
-	static ImageData list[T_COUNT];
+	//static ImageData list[T_COUNT];
+
+	static std::vector<ImageData> vList;
 
 public:
 	static void Initialise();
-	static ImageData* Get(size_t index);
+	static void Create(ImageData imageData);
+	static ImageData* Get(std::string path);
 };

@@ -16,10 +16,9 @@ Renderer::Renderer()
 {
 }
 
-void Renderer::Init(Graphics* pGraphics, SceneManager* pSceneController)
+void Renderer::Init(SceneManager* pSM)
 {
-	m_pGraphics = pGraphics;
-	m_pSceneController = pSceneController;
+	m_pSceneController = pSM;
 }
 
 void Renderer::Render()

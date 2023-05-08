@@ -7,13 +7,15 @@
 #include "ScreenObject.h"
 #include "ImageDataList.h"
 #include "Prefabs.h"
+#include "Scene.h"
+#include "ImageLoader.h"
 
 #include <Windows.h>
 #include <Windowsx.h>
 
 
 // Globals.
-static Graphics g_graphics;
+//static Graphics g_graphics;
 static Renderer g_renderer;
 static Timer g_timer;
 static SceneManager g_SceneController;
@@ -138,8 +140,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ShowWindow(hWnd, nCmdShow);
 
 
-	ImageDataList::Initialise();
-	PrefabList::Initialise();
+	//ImageDataList::Initialise();
 	g_SceneController.Initialise();
 
 	Camera::m_screenResolution = { width,height };
@@ -147,8 +148,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ScreenObject::px_per_su = { 64.f };
 
 	// Start timer
-	g_graphics.Init(hWnd);
-	g_renderer.Init(&g_graphics, &g_SceneController);
+	//g_graphics.Init(hWnd);
+	Graphics::Init(hWnd);
+	g_renderer.Init(&g_SceneController);
+	PrefabList::Initialise();
+	Camera::m_screenResolution = { width,height };
+	ImageLoader::Load("Data/TextureData.xml");
+
 	g_timer.Start();
 
 
