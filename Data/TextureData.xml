@@ -1,4 +1,16 @@
 <Textures>
+	<Texture location="Data/Textures/Error.png">
+		<Sprites count="1,1"/>
+		<Animation name="only" range="0,0"/>
+	</Texture>
+	<Texture location="Data/Textures/CursorBlinking.png">
+		<Sprites count="2,1"/>
+		<Animation name="blink" range="0,1"/>
+	</Texture>
+	<Texture location="Data/Textures/TileSelection.png">
+		<Sprites count="1,1"/>
+		<Animation name="only" range="0,0"/>
+	</Texture>
 	<Texture location="Data/Textures/sprite_sheet.png">
 		<Sprites count="4,2"/>
 		<Animation name="numbers" range="0,3"/>
@@ -9,16 +21,48 @@
 		<Animation name="off" range="0,0"/>
 		<Animation name="on" range="1,1"/>
 	</Texture>
+	<Texture location="Data/Textures/MainMenu.png">
+		<Sprites count="1,2"/>
+		<Animation name="off" range="0,0"/>
+		<Animation name="on" range="1,1"/>
+	</Texture>
+	<Texture location="Data/Textures/BG.png">
+		<Sprites count="2,2"/>
+		<Animation name="anim" range="0,3"/>
+	</Texture>
 	<Texture location="Data/Textures/guy_sheet.png">
 		<Sprites count="8,4"/>
 		<Animation name="idle_front" range="0,0"/>
 		<Animation name="idle_back" range="1,1"/>
 		<Animation name="idle_side" range="2,2"/>
 		<Animation name="dead" range="3,3"/>
-		<Animation name="move_front" range="8,3"/>
-		<Animation name="move_back" range="3,3"/>
-		<Animation name="move_side" range="3,3"/>
-
-
+		<Animation name="move_front" range="8,15"/>
+		<Animation name="move_back" range="16,23"/>
+		<Animation name="move_side" range="24,31"/>
+	</Texture>
+	<Texture location="Data/Textures/guy_sheet2.png">
+		<Sprites count="8,4"/>
+		<Animation name="idle_front" range="0,0"/>
+		<Animation name="idle_back" range="1,1"/>
+		<Animation name="idle_side" range="2,2"/>
+		<Animation name="dead" range="3,3"/>
+		<Animation name="move_front" range="8,15"/>
+		<Animation name="move_back" range="16,23"/>
+		<Animation name="move_side" range="24,31"/>
+	</Texture>
+	<Texture location="Data/Textures/Mushroom.png">
+		<Sprites count="1,1"/>
+		<Animation name="only" range="0,0"/>
+	</Texture>
+	<Texture location="Data/Textures/shopping_floor.png">
+		<Sprites count="4,2"/>
+		<Animation name="concreteA" range="0,0"/>
+		<Animation name="concreteB" range="1,1"/>
+		<Animation name="concreteC" range="2,2"/>
+		<Animation name="concreteD" range="3,3"/>
+		<Animation name="tileA" range="4,4"/>
+		<Animation name="tileC" range="5,5"/>
+		<Animation name="tileD" range="6,6"/>
+		<Animation name="tileE" range="7,7"/>
 	</Texture>
 </Textures>

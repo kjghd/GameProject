@@ -14,8 +14,8 @@ GameObject* PrefabList::prefabs[PREFAB_COUNT];
 
 void PrefabList::Initialise()
 {
-	prefabs[PREFAB_Player] = new Player(100.f, 3.5f, ImageDataList::Get("Data/Textures/Guy.png"), SL_Object, {1.f,1.f}, {0,.6f}, .28f, true, true, 1.f, 100.f);
-	prefabs[PREFAB_NPC] = new NPC(100.f, 100.f, 1.75f, ImageDataList::Get("Data/Textures/Guy2.png"), SL_Object, { 1.f,1.f }, { 0,.6f }, .28f, true, true, 4.f, 200.f);
+	prefabs[PREFAB_Player] = new Player(100.f, 3.5f, ImageDataList::Get("Data/Textures/guy_sheet.png"), SL_Object, {1.f,1.f}, {0,.6f}, .28f, true, true, 1.f, 100.f);
+	prefabs[PREFAB_NPC] = new NPC(100.f, 100.f, 1.75f, ImageDataList::Get("Data/Textures/guy_sheet2.png"), SL_Object, { 1.f,1.f }, { 0,.6f }, .28f, true, true, 4.f, 200.f);
 	prefabs[PREFAB_Mushroom] = new Ball(ImageDataList::Get("Data/Textures/Mushroom.png"), SL_Object, { 2.f,2.f }, { .1f,2.2f }, .65f, false, true);
 	prefabs[PREFAB_Floor_ConcreteA] = new WorldObject(ImageDataList::Get("Data/Textures/shopping_floor.png"), SL_Floor);
 	prefabs[PREFAB_Floor_ConcreteB] = new WorldObject(ImageDataList::Get("Data/Textures/shopping_floor.png"), SL_Floor);

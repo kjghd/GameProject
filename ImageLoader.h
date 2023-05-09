@@ -12,7 +12,7 @@ class ImageLoader
 
 	static std::ifstream file;
 	static std::vector<Texture> vTextures;
-	static Element& GetElement();
+	static bool GetElement(Element& element);
 
 
 public:

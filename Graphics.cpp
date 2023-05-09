@@ -1,6 +1,5 @@
 #include "Graphics.h"
 #include "Textures.h"
-#include <locale>
 #pragma comment(lib, "d2d1")
 
 
@@ -102,10 +101,14 @@ void Graphics::LoadImageFromFile(LPCWSTR filename, unsigned int texture)
 }
 void Graphics::CreateTextureFromFile(std::string filename, size_t& index, game::int2& dimesnions)
 {
+	size_t uConverted;
+	wchar_t* wzFilename = new wchar_t[filename.size()];
+	mbstowcs_s(&uConverted, wzFilename, filename.size() + 1, filename.c_str(), filename.size());
+
 	// Create a decoder
 	IWICBitmapDecoder* pDecoder;
 	pImagingFactory->CreateDecoderFromFilename(
-		(const wchar_t*)filename.c_str(),
+		wzFilename,
 		NULL,
 		GENERIC_READ,
 		WICDecodeMetadataCacheOnDemand,
@@ -136,6 +139,9 @@ void Graphics::CreateTextureFromFile(std::string filename, size_t& index, game::
 	D2D1_SIZE_U size{ vpBitmaps.back()->GetPixelSize() };
 	dimesnions.x = size.width;
 	dimesnions.y = size.height;
+
+	//delete[] wzFilename;
+	//wzFilename = nullptr;
 }
 
 game::float2 Graphics::GetImageSize(size_t index)

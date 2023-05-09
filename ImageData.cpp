@@ -31,49 +31,16 @@ ImageData::ImageData(std::string filename, size_t texture, game::int2 dimensions
 
 	for (size_t y = 0; y < spritesY; y++)
 		for (size_t x = 0; x < spritesX; x++)
-			m_vFrameRects.at(y * spritesX + x) = {
-				static_cast<float>(px.x * x),
-				static_cast<float>(px.y * y),
-				static_cast<float>(px.x * (x + 1)),
-				static_cast<float>(px.y * (y + 1))
-		};
+			m_vFrameRects.push_back(
+				{
+					static_cast<float>(px.x * x),
+					static_cast<float>(px.y * y),
+					static_cast<float>(px.x * (x + 1)),
+					static_cast<float>(px.y * (y + 1))
+				}
+			);
 }
 
-
-//ImageData::ImageData(size_t texture, game::int2 dimensions_px, int frames, game::rect* frameRectArray, int animCount, game::int2* animRangeArray)
-//	:
-//	m_texture(texture),
-//	m_dimensions_px(dimensions_px),
-//	m_frames(frames),
-//	m_frameRectArray(new game::rect[frames]),
-//	m_animCount(animCount),
-//	m_animRangeArray(new game::int2[animCount])
-//{
-//	for (size_t i{ 0 }; i < frames; ++i)
-//		m_frameRectArray[i] = frameRectArray[i];
-//
-//	for (size_t i{ 0 }; i < animCount; ++i)
-//		m_animRangeArray[i] = animRangeArray[i];
-//}
-//
-//ImageData::ImageData(size_t texture, game::int2 dimensions_px)
-//	:
-//	m_texture(texture),
-//	m_dimensions_px(dimensions_px),
-//	m_frames(1),
-//	m_frameRectArray(new game::rect[1]),
-//	m_animCount(1),
-//	m_animRangeArray(new game::int2[1])
-//{
-//	m_frameRectArray[0] = game::rect{ 0,0,(float)dimensions_px.x, (float)dimensions_px.y };
-//	m_animRangeArray[0] = game::int2{ 0,0 };
-//}
-
-//ImageData::~ImageData()
-//{
-//	delete[] m_frameRectArray;
-//	delete[] m_animRangeArray;
-//}
 
 int ImageData::GetTexture()
 {

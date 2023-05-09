@@ -53,9 +53,8 @@ std::ifstream ImageLoader::file;
 std::vector<ImageLoader::Texture> ImageLoader::vTextures;
 
 
-ImageLoader::Element& ImageLoader::GetElement()
+bool ImageLoader::GetElement(ImageLoader::Element& e)
 {
-	Element e;;
 	bool open{ true };
 	if (file.peek() == '<')
 	{
@@ -71,6 +70,7 @@ ImageLoader::Element& ImageLoader::GetElement()
 		while (file.peek() != ' ' && file.peek() != '>' && file.peek() != '/')
 			e.tag.push_back(file.get());
 
+		int n = file.peek();
 		// Get Attributes.
 		while (file.peek() == ' ')
 		{
@@ -101,15 +101,17 @@ ImageLoader::Element& ImageLoader::GetElement()
 			e.open = open;
 			file.ignore(1); // '>'
 		}
+
+		return true;
 	}
-	return e;
+	else return false;
 }
 
 
 void ImageLoader::Load(std::string dataDirectory)
 {
 	// Parse file.
-	file.open(dataDirectory, std::ios_base::out);
+	file.open(dataDirectory);
 	bool writingTexture{ true };
 	while (file.peek() != EOF)
 	{
@@ -120,7 +122,9 @@ void ImageLoader::Load(std::string dataDirectory)
 
 		if (file.peek() == '<')
 		{
-			Element e{ GetElement() };
+			Element e;
+			GetElement(e);
+
 			if (e.tag == "Texture" && e.open)
 			{
 				writingTexture = true;

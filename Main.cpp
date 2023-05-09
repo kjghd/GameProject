@@ -140,20 +140,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ShowWindow(hWnd, nCmdShow);
 
 
-	//ImageDataList::Initialise();
+
+	Graphics::Init(hWnd);
+	ImageLoader::Load("Data/TextureData.xml");
+	PrefabList::Initialise();
 	g_SceneController.Initialise();
+	g_renderer.Init(&g_SceneController);
 
 	Camera::m_screenResolution = { width,height };
 	ScreenObject::screenRes = { width, height };
 	ScreenObject::px_per_su = { 64.f };
 
-	// Start timer
-	//g_graphics.Init(hWnd);
-	Graphics::Init(hWnd);
-	g_renderer.Init(&g_SceneController);
-	PrefabList::Initialise();
-	Camera::m_screenResolution = { width,height };
-	ImageLoader::Load("Data/TextureData.xml");
 
 	g_timer.Start();
 
