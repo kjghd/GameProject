@@ -70,7 +70,7 @@ bool ImageLoader::GetElement(ImageLoader::Element& e)
 		while (file.peek() != ' ' && file.peek() != '>' && file.peek() != '/')
 			e.tag.push_back(file.get());
 
-		int n = file.peek();
+		int n = file.peek();  
 		// Get Attributes.
 		while (file.peek() == ' ')
 		{
