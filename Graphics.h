@@ -1,21 +1,16 @@
 #pragma once
 #include "DataTypes.h"
 #include <d2d1.h>
-#include <wincodec.h>
+#include <wincodec.h> // IWICImagingFactory
 #include <vector>
-//#include <utility>
 
 
 class Graphics
 {
-	struct Bitmap {
-		
-	};
 	static ID2D1Factory* pFactory;
 	static ID2D1HwndRenderTarget* pRenderTarget;
 	static IWICImagingFactory* pImagingFactory;
 	static std::vector<ID2D1Bitmap*> vpBitmaps;
-	//static std::vector<std::pair<std::string, ID2D1Bitmap*>> vBitmapPairs;
 	static float windowDPI;
 	static D2D1_SIZE_U screen_resolution;
 	static ID2D1SolidColorBrush* pDebugBrush;
@@ -34,6 +29,3 @@ public:
 	static void DebugBox(D2D1_RECT_F rectf);
 	static void DebugCircle(D2D1_POINT_2F location, float radius);
 };
-
-
-

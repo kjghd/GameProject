@@ -156,7 +156,6 @@
     <ClCompile Include="ImageDataList.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SO_Button.cpp" />
-    <ClCompile Include="SO_TextBox.cpp" />
     <ClCompile Include="WorldObject.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImageData.cpp" />
@@ -183,7 +182,6 @@
     <ClInclude Include="ImageDataList.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SO_Button.h" />
-    <ClInclude Include="SO_TextBox.h" />
     <ClInclude Include="WorldObject.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ImageData.h" />
@@ -197,7 +195,6 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenObject.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="Textures.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>

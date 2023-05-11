@@ -1,5 +1,4 @@
 #pragma once
-
 #include <D2D1.h>
 
 

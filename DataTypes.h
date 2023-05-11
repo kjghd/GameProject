@@ -61,5 +61,4 @@ namespace game
 		std::string name;
 		game::int2 range;
 	};
-
 }

@@ -1,7 +1,7 @@
 #include "ImageData.h"
-#include "Textures.h"
 #include <vector>
 #include <string>
+
 
 ImageData::ImageData(std::string filename, size_t texture, game::int2 dimensions_px, int spritesX, int spritesY, std::vector<game::Animation> vAnimRanges)
 	:

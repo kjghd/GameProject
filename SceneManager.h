@@ -1,9 +1,8 @@
 #pragma once
-
 #include "Scene.h"
 #include "Input.h"
-
 #include <vector>
+
 
 class Camera;
 class ScreenObject;
@@ -40,5 +39,4 @@ public:
 	void SetActive(Scene* pScene);
 
 	Camera* GetCamera();
-
 };

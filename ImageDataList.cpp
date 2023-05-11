@@ -1,5 +1,6 @@
 #include "ImageDataList.h"
 #include "DataTypes.h"
+#include "ImageData.h"
 #include <vector>
 
 
@@ -27,4 +28,3 @@ ImageData* ImageDataList::Get(std::string path)
 
 	return nullptr;
 }
-

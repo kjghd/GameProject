@@ -15,7 +15,6 @@
 
 
 // Globals.
-//static Graphics g_graphics;
 static Renderer g_renderer;
 static Timer g_timer;
 static SceneManager g_SceneController;
@@ -140,7 +139,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ShowWindow(hWnd, nCmdShow);
 
 
-
+	// Initialise
 	Graphics::Init(hWnd);
 	ImageLoader::Load("Data/TextureData.xml");
 	PrefabList::Initialise();

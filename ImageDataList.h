@@ -1,12 +1,11 @@
 #pragma once
-#include "Textures.h"
-#include "Sprite.h"
 #include <vector>
+#include <string>
+
+class ImageData;
 
 class ImageDataList
 {
-	//static ImageData list[T_COUNT];
-
 	static std::vector<ImageData> vList;
 
 public:

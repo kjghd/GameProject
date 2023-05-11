@@ -1,11 +1,7 @@
 #pragma once
-
 #include "DataTypes.h"
-#include "Textures.h"
-#include "Sprite.h"
-#include "Collider.h"
 #include "WorldObject.h"
-
+#include "Collider.h"
 #include <memory>
 
 
@@ -31,4 +27,3 @@ public:
 
 	virtual std::string Serialise() override;
 };
-

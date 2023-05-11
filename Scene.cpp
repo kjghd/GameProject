@@ -1,5 +1,4 @@
 #include "Scene.h"
-
 #include "Input.h"
 #include "Prefabs.h"
 #include "GameObject.h"
@@ -11,14 +10,14 @@
 #include "Player.h"
 #include "ScreenObject.h"
 #include "SO_Button.h"
-
 #include <algorithm>
 
 
 Scene::Scene(bool show)
 	:
 	isVisible(show),
-	canUpdate(false)
+	canUpdate(false),
+	pCursor(nullptr)
 {
 }
 
@@ -26,7 +25,8 @@ Scene::Scene(const Scene& scene)
 	:
 	isVisible(scene.isVisible),
 	canUpdate(scene.canUpdate),
-	vpSpawnQueue()
+	vpSpawnQueue(),
+	pCursor(scene.pCursor)
 {
 	for (const auto& pObject : scene.vpGameObjects)
 	{
@@ -82,9 +82,6 @@ bool Scene::CheckActive()
 
 void Scene::Collision()
 {
-	// Collision
-
-
 	for (auto& pObjectA : vpGameObjects)
 	{
 		if (dynamic_cast<Box*>(pObjectA))
@@ -98,7 +95,6 @@ void Scene::Collision()
 						dynamic_cast<Box*>(pObjectA)->m_collider.CheckCollision(&dynamic_cast<Ball*>(pObjectB)->m_collider);
 				}
 		}
-
 
 		else if (dynamic_cast<Ball*>(pObjectA))
 		{
@@ -122,12 +118,12 @@ void Scene::Collision()
 				}
 		}
 	}
-
 }
 
 
 SceneMessage Scene::Update(float deltaTime)
 {
+	SceneMessage msg{ SMID_Null, 0 };
 	if (!canUpdate && isVisible)
 	{
 		pCursor->SetLocation_percentage({ 100.f,100.f });
@@ -136,8 +132,6 @@ SceneMessage Scene::Update(float deltaTime)
 	}
 	else if (canUpdate)
 	{
-		SceneMessage msg{ SMID_Null, 0 };
-
 		DestroyObjects();
 		SpawnObjects();
 
@@ -154,9 +148,8 @@ SceneMessage Scene::Update(float deltaTime)
 		// Update
 		for (auto& pGameObject : vpGameObjects)
 			pGameObject->Update(deltaTime);
-
-		return msg;
 	}
+	return msg;
 }   
 
 void Scene::QueueToSpawn(int prefab, game::float2 location)
@@ -168,7 +161,6 @@ void Scene::QueueToSpawn(int prefab, game::float2 location)
 		if (dynamic_cast<Box*>(pPrefab))
 		{
 			vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pPrefab)));
-			vpSpawnQueue.back()->m_location = location;
 		}
 		else if (dynamic_cast<Ball*>(pPrefab))
 		{
@@ -177,29 +169,24 @@ void Scene::QueueToSpawn(int prefab, game::float2 location)
 				if (dynamic_cast<Player*>(pPrefab))
 				{
 					vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
-					vpSpawnQueue.back()->m_location = location;
 				}
 				else if (dynamic_cast<NPC*>(pPrefab))
 				{
 					vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pPrefab)));
-					vpSpawnQueue.back()->m_location = location;
 				}
 				else
 				{
 					vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pPrefab)));
-					vpSpawnQueue.back()->m_location = location;
 				}
 			}
 			else
 			{
 				vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pPrefab)));
-				vpSpawnQueue.back()->m_location = location;
 			}
 		}
 		else
 		{
 			vpSpawnQueue.push_back(new WorldObject(*dynamic_cast<WorldObject*>(pPrefab)));
-			vpSpawnQueue.back()->m_location = location;
 		}
 
 	}
@@ -208,74 +195,68 @@ void Scene::QueueToSpawn(int prefab, game::float2 location)
 		if (dynamic_cast<SO_Button*>(pPrefab))
 		{
 			vpSpawnQueue.push_back(new SO_Button(*dynamic_cast<SO_Button*>(pPrefab)));
-			vpSpawnQueue.back()->m_location = location;
 		}
 		else
 		{
 			vpSpawnQueue.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(pPrefab)));
-			vpSpawnQueue.back()->m_location = location;
 		}
 	}
-	else
-	{
-		vpSpawnQueue.push_back(new GameObject(*pPrefab));
-		vpSpawnQueue.back()->m_location = location;
-	}
+
+	vpSpawnQueue.back()->m_location = location;
 }
 
 void Scene::QueueToSpawn(GameObject* pObject)
 {
-	if (dynamic_cast<WorldObject*>(pObject))
+	if (pObject)
 	{
-		if (dynamic_cast<Box*>(pObject))
+		if (dynamic_cast<WorldObject*>(pObject))
 		{
-			vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pObject)));
-		}
-		else if (dynamic_cast<Ball*>(pObject))
-		{
-			if (dynamic_cast<Character*>(pObject))
+			if (dynamic_cast<Box*>(pObject))
 			{
-				if (dynamic_cast<Player*>(pObject))
+				vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pObject)));
+			}
+			else if (dynamic_cast<Ball*>(pObject))
+			{
+				if (dynamic_cast<Character*>(pObject))
 				{
-					vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pObject)));
-				}
-				else if (dynamic_cast<NPC*>(pObject))
-				{
-					vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pObject)));
+					if (dynamic_cast<Player*>(pObject))
+					{
+						vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pObject)));
+					}
+					else if (dynamic_cast<NPC*>(pObject))
+					{
+						vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pObject)));
+					}
+					else
+					{
+						vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pObject)));
+					}
 				}
 				else
 				{
-					vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pObject)));
+					vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pObject)));
 				}
 			}
 			else
 			{
-				vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pObject)));
+				vpSpawnQueue.push_back(new WorldObject(*dynamic_cast<WorldObject*>(pObject)));
+			}
+
+		}
+		else if (dynamic_cast<ScreenObject*>(pObject))
+		{
+			if (dynamic_cast<SO_Button*>(pObject))
+			{
+				vpSpawnQueue.push_back(new SO_Button(*dynamic_cast<SO_Button*>(pObject)));
+			}
+			else
+			{
+				vpSpawnQueue.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(pObject)));
 			}
 		}
-		else
-		{
-			vpSpawnQueue.push_back(new WorldObject(*dynamic_cast<WorldObject*>(pObject)));
-		}
 
+		vpSpawnQueue.back()->m_location = pObject->m_location;
 	}
-	else if (dynamic_cast<ScreenObject*>(pObject))
-	{
-		if (dynamic_cast<SO_Button*>(pObject))
-		{
-			vpSpawnQueue.push_back(new SO_Button(*dynamic_cast<SO_Button*>(pObject)));
-		}
-		else
-		{
-			vpSpawnQueue.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(pObject)));
-		}
-	}
-	else
-	{
-		vpSpawnQueue.push_back(new GameObject(*pObject));
-	}
-
-	vpSpawnQueue.back()->m_location = pObject->m_location;
 }
 
 
@@ -290,9 +271,6 @@ void Scene::SpawnObjects()
 	{
 		vpGameObjects.push_back(vpSpawnQueue.back());
 		vpSpawnQueue.pop_back();
-
-		//if (dynamic_cast<Player*>(vpGameObjects.back()))
-		//	pPlayer = dynamic_cast<Player*>(vpGameObjects.back());
 	}
 }
 
@@ -315,28 +293,28 @@ std::string Scene::Serialise()
 
 	std::string str;
 
-	// Show
-	str += std::to_string(isVisible);
-
-	// GameObjects
-	for (const auto& pGameObject : vpGameObjects)
-	{
-		
-	}
-
-	// Prefabs
-
-
-
-
-	std::vector<GameObject*> vpGameObjects;
-
-	int current_prefab;
-	PrefabList prefabs;
-
-	Player* pPlayer;
-	ScreenObject* pCursor;
-	GameObject* pCursorBox;
+	//// Show
+	//str += std::to_string(isVisible);
+	//
+	//// GameObjects
+	//for (const auto& pGameObject : vpGameObjects)
+	//{
+	//	
+	//}
+	//
+	//// Prefabs
+	//
+	//
+	//
+	//
+	//std::vector<GameObject*> vpGameObjects;
+	//
+	//int current_prefab;
+	//PrefabList prefabs;
+	//
+	//Player* pPlayer;
+	//ScreenObject* pCursor;
+	//GameObject* pCursorBox;
 
 	return str;
 }
@@ -382,7 +360,9 @@ Scene_World::Scene_World(bool show)
 	Scene(show),
 	current_prefab(PREFAB_Floor_ConcreteA),
 	pPlayer(nullptr),
-	pCurrentCamera(nullptr)
+	pCurrentCamera(nullptr),
+	pPreview(nullptr),
+	pCursorBox(nullptr)
 {
 }
 
@@ -391,13 +371,16 @@ Scene_World::Scene_World(const Scene_World& scene)
 	Scene(scene),
 	current_prefab(PREFAB_Floor_ConcreteA),
 	pPlayer(nullptr),
-	pCurrentCamera(nullptr)
+	pCurrentCamera(nullptr),
+	pCursorBox(nullptr),
+	pPreview(nullptr)
 {
 }
 
 
 SceneMessage Scene_World::Update(float deltaTime)
 {
+	SceneMessage msg{ SMID_Null, 0 };
 	if (!canUpdate && isVisible)
 	{
 		for (auto& pGameObject : vpGameObjects)
@@ -405,8 +388,6 @@ SceneMessage Scene_World::Update(float deltaTime)
 	}
 	else if (canUpdate)
 	{
-		SceneMessage msg;
-
 		DestroyObjects();
 		SpawnObjects();
 
@@ -502,8 +483,6 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 		Collision();
 
-
-
 		// Cursor
 		game::float2 loc_px{ Input::GetMouseLoc().x, Input::GetMouseLoc().y };
 		pCursor->SetLocaion_px(loc_px);
@@ -511,9 +490,8 @@ SceneMessage Scene_World::Update(float deltaTime)
 		// Update
 		for (auto& pGameObject : vpGameObjects)
 			pGameObject->Update(deltaTime);
-
-		return msg;
 	}
+	return msg;
 }
 
 
@@ -566,6 +544,7 @@ void Scene_Pause::Initialise()
 
 SceneMessage Scene_Pause::Update(float deltaTime)
 {
+	SceneMessage msg{ SMID_Null, 0 };
 	if (!canUpdate && isVisible)
 	{
 		pCursor->SetLocation_percentage({ 100.f,100.f });
@@ -574,8 +553,6 @@ SceneMessage Scene_Pause::Update(float deltaTime)
 	}
 	else if (canUpdate)
 	{
-		SceneMessage msg{ SMID_Null, 0 };
-
 		DestroyObjects();
 		SpawnObjects();
 
@@ -595,7 +572,6 @@ SceneMessage Scene_Pause::Update(float deltaTime)
 		// Update
 		for (auto& pGameObject : vpGameObjects)
 			pGameObject->Update(deltaTime);
-
-		return msg;
 	}
+	return msg;
 }
