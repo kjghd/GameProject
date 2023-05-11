@@ -2,6 +2,7 @@
 #include "DataTypes.h"
 #include "Graphics.h"
 #include "ImageDataList.h"
+#include "ImageData.h"
 #include <fstream>
 
 
@@ -35,23 +36,15 @@ struct ImageLoader::Element {
 			return false;
 	}
 };
-
-//struct ImageLoader::Animation
-//{
-//	std::string name;
-//	game::int2 range;
-//};
 struct ImageLoader::Texture
 {
 	std::string fileLocation;
-	game::int2 spriteCount;
+	game::int2 spriteCount{ 1,1 };
 	std::vector<game::Animation> vAnimations;
-
 };
 
 std::ifstream ImageLoader::file;
 std::vector<ImageLoader::Texture> ImageLoader::vTextures;
-
 
 bool ImageLoader::GetElement(ImageLoader::Element& e)
 {
@@ -107,12 +100,11 @@ bool ImageLoader::GetElement(ImageLoader::Element& e)
 	else return false;
 }
 
-
 void ImageLoader::Load(std::string dataDirectory)
 {
 	// Parse file.
 	file.open(dataDirectory);
-	bool writingTexture{ true };
+	bool writingTexture{ false };
 	while (file.peek() != EOF)
 	{
 		while (file.peek() == '\n' || file.peek() == '\t')
@@ -125,20 +117,20 @@ void ImageLoader::Load(std::string dataDirectory)
 			Element e;
 			GetElement(e);
 
-			if (e.tag == "Texture" && e.open)
+			if (e.tag == "Texture")
 			{
-				writingTexture = true;
-				vTextures.push_back(Texture());
-				for (const auto& a : e.vAttributes)
-					if (a.tag == "location")
-						vTextures.back().fileLocation = a.content;
-			}
-			else if (writingTexture)
-			{
-				if (e.tag == "Sprites" && !e.open)
+				if (!writingTexture)
 				{
+					writingTexture = e.open;
+
+					vTextures.push_back(Texture());
 					for (const auto& a : e.vAttributes)
-						if (a.tag == "count")
+					{
+						if (a.tag == "location")
+						{
+							vTextures.back().fileLocation = a.content;
+						}
+						else if (a.tag == "count")
 						{
 							std::string x;
 							std::string y;
@@ -150,17 +142,24 @@ void ImageLoader::Load(std::string dataDirectory)
 							vTextures.back().spriteCount.x = std::stoi(x);
 							vTextures.back().spriteCount.y = std::stoi(y);
 						}
+					}
+
 				}
-				if (e.tag == "Animation" && !e.open)
+				else if (!e.open)
 				{
-					vTextures.back().vAnimations.push_back(game::Animation());
-					for (const auto& a : e.vAttributes)
-					{
-						if (a.tag == "name")
+					writingTexture = false;
+				}
+			}
+			else if (writingTexture && e.tag == "Animation" && !e.open)
+			{
+				vTextures.back().vAnimations.push_back(game::Animation());
+				for (const auto& a : e.vAttributes)
+				{
+					if (a.tag == "name")
 						{
 							vTextures.back().vAnimations.back().name = a.content;
 						}
-						else if (a.tag == "range")
+					else if (a.tag == "range")
 						{
 							std::string first;
 							std::string last;
@@ -172,17 +171,23 @@ void ImageLoader::Load(std::string dataDirectory)
 							vTextures.back().vAnimations.back().range.x = std::stoi(first);
 							vTextures.back().vAnimations.back().range.y = std::stoi(last);
 						}
-					}
 				}
-
 			}
 		}
 	}
 	file.close();
 
 
-	for (const auto& texture : vTextures)
+	for (auto& texture : vTextures)
 	{
+		if (texture.vAnimations.empty())
+			texture.vAnimations.push_back(
+				{
+					"default",
+					{ 0, texture.spriteCount.x * texture.spriteCount.y - 1 }
+				}
+			);
+
 		size_t index;
 		game::int2 dimensions;
 
