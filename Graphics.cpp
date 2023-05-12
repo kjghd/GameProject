@@ -31,38 +31,6 @@ void Graphics::Init(HWND hWnd)
 		&pRenderTarget
 	);
 
-	// Load Images
-	//vpBitmaps.reserve(T_COUNT);
-	//vpBitmaps.resize(T_COUNT);
-	//
-	//LoadImageFromFile(L"Data/Textures/Error.png", T_Error);
-	//LoadImageFromFile(L"Data/Textures/Wallace.png", T_Wallace);
-	//LoadImageFromFile(L"Data/Textures/Mushroom.png", T_Mushroom);
-	//
-	//LoadImageFromFile(L"Data/Textures/font_32x48.png", T_Font);
-	//
-	//LoadImageFromFile(L"Data/Textures/sprite_sheet.png", T_Animation);
-	//LoadImageFromFile(L"Data/Textures/guy_sheet.png", T_Guy);
-	//LoadImageFromFile(L"Data/Textures/guy_sheet2.png", T_Guy2);
-	//
-	//LoadImageFromFile(L"Data/Textures/Block_Blue.png", T_Blue);
-	//LoadImageFromFile(L"Data/Textures/Block_Green.png", T_Green);
-	//LoadImageFromFile(L"Data/Textures/Block_Red.png", T_Red);
-	//
-	//LoadImageFromFile(L"Data/Textures/Ball_Blue.png", T_BallBlue);
-	//LoadImageFromFile(L"Data/Textures/Ball_Green.png", T_BallGreen);
-	//LoadImageFromFile(L"Data/Textures/Ball_Red.png", T_BallRed);
-	//
-	//LoadImageFromFile(L"Data/Textures/shopping_floor.png", T_Floor);
-	//
-	//LoadImageFromFile(L"Data/Textures/Cursor.png", T_UI_Cursor);
-	//LoadImageFromFile(L"Data/Textures/CursorBlinking.png", T_UI_CursorBlinking);
-	//LoadImageFromFile(L"Data/Textures/TileSelection.png", T_UI_Selection);
-	//LoadImageFromFile(L"Data/Textures/Resume.png", T_UI_Resume);
-	//LoadImageFromFile(L"Data/Textures/MainMenu.png", T_UI_MainMenu);
-	//LoadImageFromFile(L"Data/Textures/BG.png", T_UI_BG);
-
-
 	windowDPI = GetDpiForWindow(hWnd);
 
 	pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1), &pDebugBrush);
