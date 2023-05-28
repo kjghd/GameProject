@@ -12,8 +12,7 @@ NPC::NPC(float damage,
 	bool collider_dynamic,
 	bool collider_block,
 	float view_range,
-	float sprite_frameTime
-	)
+	float sprite_frameTime)
 	:
 	Character(
 		health,
@@ -26,24 +25,34 @@ NPC::NPC(float damage,
 		collider_dynamic,
 		collider_block,
 		view_range,
-		sprite_frameTime
-	),
-	m_damage(damage),
+		sprite_frameTime),
 	wanderDirection{0,0},
 	wanderCooldown(0),
-	wanderTime(0)
+	wanderTime(0),
+	m_damage(damage)
 {
 	m_collider.trigger = true;
+	m_tag = "WONP";
 }
-
 NPC::NPC(const NPC& npc)
 	:
 	Character(npc.m_sprite, npc.m_collider, npc.m_viewRange, npc.m_health, npc.m_speed),
-	m_damage(npc.m_damage),
 	wanderDirection{0,0},
 	wanderCooldown(0),
-	wanderTime(0)
+	wanderTime(0),
+	m_damage(npc.m_damage)
 {
+	m_tag = "WONP";
+}
+NPC::NPC(std::istream& is)
+	:
+	Character(is),
+	wanderDirection{ std::stof(FileWritable::GetNextValue(is)),std::stof(FileWritable::GetNextValue(is)) },
+	wanderCooldown(std::stof(FileWritable::GetNextValue(is))),
+	wanderTime(std::stof(FileWritable::GetNextValue(is))),
+	m_damage(std::stof(FileWritable::GetNextValue(is)))
+{
+	m_tag = "WONP";
 }
 
 void NPC::Update(float deltaTime)
@@ -120,14 +129,18 @@ void NPC::Wander(float deltaTime)
 
 }
 
-std::string NPC::Serialise()
+GameObject* NPC::Clone()
 {
-	std::string str;
+	return new NPC(*this);
+}
 
-	//str += Character::Serialise();
-	//str += game::DataToString<game::float2>(wanderDirection);
-	//str += game::DataToString<float>(wanderCooldown);
-	//str += game::DataToString<float>(wanderTime);
-	
-	return str;
+void NPC::WriteData(std::ostream& os)
+{
+	Character::WriteData(os);
+	os << ',';
+	os << wanderDirection.x << ',';
+	os << wanderDirection.y << ',';
+	os << wanderCooldown	<< ',';
+	os << wanderTime		<< ',';
+	os << m_damage;
 }

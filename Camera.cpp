@@ -6,10 +6,20 @@ game::float2 Camera::m_screenResolution;
 Camera::Camera(GameObject* pOwner)
 	:
 	pOwner(pOwner),
+	m_offset{ 0,0 },
 	m_zoom(64.f),
-	m_speed(4.f),
-	m_offset{ 0,0 }
+	m_speed(4.f)
 {
+	m_tag = "CMRA";
+}
+Camera::Camera(GameObject* pOwner, std::istream& is)
+	:
+	pOwner(pOwner),
+	m_offset{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) },
+	m_zoom(std::stof(FileWritable::GetNextValue(is))),
+	m_speed(std::stof(FileWritable::GetNextValue(is)))
+{
+	m_tag = "CMRA";
 }
 
 void Camera::OffsetTo(game::float2 destination, float deltaTime)
@@ -135,15 +145,10 @@ float Camera::WU_to_PX(float worldUnit)
 	return worldUnit * m_zoom;
 }
 
-std::string Camera::Serialise()
+void Camera::WriteData(std::ostream& os)
 {
-	std::string str;
-
-	//str += game::DataToString<game::int2>(m_screenResolution);
-	//str += game::DataToString<game::float2>(m_origin);
-	//str += game::DataToString<game::float2>(m_offset);
-	//str += game::DataToString<float>(m_zoom);
-	//str += game::DataToString<float>(m_speed);
-
-	return str;
+	os << m_offset.x << ',';
+	os << m_offset.y << ',';
+	os << m_zoom	 << ',';
+	os << m_speed;
 }

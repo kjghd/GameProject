@@ -13,20 +13,28 @@ Box::Box(ImageData* sprite_pImageData,
 	WorldObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime),
 	m_collider(this, collider_size, collider_dynamic, collider_block)
 {
+	m_tag = "WOBX";
 }
-
 Box::Box(const Box& box)
 	:
 	WorldObject(box.m_sprite),
 	m_collider(this, box.m_collider)
 {
+	m_tag = "WOBX";
 }
-
 Box::Box(const Sprite& sprite, const Collider_Box& collider)
 	:
 	WorldObject(sprite),
 	m_collider(this, collider)
 {
+	m_tag = "WOBX";
+}
+Box::Box(std::istream& is)
+	:
+	WorldObject(is),
+	m_collider(this, is)
+{
+	m_tag = "WOBX";
 }
 
 void Box::Update(float deltaTime)
@@ -35,12 +43,14 @@ void Box::Update(float deltaTime)
 	m_sprite.Update(deltaTime);
 }
 
-std::string Box::Serialise()
+GameObject* Box::Clone()
 {
-	std::string str;
+	return new Box(*this);
+}
 
-	//str += WorldObject::Serialise();
-	//str += m_collider.Serialise();
-
-	return str;
+void Box::WriteData(std::ostream& os)
+{
+	WorldObject::WriteData(os);
+	os << ',';
+	m_collider.WriteData(os);
 }

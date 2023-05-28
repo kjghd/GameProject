@@ -4,6 +4,9 @@
 
 class ScreenObject : public GameObject
 {
+protected:
+	virtual void WriteData(std::ostream& os) override;
+
 public:
 	static game::float2 screenRes;
 	static float px_per_su;
@@ -11,6 +14,7 @@ public:
 	ScreenObject(ImageData* sprite_pImageData, int sprite_layer, game::float2 sprite_scale = { 1.f,1.f }, game::float2 sprite_offset = { 0,0 }, float sprite_frameTime = 0);
 	ScreenObject(const ScreenObject& screenObject);
 	ScreenObject(const Sprite& sprite);
+	ScreenObject(std::istream& is);
 
 	virtual void Update(float deltaTime) override;
 
@@ -30,7 +34,7 @@ public:
 
 	static bool CompareRenderOrder_Under(ScreenObject* screenObjectA, ScreenObject* screenObjectB);
 
-	virtual std::string Serialise() override;
+	virtual GameObject* Clone() override;
 };
 
 class SO_Preview : public ScreenObject

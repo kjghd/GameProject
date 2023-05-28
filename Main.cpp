@@ -141,7 +141,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	// Initialise
 	Graphics::Init(hWnd);
-	ImageLoader::Load("Data/TextureData.xml");
+	ImageLoader::Load("Data/TextureData.xml", "Data/Textures/");
 	PrefabList::Initialise();
 	g_SceneController.Initialise();
 	g_renderer.Init(&g_SceneController);

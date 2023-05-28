@@ -14,5 +14,5 @@ class ImageLoader
 	static bool GetElement(Element& element);
 
 public:
-	static void Load(std::string directory);
+	static void Load(std::string dataDirectory, std::string imageDirectory);
 };

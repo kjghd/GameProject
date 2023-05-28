@@ -1,11 +1,12 @@
-#pragma once
 
+#pragma once
+#include "FileWritable.h"
 #include "DataTypes.h"
 #include "ImageData.h"
 #include "Camera.h"
-
 #include <vector>
 #include <string>
+
 
 class GameObject;
 
@@ -24,7 +25,7 @@ enum SpriteLayers
 	SL_COUNT
 };
 
-class Sprite
+class Sprite : public FileWritable
 {
 protected:
 	GameObject* pOwner;
@@ -41,6 +42,8 @@ protected:
 	bool invertedX;
 	bool invertedY;
 
+	//virtual void WriteData(std::ostream& os) override;
+
 public:
 	static float pixels_per_world_unit;
 	static float pixels_per_screen_unit;
@@ -52,7 +55,7 @@ public:
 
 	Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int layer = SL_DEFAULT, game::float2 scale = { 1,1 }, game::float2 offset = { 0,0 });
 	Sprite(GameObject* pOwner, const Sprite& sprite);
-	//Sprite(GameObject* pOwner, std::ifstream& fstream);
+	Sprite(GameObject* pOwner, std::istream& is);
 
 	void Update(float deltaTime);
 
@@ -81,5 +84,5 @@ public:
 	static bool CompareRowAndLeftOf(Sprite* gameObjectA, Sprite* gameObjectB);
 	static bool Obstructing(Sprite* pA, Sprite* pB);
 
-	std::string Serialise();
+	virtual void WriteData(std::ostream& os) override;
 };

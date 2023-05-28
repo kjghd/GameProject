@@ -5,7 +5,10 @@
 
 class Character : public Ball
 {
+protected:
 	game::float2 m_moveBuffer;
+
+	virtual void WriteData(std::ostream& os) override;
 
 public:
 	float m_health;
@@ -28,11 +31,9 @@ public:
 		float view_radius,
 		float sprite_frameTime = 1000.f
 	);
-
 	Character(const Character& character);
-
 	Character(const Sprite& sprite, const Collider_Circle& collider, const Collider_Circle& colliderView, float health, float speed);
-
+	Character(std::istream& is);
 
 	virtual void Update(float deltaTime) override;
 
@@ -40,5 +41,6 @@ public:
 
 	void ApplyMovement(float deltaTime);
 
-	virtual std::string Serialise() override;
+	virtual GameObject* Clone() override;
+
 };

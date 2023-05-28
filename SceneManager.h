@@ -19,7 +19,7 @@ class SceneManager
 	Camera defaultCamera;
 	ScreenObject* pCursor;
 
-	void LoadScene(size_t index);
+	void LoadScene(size_t storeIndex);
 	void NewScene(size_t index);
 	void SaveScene();
 	void PopScene();

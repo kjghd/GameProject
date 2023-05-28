@@ -48,7 +48,12 @@ int ImageData::GetAnimEndFrame(size_t currentAnim)
 	return m_vAnimRanges.at(currentAnim).range.y;
 }
 
-bool ImageData::MatchPath(std::string path)
+bool ImageData::MatchFilename(std::string path)
 {
 	return path == m_filename;
+}
+
+std::string ImageData::GetFilename()
+{
+	return m_filename;
 }

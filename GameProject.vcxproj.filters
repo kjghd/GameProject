@@ -22,13 +22,13 @@
     <Filter Include="Objects\Source">
       <UniqueIdentifier>{3b9f360b-6325-48e2-95d7-8b56f53803b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components">
+    <Filter Include="Objects\Components">
       <UniqueIdentifier>{c9f093de-e458-4a36-abd9-968d8669da8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\Header">
+    <Filter Include="Objects\Components\Header">
       <UniqueIdentifier>{7da6793b-ec0f-4b2c-ab77-dde7b69e7852}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\Source">
+    <Filter Include="Objects\Components\Source">
       <UniqueIdentifier>{466d5a9e-8dd8-4120-9371-de743b9f290b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -64,13 +64,13 @@
       <Filter>Objects\Source</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Components\Source</Filter>
+      <Filter>Objects\Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
-      <Filter>Components\Source</Filter>
+      <Filter>Objects\Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>Components\Source</Filter>
+      <Filter>Objects\Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="Prefabs.cpp">
       <Filter>Source Files</Filter>
@@ -90,9 +90,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Objects\Source</Filter>
     </ClCompile>
-    <ClCompile Include="SO_Button.cpp">
-      <Filter>Objects\Source</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,6 +98,12 @@
     </ClCompile>
     <ClCompile Include="ImageLoader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileWritable.cpp">
+      <Filter>Objects\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SO_Button.cpp">
+      <Filter>Objects\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,13 +138,13 @@
       <Filter>Objects\Header</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Components\Header</Filter>
+      <Filter>Objects\Components\Header</Filter>
     </ClInclude>
     <ClInclude Include="Collider.h">
-      <Filter>Components\Header</Filter>
+      <Filter>Objects\Components\Header</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>Components\Header</Filter>
+      <Filter>Objects\Components\Header</Filter>
     </ClInclude>
     <ClInclude Include="Prefabs.h">
       <Filter>Header Files</Filter>
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="ImageLoader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileWritable.h">
+      <Filter>Objects\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "GameObject.h"
 
+
 // Used to create prefabs.
 GameObject::GameObject(
 	ImageData* sprite_pImageData,
@@ -12,6 +13,7 @@ GameObject::GameObject(
 	m_location{ 0,0 },
 	m_sprite(this, sprite_pImageData, sprite_frameTime, sprite_layer, sprite_scale, sprite_offset)
 {
+	m_tag = "GOBJ";
 }
 
 // Used when spawing from a prefab in a scene.
@@ -20,6 +22,7 @@ GameObject::GameObject(const GameObject& gameObject)
 	m_location(gameObject.m_location),
 	m_sprite(this, gameObject.m_sprite)
 {
+	m_tag = "GOBJ";
 }
 
 // Used by derived classes.
@@ -28,14 +31,17 @@ GameObject::GameObject(const Sprite& sprite)
 	m_location{ 0,0 },
 	m_sprite(this, sprite)
 {
+	m_tag = "GOBJ";
 }
 
-//GameObject::GameObject(std::ifstream& file)
-//	:
-//	m_location{(float)file.get(), (float)file.get()}
-//{
-//
-//}
+// Used with file data.
+GameObject::GameObject(std::istream& is)
+	:
+	m_location{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) },
+	m_sprite(this, is)
+{
+	m_tag = "GOBJ";
+}
 
 void GameObject::Update(float deltaTime)
 {
@@ -48,12 +54,14 @@ void GameObject::Update_SpriteOnly()
 	m_sprite.Update(0);
 }
 
-std::string GameObject::Serialise()
+GameObject* GameObject::Clone()
 {
-	std::string str;
-	
-	//str += game::DataToString<game::float2>(m_location);
-	//str += m_sprite.Serialise();
-	
-	return str;
+	return new GameObject(*this);
+}
+
+void GameObject::WriteData(std::ostream& os)
+{
+	os << m_location.x << ',';
+	os << m_location.y << ',';
+	m_sprite.WriteData(os);
 }

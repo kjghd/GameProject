@@ -5,6 +5,9 @@
 
 class Player : public Character
 {
+protected:
+	virtual void WriteData(std::ostream& os) override;
+
 public:
     Camera m_camera;
 
@@ -21,10 +24,10 @@ public:
 		float view_radius,
 		float sprite_frameTime = 1000.f
 	);
-
 	Player(const Player& player);
+	Player(std::istream& is);
 
     virtual void Update(float deltaTime) override;
 
-	virtual std::string Serialise() override;
+	virtual GameObject* Clone() override;
 };

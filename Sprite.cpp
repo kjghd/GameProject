@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "WorldObject.h"
 #include "ScreenObject.h"
+#include "ImageDataList.h"
 
 float Sprite::pixels_per_world_unit{ 64 };
 float Sprite::pixels_per_screen_unit{ 32 };
@@ -26,6 +27,7 @@ Sprite::Sprite(GameObject* pOwner, ImageData* pImageData, float frameTime, int l
 	active(true)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
+	m_tag = "SPRT";
 }
 Sprite::Sprite(GameObject* pOwner, const Sprite& sprite)
 	:
@@ -45,6 +47,27 @@ Sprite::Sprite(GameObject* pOwner, const Sprite& sprite)
 	active(sprite.active)
 {
 	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
+	m_tag = "SPRT";
+}
+Sprite::Sprite(GameObject* pOwner, std::istream& is)
+	:
+	pOwner(pOwner),
+	offset{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) },
+	scale{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) },
+	layer(std::stoi(FileWritable::GetNextValue(is))),
+	pImageData(ImageDataList::Get(FileWritable::GetNextValue(is))),
+	currentFrame(std::stoi(FileWritable::GetNextValue(is))),
+	currentAnim(std::stoi(FileWritable::GetNextValue(is))),
+	frameTimeMax(std::stof(FileWritable::GetNextValue(is))),
+	frameTimeCurrent(std::stof(FileWritable::GetNextValue(is))),
+	direction(std::stoi(FileWritable::GetNextValue(is))),
+	invertedX(FileWritable::GetNextValue(is) == "1" ? true : false),
+	invertedY(FileWritable::GetNextValue(is) == "1" ? true : false),
+	visible(FileWritable::GetNextValue(is) == "1" ? true : false),
+	active(FileWritable::GetNextValue(is) == "1" ? true : false)
+
+{
+	m_tag = "SPRT";
 }
 
 
@@ -165,21 +188,21 @@ bool Sprite::Obstructing(Sprite* pA, Sprite* pB)
 	//return locA.y - sizeA.y / 2.f > locB.y - sizeB.y / 2.f && ;
 }
 
-std::string Sprite::Serialise()
+void Sprite::WriteData(std::ostream& os)
 {
-	std::string str;
-
-	//str += game::DataToString<game::float2>(offset);
-	//str += game::DataToString<game::float2>(scale);
-	//str += game::DataToString<int>(layer);
-	//str += game::DataToString<int>(pImageData->GetTexture()); // Determine image data from place in texture array
-	//str += game::DataToString<int>(currentFrame);
-	//str += game::DataToString<int>(currentAnim);
-	//str += game::DataToString<float>(frameTimeMax);
-	//str += game::DataToString<float>(frameTimeCurrent);
-	//str += game::DataToString<int>(direction);
-	//str += game::DataToString<bool>(invertedX);
-	//str += game::DataToString<bool>(invertedY);
-
-	return str;
+	os << offset.x					<< ',';
+	os << offset.y					<< ',';
+	os << scale.x					<< ',';
+	os << scale.y					<< ',';
+	os << layer						<< ',';
+	os << pImageData->GetFilename().c_str() << ',';
+	os << currentFrame				<< ',';
+	os << currentAnim				<< ',';
+	os << frameTimeMax				<< ',';
+	os << frameTimeCurrent			<< ',';
+	os << direction					<< ',';
+	os << invertedX					<< ',';
+	os << invertedY					<< ',';
+	os << visible					<< ',';
+	os << active;
 }

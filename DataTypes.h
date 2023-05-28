@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 
+
 namespace game
 {
 	struct int2
@@ -61,4 +62,11 @@ namespace game
 		std::string name;
 		game::int2 range;
 	};
+
+	template <class T>
+	void SerialiseToFile(std::ofstream& file, T data)
+	{
+		char* c{ (char*)&data };
+		file.write(c, sizeof(data));
+	}
 }

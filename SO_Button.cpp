@@ -1,5 +1,4 @@
 #include "SO_Button.h"
-
 #include "Input.h"
 
 
@@ -9,6 +8,7 @@ SO_Button::SO_Button(ImageData* pImageData, int layer, game::float2 scale, game:
 	hovered(false),
 	pressed(false)
 {
+	m_tag = "SOBT";
 }
 SO_Button::SO_Button(const SO_Button& button)
 	:
@@ -16,6 +16,20 @@ SO_Button::SO_Button(const SO_Button& button)
 	hovered(false),
 	pressed(false)
 {
+	m_tag = "SOBT";
+}
+SO_Button::SO_Button(std::istream& is)
+	:
+	ScreenObject(is),
+	hovered(FileWritable::GetNextValue(is) == "1" ? true : false),
+	pressed(FileWritable::GetNextValue(is) == "1" ? true : false)
+{
+	m_tag = "SOBT";
+}
+
+GameObject* SO_Button::Clone()
+{
+	return new SO_Button(*this);
 }
 
 void SO_Button::Update(float deltaTime)
@@ -72,4 +86,12 @@ bool SO_Button::IsPressed()
 bool SO_Button::IsHovered()
 {
 	return hovered;
+}
+
+void SO_Button::WriteData(std::ostream& os)
+{
+	ScreenObject::WriteData(os);
+	os << ',';
+	os << hovered << ',';
+	os << pressed;
 }

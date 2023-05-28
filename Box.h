@@ -6,6 +6,9 @@
 
 class Box : public WorldObject
 {
+protected:
+	virtual void WriteData(std::ostream& os) override;
+
 public:
 	Collider_Box m_collider;
 
@@ -22,8 +25,8 @@ public:
 		float sprite_frameTime = 1000.f
 	);
 	Box(const Box& box);
-
 	Box(const Sprite& sprite, const Collider_Box& collider);
+	Box(std::istream& is);
 
-	virtual std::string Serialise() override;
+	virtual GameObject* Clone() override;
 };

@@ -99,10 +99,22 @@ Collider::Collider(WorldObject* pOwner, bool dynamic, bool block, bool trigger)
 	pOwner(pOwner),
 	dynamic(dynamic),
 	block(block),
-	trigger(trigger),
 	moving(false),
+	trigger(trigger),
 	moveBuffer{ 0,0 }
 {
+	m_tag = "COLL";
+}
+Collider::Collider(WorldObject* pOwner, std::istream& is)
+	:
+	pOwner(pOwner),
+	dynamic(FileWritable::GetNextValue(is) == "1" ? true : false),
+	block(FileWritable::GetNextValue(is) == "1" ? true : false),
+	moving(FileWritable::GetNextValue(is) == "1" ? true : false),
+	trigger(FileWritable::GetNextValue(is) == "1" ? true : false),
+	moveBuffer{ std::stof(FileWritable::GetNextValue(is)),std::stof(FileWritable::GetNextValue(is)) }
+{
+	m_tag = "COLL";
 }
 
 void Collider::CheckCollision(Collider* pCollider)
@@ -118,16 +130,14 @@ void Collider::Update()
 	pCollisions.clear();
 }
 
-std::string Collider::Serialise()
+void Collider::WriteData(std::ostream& os)
 {
-	std::string str;
-
-	//str += game::DataToString<bool>(dynamic);
-	//str += game::DataToString<bool>(block);
-	//str += game::DataToString<bool>(moving);
-	//str += game::DataToString<bool>(trigger);
-
-	return str;
+	os << dynamic		<< ',';
+	os << block			<< ',';
+	os << moving		<< ',';
+	os << trigger		<< ',';
+	os << moveBuffer.x	<< ',';
+	os << moveBuffer.y;
 }
 
 
@@ -137,12 +147,21 @@ Collider_Box::Collider_Box(WorldObject* pOwner, game::float2 sz, bool dyn, bool 
 	Collider(pOwner, dyn, blck, trigger),
 	size(sz)
 {
+	m_tag = "COLB";
 }
 Collider_Box::Collider_Box(WorldObject* pOwner, const Collider_Box& collider)
 	:
 	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	size(collider.size)
 {
+	m_tag = "COLB";
+}
+Collider_Box::Collider_Box(WorldObject* pOwner, std::istream& is)
+	:
+	Collider(pOwner, is),
+	size{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) }
+{
+	m_tag = "COLB";
 }
 
 void Collider_Box::CheckCollision(Collider* pCollider)
@@ -165,14 +184,12 @@ void Collider_Box::CheckCollision(Collider* pCollider)
 	}
 };
 
-std::string Collider_Box::Serialise()
+void Collider_Box::WriteData(std::ostream& os)
 {
-	std::string str;
-
-	//str += Collider::Serialise();
-	//str += game::DataToString<game::float2>(size);
-
-	return str;
+	Collider::WriteData(os);
+	os << ',';
+	os << size.x << ',';
+	os << size.y;
 }
 
 
@@ -182,14 +199,21 @@ Collider_Circle::Collider_Circle(WorldObject* pOwner, float radius, bool dynamic
 	Collider(pOwner, dynamic, block, trigger),
 	radius(radius)
 {
+	m_tag = "COLC";
 }
 Collider_Circle::Collider_Circle(WorldObject* pOwner, const Collider_Circle& collider)
 	:
 	Collider(pOwner, collider.dynamic, collider.block, collider.trigger),
 	radius(collider.radius)
 {
+	m_tag = "COLC";
 }
-
+Collider_Circle::Collider_Circle(WorldObject* pOwner, std::istream& is)
+	:
+	Collider(pOwner, is),
+	radius(std::stof(FileWritable::GetNextValue(is)))
+{
+}
 void Collider_Circle::CheckCollision(Collider* pCollider)
 {
 	// Circle vs circle
@@ -210,12 +234,9 @@ void Collider_Circle::CheckCollision(Collider* pCollider)
 	}
 };
 
-std::string Collider_Circle::Serialise()
+void Collider_Circle::WriteData(std::ostream& os)
 {
-	std::string str;
-
-	//str += Collider::Serialise();
-	//str += game::DataToString<float>(radius);
-
-	return str;
+	Collider::WriteData(os);
+	os << ',';
+	os << radius;
 }

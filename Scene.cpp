@@ -19,8 +19,8 @@ Scene::Scene(bool show)
 	canUpdate(false),
 	pCursor(nullptr)
 {
+	m_tag = "SCNE";
 }
-
 Scene::Scene(const Scene& scene)
 	:
 	isVisible(scene.isVisible),
@@ -28,6 +28,8 @@ Scene::Scene(const Scene& scene)
 	vpSpawnQueue(),
 	pCursor(scene.pCursor)
 {
+	m_tag = "SCNE";
+
 	for (const auto& pObject : scene.vpGameObjects)
 	{
 		if (pObject != scene.pCursor)
@@ -43,6 +45,29 @@ Scene::Scene(const Scene& scene)
 		}
 	}
 }
+Scene::Scene(std::istream& is)
+	:
+	isVisible(FileWritable::GetNextValue(is).c_str() == "1" ? true : false),
+	canUpdate(FileWritable::GetNextValue(is).c_str() == "1" ? true : false),
+	pCursor(nullptr)
+{
+	int objectCount{ std::stoi(FileWritable::GetNextValue(is).c_str()) };
+	while (objectCount > 0)
+	{
+		std::string tag = FileWritable::GetNextValue(is);
+		if (tag == "GOBJ") vpGameObjects.push_back(new GameObject(is));
+		else if (tag == "WOBJ") vpGameObjects.push_back(new WorldObject(is));
+		else if (tag == "WOBX") vpGameObjects.push_back(new Box(is));
+		else if (tag == "WOBL") vpGameObjects.push_back(new Ball(is));
+		else if (tag == "WOCH") vpGameObjects.push_back(new Character(is));
+		else if (tag == "WONP") vpGameObjects.push_back(new NPC(is));
+		else if (tag == "WOPC") vpGameObjects.push_back(new Player(is));
+		else if (tag == "SOBJ") vpGameObjects.push_back(new ScreenObject(is));
+		else if (tag == "SOBT") vpGameObjects.push_back(new SO_Button(is));
+		--objectCount;
+	}
+}
+
 
 Scene::~Scene()
 {
@@ -154,54 +179,7 @@ SceneMessage Scene::Update(float deltaTime)
 
 void Scene::QueueToSpawn(int prefab, game::float2 location)
 {
-	GameObject* pPrefab{ PrefabList::Get(prefab) };
-
-	if (dynamic_cast<WorldObject*>(pPrefab))
-	{
-		if (dynamic_cast<Box*>(pPrefab))
-		{
-			vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pPrefab)));
-		}
-		else if (dynamic_cast<Ball*>(pPrefab))
-		{
-			if (dynamic_cast<Character*>(pPrefab))
-			{
-				if (dynamic_cast<Player*>(pPrefab))
-				{
-					vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pPrefab)));
-				}
-				else if (dynamic_cast<NPC*>(pPrefab))
-				{
-					vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pPrefab)));
-				}
-				else
-				{
-					vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pPrefab)));
-				}
-			}
-			else
-			{
-				vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pPrefab)));
-			}
-		}
-		else
-		{
-			vpSpawnQueue.push_back(new WorldObject(*dynamic_cast<WorldObject*>(pPrefab)));
-		}
-
-	}
-	else if (dynamic_cast<ScreenObject*>(pPrefab))
-	{
-		if (dynamic_cast<SO_Button*>(pPrefab))
-		{
-			vpSpawnQueue.push_back(new SO_Button(*dynamic_cast<SO_Button*>(pPrefab)));
-		}
-		else
-		{
-			vpSpawnQueue.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(pPrefab)));
-		}
-	}
-
+	vpSpawnQueue.push_back(PrefabList::Get(prefab)->Clone());
 	vpSpawnQueue.back()->m_location = location;
 }
 
@@ -209,52 +187,7 @@ void Scene::QueueToSpawn(GameObject* pObject)
 {
 	if (pObject)
 	{
-		if (dynamic_cast<WorldObject*>(pObject))
-		{
-			if (dynamic_cast<Box*>(pObject))
-			{
-				vpSpawnQueue.push_back(new Box(*dynamic_cast<Box*>(pObject)));
-			}
-			else if (dynamic_cast<Ball*>(pObject))
-			{
-				if (dynamic_cast<Character*>(pObject))
-				{
-					if (dynamic_cast<Player*>(pObject))
-					{
-						vpSpawnQueue.push_back(new Player(*dynamic_cast<Player*>(pObject)));
-					}
-					else if (dynamic_cast<NPC*>(pObject))
-					{
-						vpSpawnQueue.push_back(new NPC(*dynamic_cast<NPC*>(pObject)));
-					}
-					else
-					{
-						vpSpawnQueue.push_back(new Character(*dynamic_cast<Character*>(pObject)));
-					}
-				}
-				else
-				{
-					vpSpawnQueue.push_back(new Ball(*dynamic_cast<Ball*>(pObject)));
-				}
-			}
-			else
-			{
-				vpSpawnQueue.push_back(new WorldObject(*dynamic_cast<WorldObject*>(pObject)));
-			}
-
-		}
-		else if (dynamic_cast<ScreenObject*>(pObject))
-		{
-			if (dynamic_cast<SO_Button*>(pObject))
-			{
-				vpSpawnQueue.push_back(new SO_Button(*dynamic_cast<SO_Button*>(pObject)));
-			}
-			else
-			{
-				vpSpawnQueue.push_back(new ScreenObject(*dynamic_cast<ScreenObject*>(pObject)));
-			}
-		}
-
+		vpSpawnQueue.push_back(pObject->Clone());
 		vpSpawnQueue.back()->m_location = pObject->m_location;
 	}
 }
@@ -286,45 +219,29 @@ void Scene::DestroyObjects()
 	vDestroyQueue.clear();
 }
 
-std::string Scene::Serialise()
-{
-	DestroyObjects();
-	SpawnObjects();
-
-	std::string str;
-
-	//// Show
-	//str += std::to_string(isVisible);
-	//
-	//// GameObjects
-	//for (const auto& pGameObject : vpGameObjects)
-	//{
-	//	
-	//}
-	//
-	//// Prefabs
-	//
-	//
-	//
-	//
-	//std::vector<GameObject*> vpGameObjects;
-	//
-	//int current_prefab;
-	//PrefabList prefabs;
-	//
-	//Player* pPlayer;
-	//ScreenObject* pCursor;
-	//GameObject* pCursorBox;
-
-	return str;
-}
-
 void Scene::SetCursor(ScreenObject* pC)
 {
 	pCursor = pC;
 }
 
+void Scene::WriteData(std::ostream& os)
+{
+	DestroyObjects();
+	SpawnObjects();
 
+	os << isVisible << ',';
+	os << canUpdate << ',';
+	os << vpGameObjects.size() << '\n';
+
+	for (const auto& pGameObject : vpGameObjects)
+	{
+		pGameObject->Write(os);
+		os << '\n';
+	}
+}
+
+
+// World
 
 void Scene_World::Initialise()
 {
@@ -358,23 +275,53 @@ void Scene_World::Initialise()
 Scene_World::Scene_World(bool show)
 	:
 	Scene(show),
+	pCurrentCamera(nullptr),
 	current_prefab(PREFAB_Floor_ConcreteA),
 	pPlayer(nullptr),
-	pCurrentCamera(nullptr),
-	pPreview(nullptr),
-	pCursorBox(nullptr)
-{
-}
-
-Scene_World::Scene_World(const Scene_World& scene)
-	:
-	Scene(scene),
-	current_prefab(PREFAB_Floor_ConcreteA),
-	pPlayer(nullptr),
-	pCurrentCamera(nullptr),
 	pCursorBox(nullptr),
 	pPreview(nullptr)
 {
+	m_tag = "SCWL";
+}
+Scene_World::Scene_World(const Scene_World& scene)
+	:
+	Scene(scene),
+	pCurrentCamera(nullptr),
+	current_prefab(PREFAB_Floor_ConcreteA),
+	pPlayer(nullptr),
+	pCursorBox(nullptr),
+	pPreview(nullptr)
+{
+	m_tag = "SCWL";
+}
+Scene_World::Scene_World(std::istream& is)
+	:
+	Scene(is),
+	pCurrentCamera(nullptr),
+	current_prefab(std::stoi(FileWritable::GetNextValue(is))),
+	pPlayer(nullptr),
+	pCursorBox(nullptr),
+	pPreview(nullptr)
+{
+	m_tag = "SCWL";
+
+	int n_pPlayer = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pPlayer >= 0)
+	{
+		pPlayer = dynamic_cast<Player*>(vpGameObjects.at(n_pPlayer));
+	}
+
+	int n_pCursorBox = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pCursorBox >= 0)
+	{
+		pCursorBox = dynamic_cast<WorldObject*>(vpGameObjects.at(n_pCursorBox));
+	}
+
+	int n_pPreview = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pPreview >= 0)
+	{
+		pPreview = dynamic_cast<ScreenObject*>(vpGameObjects.at(n_pPreview));
+	}
 }
 
 
@@ -477,9 +424,9 @@ SceneMessage Scene_World::Update(float deltaTime)
 		}
 		else
 			pCursorBox->m_sprite.visible = false;
-		if (Input::CheckPressed(BTN_2)) current_prefab = PREFAB_Mushroom;
-		if (Input::CheckPressed(BTN_3)) current_prefab = PREFAB_Floor_ConcreteA;
-		if (Input::CheckPressed(BTN_4)) current_prefab = PREFAB_NPC;
+		if (Input::CheckPressed(BTN_1)) current_prefab = PREFAB_Mushroom;
+		if (Input::CheckPressed(BTN_2)) current_prefab = PREFAB_Floor_ConcreteA;
+		if (Input::CheckPressed(BTN_3)) current_prefab = PREFAB_NPC;
 
 		Collision();
 
@@ -512,32 +459,107 @@ Camera* Scene_World::GetCamera()
 	return pCurrentCamera ? pCurrentCamera : nullptr;
 }
 
+void Scene_World::WriteData(std::ostream& os)
+{
+	Scene::WriteData(os);
+	//os << ',';
 
+	os << current_prefab << ',';
+
+	if (pPlayer)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pPlayer)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+	os << ',';
+
+	if (pCursorBox)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pCursorBox)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+	os << ',';
+
+	if (pPreview)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pPreview)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+}
+
+
+// Pause
 
 Scene_Pause::Scene_Pause(bool visible)
 	:
 	Scene(visible),
 	pResume(nullptr),
-	pMainMenu(nullptr)
+	pMainMenu(nullptr),
+	pSave(nullptr)
 {
 }
 Scene_Pause::Scene_Pause(const Scene_Pause& scene)
 	:
 	Scene(scene),
 	pResume(scene.pResume),
-	pMainMenu(scene.pMainMenu)
+	pMainMenu(scene.pMainMenu),
+	pSave(scene.pSave)
 {
 }
 
 void Scene_Pause::Initialise()
 {
 	pResume = nullptr;
-	QueueToSpawn(PREFAB_Resume, { 0, 1 });
+	QueueToSpawn(PREFAB_Resume, { 0, 1.5 });
 	pResume = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
 
 	pMainMenu = nullptr;
-	QueueToSpawn(PREFAB_MainMenu, { 0, -1 });
+	QueueToSpawn(PREFAB_MainMenu, { 0, 0 });
 	pMainMenu = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+
+	pSave = nullptr;
+	QueueToSpawn(PREFAB_Save, { 0, -1.5 });
+	pSave = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+
+	pLoad = nullptr;
+	QueueToSpawn(PREFAB_Load, { 0, -3 });
+	pLoad = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
 
 	SpawnObjects();
 }
@@ -564,6 +586,15 @@ SceneMessage Scene_Pause::Update(float deltaTime)
 		{
 			msg.id = SMID_Pop;
 		}
+		if (pSave->IsPressed())
+		{
+			msg.id = SMID_Store;
+		}
+		if (pLoad->IsPressed())
+		{
+			msg.id = SMID_Load;
+		}
+
 
 		// Cursor
 		game::float2 loc_px{ Input::GetMouseLoc().x, Input::GetMouseLoc().y };

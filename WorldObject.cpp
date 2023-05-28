@@ -12,6 +12,7 @@ WorldObject::WorldObject(
 	:
 	GameObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime)
 {
+	m_tag = "WOBJ";
 }
 
 // Used in scene
@@ -19,6 +20,7 @@ WorldObject::WorldObject(const WorldObject& worldObject)
 	:
 	GameObject(worldObject)
 {
+	m_tag = "WOBJ";
 }
 
 // Used by derived classes
@@ -26,6 +28,15 @@ WorldObject::WorldObject(const Sprite& sprite)
 	:
 	GameObject(sprite)
 {
+	m_tag = "WOBJ";
+}
+
+// Used with file data.
+WorldObject::WorldObject(std::istream& is)
+	:
+	GameObject(is)
+{
+	m_tag = "WOBJ";
 }
 
 bool WorldObject::CompareRenderOrder_Under(WorldObject* gameObjectA, WorldObject* gameObjectB)
@@ -46,11 +57,12 @@ void WorldObject::Update(float deltaTime)
 	m_sprite.Update(deltaTime);
 }
 
-std::string WorldObject::Serialise()
+GameObject* WorldObject::Clone()
 {
-	std::string str;
+	return new WorldObject(*this);
+}
 
-	//str += GameObject::Serialise();
-
-	return str;
+void WorldObject::WriteData(std::ostream& os)
+{
+	GameObject::WriteData(os);
 }

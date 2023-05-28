@@ -29,13 +29,21 @@ Player::Player(float health,
 		sprite_frameTime),
 	m_camera(this)
 {
+	m_tag = "WOPC";
 }
-
 Player::Player(const Player& player)
 	:
 	Character(player.m_sprite, player.m_collider, player.m_viewRange, player.m_health, player.m_speed),
 	m_camera(this)
 {
+	m_tag = "WOPC";
+}
+Player::Player(std::istream& is)
+	:
+	Character(is),
+	m_camera(this, is)
+{
+	m_tag = "WOPC";
 }
 
 void Player::Update(float deltaTime)
@@ -43,7 +51,7 @@ void Player::Update(float deltaTime)
 	if (m_health > 0)
 	{
 		if (Input::GetScrollDistance())
-			m_camera.IncreaseZoom(Input::GetScrollDistance() * .4);
+			m_camera.IncreaseZoom(Input::GetScrollDistance() * .4f);
 
 		m_lookDirection = m_camera.ScreenLocToWorldLoc(Input::GetMouseLoc().x, Input::GetMouseLoc().y) - m_location;
 
@@ -76,12 +84,14 @@ void Player::Update(float deltaTime)
 	m_sprite.Update(deltaTime);
 }
 
-std::string Player::Serialise()
+GameObject* Player::Clone()
 {
-	std::string str;
+	return new Player(*this);
+}
 
-	//str += Character::Serialise();
-	//str += m_camera.Serialise();
-
-	return str;
+void Player::WriteData(std::ostream& os)
+{
+	Character::WriteData(os);
+	os << ',';
+	m_camera.WriteData(os);
 }

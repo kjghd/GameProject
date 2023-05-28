@@ -5,6 +5,9 @@
 
 class WorldObject : public GameObject
 {
+protected:
+	virtual void WriteData(std::ostream& os) override;
+
 public:
 	virtual void Update(float deltaTime) override;
 
@@ -17,11 +20,11 @@ public:
 	);
 	WorldObject(const WorldObject& worldObject);
 	WorldObject(const Sprite& sprite);
+	WorldObject(std::istream& is);
 
 	static bool CompareRenderOrder_Under(WorldObject* gameObjectA, WorldObject* gameObjectB);
 	static bool CompareRenderOrder_Above(WorldObject* gameObjectA, WorldObject* gameObjectB);
 	static bool CompareRenderOrder_RowAndLeftOf(WorldObject* gameObjectA, WorldObject* gameObjectB);
 
-	virtual std::string Serialise() override;
+	virtual GameObject* Clone() override;
 };
-

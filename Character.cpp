@@ -25,8 +25,7 @@ Character::Character(
 	bool collider_dynamic,
 	bool collider_block,
 	float view_radius,
-	float sprite_frameTime
-)
+	float sprite_frameTime)
 	:
 	Ball(sprite_pImageData,
 		sprite_layer,
@@ -41,8 +40,8 @@ Character::Character(
 	m_viewRange(this, view_radius, false, false, true),
 	m_lookDirection{0,0}
 {
+	m_tag = "WOCH";
 }
-
 Character::Character(const Character& character)
 	:
 	Ball(character.m_sprite, character.m_collider),
@@ -51,8 +50,8 @@ Character::Character(const Character& character)
 	m_speed(character.m_speed),
 	m_lookDirection(character.m_lookDirection)
 {
+	m_tag = "WOCH";
 }
-
 Character::Character(const Sprite& sprite, const Collider_Circle& collider, const Collider_Circle& colliderView, float health, float speed)
 	:
 	Ball(sprite, collider),
@@ -61,8 +60,19 @@ Character::Character(const Sprite& sprite, const Collider_Circle& collider, cons
 	m_speed(speed),
 	m_lookDirection{0,0}
 {
+	m_tag = "WOCH";
 }
-
+Character::Character(std::istream& is)
+	:
+	Ball(is),
+	m_moveBuffer{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) },
+	m_health(std::stof(FileWritable::GetNextValue(is))),
+	m_speed(std::stof(FileWritable::GetNextValue(is))),
+	m_lookDirection{ std::stof(FileWritable::GetNextValue(is)), std::stof(FileWritable::GetNextValue(is)) },
+	m_viewRange(this, is)
+{
+	m_tag = "WOCH";
+}
 void Character::Update(float deltaTime)
 {
 	ApplyMovement(deltaTime);
@@ -203,15 +213,20 @@ void Character::ApplyMovement(float deltaTime)
 		m_sprite.SetAnimation(Anim_Idle_Down);
 }
 	
-std::string Character::Serialise()
+GameObject* Character::Clone()
 {
-	std::string str;
+	return new Character(*this);
+}
 
-	//str += Ball::Serialise();
-	//str += game::DataToString<float>(m_health);
-	//str += game::DataToString<float>(m_speed);
-	//str += game::DataToString<game::float2>(m_lookDirection);
-	//str += m_viewRange.Serialise();
-
-	return str;
+void Character::WriteData(std::ostream& os)
+{
+	Ball::WriteData(os);
+	os << ',';
+	os << m_moveBuffer.x	<< ',';
+	os << m_moveBuffer.y	<< ',';
+	os << m_health			<< ',';
+	os << m_speed			<< ',';
+	os << m_lookDirection.x << ',';
+	os << m_lookDirection.y << ',';
+	m_viewRange.WriteData(os);
 }

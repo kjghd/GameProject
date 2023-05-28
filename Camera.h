@@ -1,13 +1,17 @@
 #pragma once
-
+#include "FileWritable.h"
 #include "DataTypes.h"
 
 class GameObject;
 
-class Camera
+class Camera : public FileWritable
 {
+protected:
+	//virtual void WriteData(std::ostream& os) override;
+
 public:
 	Camera(GameObject* pOwner);
+	Camera(GameObject* pOwner, std::istream& is);
 
 	void OffsetTo(game::float2 destination, float deltaTime);
 
@@ -26,7 +30,7 @@ public:
 
 	static game::float2 m_screenResolution;
 
-	virtual std::string Serialise();
+	virtual void WriteData(std::ostream& os) override;
 
 protected:
 	GameObject* pOwner;

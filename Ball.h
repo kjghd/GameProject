@@ -7,6 +7,9 @@
 
 class Ball : public WorldObject
 {
+protected:
+	virtual void WriteData(std::ostream& os) override;
+
 public:
 	Collider_Circle m_collider;
 	
@@ -24,6 +27,7 @@ public:
 	);
 	Ball(const Ball& ball);
 	Ball(const Sprite& sprite, const Collider_Circle& collider);
+	Ball(std::istream& is);
 
-	virtual std::string Serialise() override;
+	virtual GameObject* Clone() override;
 };

@@ -38,7 +38,7 @@ struct ImageLoader::Element {
 };
 struct ImageLoader::Texture
 {
-	std::string fileLocation;
+	std::string filename;
 	game::int2 spriteCount{ 1,1 };
 	std::vector<game::Animation> vAnimations;
 };
@@ -100,7 +100,7 @@ bool ImageLoader::GetElement(ImageLoader::Element& e)
 	else return false;
 }
 
-void ImageLoader::Load(std::string dataDirectory)
+void ImageLoader::Load(std::string dataDirectory, std::string imageDirectory)
 {
 	// Parse file.
 	file.open(dataDirectory);
@@ -128,7 +128,7 @@ void ImageLoader::Load(std::string dataDirectory)
 					{
 						if (a.tag == "location")
 						{
-							vTextures.back().fileLocation = a.content;
+							vTextures.back().filename = a.content;
 						}
 						else if (a.tag == "count")
 						{
@@ -192,10 +192,10 @@ void ImageLoader::Load(std::string dataDirectory)
 		game::int2 dimensions;
 
 		// Create ID2D1Bitmap
-		Graphics::CreateTextureFromFile(texture.fileLocation, index, dimensions);
+		Graphics::CreateTextureFromFile(imageDirectory + texture.filename, index, dimensions);
 
 		// Create ImageData
-		ImageDataList::Create(ImageData(texture.fileLocation, index, dimensions, texture.spriteCount.x, texture.spriteCount.y, texture.vAnimations));
+		ImageDataList::Create(ImageData(texture.filename, index, dimensions, texture.spriteCount.x, texture.spriteCount.y, texture.vAnimations));
 	}
 	
 }

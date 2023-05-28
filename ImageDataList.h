@@ -12,5 +12,5 @@ class ImageDataList
 public:
 	static void Initialise();
 	static void Create(ImageData imageData);
-	static ImageData* Get(std::string path);
+	static ImageData* Get(std::string filename);
 };

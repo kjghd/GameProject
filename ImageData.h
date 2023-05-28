@@ -20,5 +20,6 @@ public:
 	game::rect GetCurrentRect(size_t currentFrame);
 	int GetAnimStartFrame(size_t currentAnim);
 	int GetAnimEndFrame(size_t currentAnim);
-	bool MatchPath(std::string);
+	bool MatchFilename(std::string);
+	std::string GetFilename();
 };

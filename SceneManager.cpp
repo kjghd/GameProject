@@ -2,11 +2,20 @@
 
 #include "Prefabs.h"
 #include "PrefabTags.h"
+
+#include "GameObject.h"
 #include "ScreenObject.h"
+#include "SO_Button.h"
+#include "WorldObject.h"
+#include "Box.h"
+#include "Ball.h"
+#include "Character.h"
+#include "NPC.h"
+#include "Player.h"
+
 
 std::vector<Scene*> SceneManager::pScenePrefabs;
 std::vector<Scene*> SceneManager::pSceneStore;
-
 
 SceneManager::SceneManager()
 	:
@@ -51,8 +60,6 @@ void SceneManager::Initialise()
 	// Pause
 	Scene_Pause* pPause{ new Scene_Pause(false) };
 	pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
-	//pPause->QueueToSpawn(PREFAB_Resume, { 0,1 });
-	//pPause->QueueToSpawn(PREFAB_MainMenu, { 0,-1 });
 	pScenePrefabs.push_back(pPause);
 
 	// 
@@ -82,7 +89,13 @@ void SceneManager::Update(float deltaTime)
 			case SMID_Null: break;
 			case SMID_Pop: PopScene(); break;
 			case SMID_Store: SaveScene(); break;
-			case SMID_Load: LoadScene(sm.indexStore); break;
+			case SMID_Load: {
+				while (!pSceneStack.empty())
+					PopScene();
+
+				LoadScene(sm.indexStore);
+				break;
+			}
 			case SMID_New: NewScene(sm.indexPrefabs);  break;
 			}
 		}
@@ -98,13 +111,14 @@ void SceneManager::Update(float deltaTime)
 
 void SceneManager::LoadScene(size_t storeIndex)
 {
-	if (dynamic_cast<Scene_World*>(pSceneStore.at(storeIndex)))
+	std::ifstream fin("Data/Saves/TestScene.scene");
+	
+	if (FileWritable::GetNextValue(fin) == "SCWL")
 	{
-		pSceneStack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(pSceneStore.at(storeIndex))));
+		pSceneStack.push_back(new Scene_World(fin));
 		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 	}
-	else
-		pSceneStack.push_back(new Scene(*pSceneStore.at(storeIndex)));
+
 
 	pSceneStack.back()->SetCursor(pCursor);
 	SetActive(pSceneStack.back());
@@ -130,7 +144,9 @@ void SceneManager::NewScene(size_t prefabIndex)
 }
 void SceneManager::SaveScene()
 {
-	pSceneStore.push_back(pMainScene);
+	std::ofstream fout("Data/Saves/TestScene.scene");
+	pMainScene->Write(fout);
+	fout.close();
 }
 void SceneManager::PopScene()
 {

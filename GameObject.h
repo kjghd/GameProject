@@ -1,10 +1,15 @@
 #pragma once
-
+#include "FileWritable.h"
 #include "DataTypes.h"
 #include "Sprite.h"
-#include <fstream>
-class GameObject
+#include <ostream>
+
+
+class GameObject : public FileWritable
 {
+protected:
+	virtual void WriteData(std::ostream& os) override;
+
 public:
 	game::float2 m_location;
 	Sprite m_sprite;
@@ -18,10 +23,11 @@ public:
 	);
 	GameObject(const GameObject& gameObject);
 	GameObject(const Sprite& sprite);
-	//GameObject(std::ifstream& file);
+	GameObject(std::istream& is);
 
 	virtual void Update(float deltaTime);
 	virtual void Update_SpriteOnly();
 
-	virtual std::string Serialise();
+	virtual GameObject* Clone();
+
 };

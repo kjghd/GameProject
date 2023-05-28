@@ -1,4 +1,5 @@
 #pragma once
+#include "FileWritable.h"
 #include "DataTypes.h"
 #include "Camera.h"
 #include <vector>
@@ -6,6 +7,7 @@
 
 
 class GameObject;
+class WorldObject;
 class Player;
 class ScreenObject;
 class SO_Button;
@@ -33,7 +35,7 @@ struct SceneMessage
 	//std::string fileName;
 };
 
-class Scene
+class Scene : public FileWritable
 {
 protected:
 	bool isVisible;
@@ -51,9 +53,12 @@ protected:
 	virtual void SpawnObjects();
 	void DestroyObjects();
 
+	virtual void WriteData(std::ostream& os) override;
+
 public:
 	Scene(bool visible);
 	Scene(const Scene& scene);
+	Scene(std::istream& is);
 	~Scene();
 
 	virtual void Initialise();
@@ -68,8 +73,6 @@ public:
 
 	void QueueToSpawn(int prefab, game::float2 location = { 0,0 });
 	void QueueToSpawn(GameObject* pObject);
-
-	std::string Serialise();
 };
 
 class Scene_World : public Scene
@@ -78,14 +81,16 @@ protected:
 	Camera* pCurrentCamera;
 	int current_prefab;
 	Player* pPlayer;
-	GameObject* pCursorBox;
+	WorldObject* pCursorBox;
 	ScreenObject* pPreview;
 
 	virtual void SpawnObjects() override;
+	virtual void WriteData(std::ostream& os) override;
 
 public:
 	Scene_World(bool show);
 	Scene_World(const Scene_World& scene);
+	Scene_World(std::istream& is);
 
 	Camera* GetCamera();
 
@@ -98,7 +103,11 @@ class Scene_Pause : public Scene
 {
 	SO_Button* pResume;
 	SO_Button* pMainMenu;
+	SO_Button* pSave;
+	SO_Button* pLoad;
+
 public:
+
 	Scene_Pause(bool visible);
 	Scene_Pause(const Scene_Pause& scene);
 	virtual void Initialise() override;

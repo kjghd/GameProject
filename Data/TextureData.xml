@@ -1,21 +1,29 @@
 <Textures>
-	<Texture location="Data/Textures/Error.png"/>
-	<Texture location="Data/Textures/CursorBlinking.png" count="2,1"/>
-	<Texture location="Data/Textures/TileSelection.png"/>
-	<Texture location="Data/Textures/sprite_sheet.png" count="4,2">
+	<Texture location="Error.png"/>
+	<Texture location="CursorBlinking.png" count="2,1"/>
+	<Texture location="TileSelection.png"/>
+	<Texture location="sprite_sheet.png" count="4,2">
 		<Animation name="numbers" range="0,3"/>
 		<Animation name="letters" range="4,7"/>
 	</Texture>
-	<Texture location="Data/Textures/Resume.png" count="1,2">
+	<Texture location="Resume.png" count="1,2">
 		<Animation name="off" range="0,0"/>
 		<Animation name="on" range="1,1"/>
 	</Texture>
-	<Texture location="Data/Textures/MainMenu.png" count="1,2">
+	<Texture location="MainMenu.png" count="1,2">
 		<Animation name="off" range="0,0"/>
 		<Animation name="on" range="1,1"/>
 	</Texture>
-	<Texture location="Data/Textures/BG.png" count="2,2"/>
-	<Texture location="Data/Textures/guy_sheet.png" count="8,4">
+	<Texture location="Save.png" count="1,2">
+		<Animation name="off" range="0,0"/>
+		<Animation name="on" range="1,1"/>
+	</Texture>
+	<Texture location="Load.png" count="1,2">
+		<Animation name="off" range="0,0"/>
+		<Animation name="on" range="1,1"/>
+	</Texture>
+	<Texture location="BG.png" count="2,2"/>
+	<Texture location="guy_sheet.png" count="8,4">
 		<Animation name="idle_front" range="0,0"/>
 		<Animation name="idle_back" range="1,1"/>
 		<Animation name="idle_side" range="2,2"/>
@@ -24,7 +32,7 @@
 		<Animation name="move_back" range="16,23"/>
 		<Animation name="move_side" range="24,31"/>
 	</Texture>
-	<Texture location="Data/Textures/guy_sheet2.png" count="8,4">
+	<Texture location="guy_sheet2.png" count="8,4">
 		<Animation name="idle_front" range="0,0"/>
 		<Animation name="idle_back" range="1,1"/>
 		<Animation name="idle_side" range="2,2"/>
@@ -33,8 +41,8 @@
 		<Animation name="move_back" range="16,23"/>
 		<Animation name="move_side" range="24,31"/>
 	</Texture>
-	<Texture location="Data/Textures/Mushroom.png"/>
-	<Texture location="Data/Textures/shopping_floor.png" count="4,2">
+	<Texture location="Mushroom.png"/>
+	<Texture location="shopping_floor.png" count="4,2">
 		<Animation name="concreteA" range="0,0"/>
 		<Animation name="concreteB" range="1,1"/>
 		<Animation name="concreteC" range="2,2"/>

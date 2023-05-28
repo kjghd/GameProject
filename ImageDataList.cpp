@@ -14,14 +14,14 @@ void ImageDataList::Create(ImageData imageData)
 ImageData* ImageDataList::Get(std::string path)
 {
 	for (auto& imageData : vList)
-		if (imageData.MatchPath(path))
+		if (imageData.MatchFilename(path))
 		{
 			return &imageData;
 		}
 
 	// Error
 	for (auto& imageData : vList)
-		if (imageData.MatchPath("Data/Textures/Error.png"))
+		if (imageData.MatchFilename("Data/Textures/Error.png"))
 		{
 			return &imageData;
 		}

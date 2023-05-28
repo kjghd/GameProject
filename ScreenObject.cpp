@@ -8,16 +8,25 @@ ScreenObject::ScreenObject(ImageData* pImageData, int layer, game::float2 scale,
 	:
 	GameObject(pImageData, layer, scale, offset, frameTime)
 {
+	m_tag = "SOBJ";
 }
 ScreenObject::ScreenObject(const ScreenObject& screenObject)
 	:
 	GameObject(screenObject)
 {
+	m_tag = "SOBJ";
 }
 ScreenObject::ScreenObject(const Sprite& sprite)
 	:
 	GameObject(sprite)
 {
+	m_tag = "SOBJ";
+}
+ScreenObject::ScreenObject(std::istream& is)
+	:
+	GameObject(is)
+{
+	m_tag = "SOBJ";
 }
 
 void ScreenObject::Update(float deltaTime)
@@ -89,15 +98,14 @@ bool ScreenObject::CompareRenderOrder_Under(ScreenObject* screenObjectA, ScreenO
 	return screenObjectA->GetRenderLayer() > screenObjectB->GetRenderLayer();
 }
 
-std::string ScreenObject::Serialise()
+GameObject* ScreenObject::Clone()
 {
-	std::string str;
+	return new ScreenObject(*this);
+}
 
-	//str += GameObject::Serialise();
-	//str += game::DataToString<game::float2>(screenRes);
-	//str += game::DataToString<float>(px_per_su);
-
-	return str;
+void ScreenObject::WriteData(std::ostream& os)
+{
+	GameObject::WriteData(os);
 }
 
 

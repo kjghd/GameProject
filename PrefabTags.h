@@ -18,6 +18,8 @@ enum PrefabTag
 	PREFAB_Selection,
 	PREFAB_Resume,
 	PREFAB_MainMenu,
+	PREFAB_Save,
+	PREFAB_Load,
 	PREFAB_Background,
 
 	PREFAB_COUNT
