@@ -24,7 +24,7 @@ void Renderer::Init(SceneManager* pSM)
 void Renderer::Render()
 {
 	m_pGraphics->BeginDraw();
-	m_pGraphics->ClearScreen();
+	m_pGraphics->ClearScreen(.2f,.3f,.5f);
 
 	if (m_pSceneController->GetCamera())
 	{

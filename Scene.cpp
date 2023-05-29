@@ -393,6 +393,7 @@ SceneMessage Scene_World::Update(float deltaTime)
 		{
 			pCursorBox->m_sprite.visible = true;
 
+			// Round mouse loc to whole unit.
 			game::float2 loc{
 				pCurrentCamera->ScreenLocToWorldLoc(
 				Input::GetMouseLoc().x,
@@ -404,20 +405,20 @@ SceneMessage Scene_World::Update(float deltaTime)
 			pCursorBox->Update(deltaTime);
 
 			// Object spawn controls.
+			GameObject* pSpawn{ PrefabList::Get(current_prefab) };
 			if (Input::CheckHeld(BTN_LMB))
 			{
-				game::float2 loc{
-					pCurrentCamera->ScreenLocToWorldLoc(
-							Input::GetMouseLoc().x,
-							Input::GetMouseLoc().y
-						)
-				};
-				game::float2 locRounded{ roundf(loc.x), roundf(loc.y) };
-
 				bool canSpawn{ true };
 				for (auto& pGameObject : vpGameObjects)
-					if (pGameObject->m_location == locRounded && pGameObject->m_sprite.GetRenderLayer() < SL_Object && pGameObject != pCursorBox) canSpawn = false;
-
+				{
+					if (pGameObject->m_location == locRounded &&
+						pSpawn->m_sprite.GetRenderLayer() == pGameObject->m_sprite.GetRenderLayer() &&
+						pGameObject != pCursorBox)
+					{
+						canSpawn = false;
+					}
+				}
+			
 				if (canSpawn)
 					QueueToSpawn(current_prefab, locRounded);
 			}
