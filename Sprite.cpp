@@ -102,12 +102,20 @@ void Sprite::PlayForwards() { direction = 1; }
 void Sprite::PlayBackwards() { direction = -1; }
 
 
-void Sprite::SetAnimation(int index)
+//void Sprite::SetAnimation(int index)
+//{
+//	currentAnim = index;
+//	currentFrame = pImageData->GetAnimStartFrame(index);
+//	frameTimeCurrent = 0;
+//}
+
+void Sprite::SetAnimation(std::string name)
 {
-	currentAnim = index;
-	currentFrame = pImageData->GetAnimStartFrame(index);
+	currentAnim = pImageData->GetAnimIndex(name);
+	currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 	frameTimeCurrent = 0;
 }
+
 
 void Sprite::FlipX() { invertedX = invertedX ? false : true; };
 void Sprite::FlipY() { invertedY = invertedY ? false : true; };
@@ -134,6 +142,10 @@ int Sprite::GetRenderLayer() { return layer; }
 game::rect Sprite::GetSourceRect() { return pImageData->GetCurrentRect(currentFrame); }
 int Sprite::GetBitmapIndex() { return pImageData->GetTexture(); }
 int Sprite::GetCurrentAnimation() { return currentAnim; }
+std::string Sprite::GetAnimName()
+{
+	return pImageData->GetAnimName(currentAnim);
+}
 
 bool Sprite::CheckInvertedX() { return invertedX; }
 bool Sprite::CheckInvertedY() { return invertedY; }

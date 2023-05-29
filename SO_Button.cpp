@@ -57,12 +57,12 @@ void SO_Button::SetHovered()
 		mouseLoc.x < rc.r &&
 		mouseLoc.y < rc.t)
 	{
-		m_sprite.SetAnimation(1);
+		m_sprite.SetAnimation("on");
 		hovered = true;
 	}
 	else
 	{
-		m_sprite.SetAnimation(0);
+		m_sprite.SetAnimation("off");
 		hovered = false;
 	}
 }

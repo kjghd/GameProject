@@ -110,12 +110,12 @@ void Character::ApplyMovement(float deltaTime)
 		{
 			if (m_lookDirection.y > 0)
 			{
-				if (m_sprite.GetCurrentAnimation() != Anim_Up) m_sprite.SetAnimation(Anim_Up);
+				if (m_sprite.GetAnimName() != "move_back") m_sprite.SetAnimation("move_back");
 				m_sprite.PlayForwards();
 			}
 			else if (m_lookDirection.y < 0)
 			{
-				if (m_sprite.GetCurrentAnimation() != Anim_Down) m_sprite.SetAnimation(Anim_Down);
+				if (m_sprite.GetAnimName() != "move_front") m_sprite.SetAnimation("move_front");
 				m_sprite.PlayBackwards();
 			}
 		}
@@ -125,12 +125,12 @@ void Character::ApplyMovement(float deltaTime)
 		{
 			if (m_lookDirection.y < 0)
 			{
-				if (m_sprite.GetCurrentAnimation() != Anim_Down) m_sprite.SetAnimation(Anim_Down);
+				if (m_sprite.GetAnimName() != "move_front") m_sprite.SetAnimation("move_front");
 				m_sprite.PlayForwards();
 			}
 			else if (m_lookDirection.y > 0)
 			{
-				if (m_sprite.GetCurrentAnimation() != Anim_Up) m_sprite.SetAnimation(Anim_Up);
+				if (m_sprite.GetAnimName() != "move_back") m_sprite.SetAnimation("move_back");
 				m_sprite.PlayBackwards();
 			}
 		}
@@ -138,7 +138,7 @@ void Character::ApplyMovement(float deltaTime)
 		// Left
 		else if (r < -l && (l <= -y || x == y))
 		{
-			if (m_sprite.GetCurrentAnimation() != Anim_Horizontal) m_sprite.SetAnimation(Anim_Horizontal);
+			if (m_sprite.GetAnimName() != "move_side") m_sprite.SetAnimation("move_side");
 			if (m_lookDirection.x < 0)
 			{
 				if (!m_sprite.CheckInvertedX()) m_sprite.FlipX();
@@ -154,7 +154,7 @@ void Character::ApplyMovement(float deltaTime)
 		// Right
 		else if (r > -l && (r >= y || x == y))
 		{
-			if (m_sprite.GetCurrentAnimation() != Anim_Horizontal) m_sprite.SetAnimation(Anim_Horizontal);
+			if (m_sprite.GetAnimName() != "move_side") m_sprite.SetAnimation("move_side");
 			if (m_lookDirection.x > 0)
 			{
 				if (m_sprite.CheckInvertedX()) m_sprite.FlipX();
@@ -188,29 +188,29 @@ void Character::ApplyMovement(float deltaTime)
 		float y{ u > -d ? u : -d };
 
 		// Up
-		if (u > -d && (u >= x && x < y) && m_sprite.GetCurrentAnimation() != Anim_Idle_Up)
-			m_sprite.SetAnimation(Anim_Idle_Up);
+		if (u > -d && (u >= x && x < y) && m_sprite.GetAnimName() != "idle_back")
+			m_sprite.SetAnimation("idle_back");
 
 		// Down
-		else if (u < -d && (d <= -x && x < y) && m_sprite.GetCurrentAnimation() != Anim_Idle_Down)
-			m_sprite.SetAnimation(Anim_Idle_Down);
+		else if (u < -d && (d <= -x && x < y) && m_sprite.GetAnimName() != "idle_front")
+			m_sprite.SetAnimation("idle_front");
 
 		// Left
-		else if (r < -l && (l <= -y || x == y) && m_sprite.GetCurrentAnimation() != Anim_Idle_Horizontal)
+		else if (r < -l && (l <= -y || x == y) && m_sprite.GetAnimName() != "idle_side")
 		{
-			m_sprite.SetAnimation(Anim_Idle_Horizontal);
+			m_sprite.SetAnimation("idle_side");
 			if (!m_sprite.CheckInvertedX()) m_sprite.FlipX();
 		}
 
 		// Right
-		else if (r > -l && (r >= y || x == y) && m_sprite.GetCurrentAnimation() != Anim_Idle_Horizontal)
+		else if (r > -l && (r >= y || x == y) && m_sprite.GetAnimName() != "idle_side")
 		{
-			m_sprite.SetAnimation(Anim_Idle_Horizontal);
+			m_sprite.SetAnimation("idle_side");
 			if (m_sprite.CheckInvertedX()) m_sprite.FlipX();
 		}
 	}
-	else if (m_sprite.GetCurrentAnimation() != Anim_Idle_Down)
-		m_sprite.SetAnimation(Anim_Idle_Down);
+	else if (m_sprite.GetAnimName() != "idle_front")
+		m_sprite.SetAnimation("idle_front");
 }
 	
 GameObject* Character::Clone()

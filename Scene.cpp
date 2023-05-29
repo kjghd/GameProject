@@ -327,7 +327,7 @@ Scene_World::Scene_World(std::istream& is)
 
 SceneMessage Scene_World::Update(float deltaTime)
 {
-	SceneMessage msg{ SMID_Null, 0 };
+	SceneMessage msg{ SMID_Null };
 	if (!canUpdate && isVisible)
 	{
 		for (auto& pGameObject : vpGameObjects)
@@ -346,7 +346,8 @@ SceneMessage Scene_World::Update(float deltaTime)
 		if (Input::CheckPressed(BTN_ESC))
 		{
 			msg.id = SMID_New;
-			msg.indexPrefabs = SCENE_Pause;
+			//msg.index = SCENE_Pause;
+			msg.fileName = "pause.scene";
 		}
 
 		if (Input::CheckPressed(BTN_RMB))
@@ -386,7 +387,6 @@ SceneMessage Scene_World::Update(float deltaTime)
 				}
 				++i;
 			}
-
 		}
 
 		if (Input::CheckHeld(BTN_SHIFT))
@@ -404,7 +404,7 @@ SceneMessage Scene_World::Update(float deltaTime)
 			pCursorBox->Update(deltaTime);
 
 			// Object spawn controls.
-			if (Input::CheckPressed(BTN_LMB))
+			if (Input::CheckHeld(BTN_LMB))
 			{
 				game::float2 loc{
 					pCurrentCamera->ScreenLocToWorldLoc(
@@ -531,42 +531,104 @@ Scene_Pause::Scene_Pause(bool visible)
 	Scene(visible),
 	pResume(nullptr),
 	pMainMenu(nullptr),
-	pSave(nullptr)
+	pSave(nullptr),
+	pLoad(nullptr),
+	pNew(nullptr)
 {
+	m_tag = "SCPS";
 }
 Scene_Pause::Scene_Pause(const Scene_Pause& scene)
 	:
 	Scene(scene),
 	pResume(scene.pResume),
 	pMainMenu(scene.pMainMenu),
-	pSave(scene.pSave)
+	pSave(scene.pSave),
+	pLoad(scene.pLoad),
+	pNew(scene.pNew)
 {
+	m_tag = "SCPS";
+}
+Scene_Pause::Scene_Pause(std::istream& is)
+	:
+	Scene(is),
+	pResume(nullptr),
+	pMainMenu(nullptr),
+	pSave(nullptr),
+	pLoad(nullptr),
+	pNew(nullptr)
+{
+	m_tag = "SCWL";
+
+	int n_pResume = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pResume >= 0)
+	{
+		pResume = dynamic_cast<SO_Button*>(vpGameObjects.at(n_pResume));
+	}
+
+	int n_pMainMenu = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pMainMenu >= 0)
+	{
+		pMainMenu = dynamic_cast<SO_Button*>(vpGameObjects.at(n_pMainMenu));
+	}
+
+	int n_pSave = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pSave >= 0)
+	{
+		pSave = dynamic_cast<SO_Button*>(vpGameObjects.at(n_pSave));
+	}
+
+	int n_pLoad = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pLoad >= 0)
+	{
+		pLoad = dynamic_cast<SO_Button*>(vpGameObjects.at(n_pLoad));
+	}
+
+	int n_pNew = std::stoi(FileWritable::GetNextValue(is));
+	if (n_pNew >= 0)
+	{
+		pNew = dynamic_cast<SO_Button*>(vpGameObjects.at(n_pNew));
+	}
 }
 
 void Scene_Pause::Initialise()
 {
-	pResume = nullptr;
-	QueueToSpawn(PREFAB_Resume, { 0, 1.5 });
-	pResume = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	if (!pResume)
+	{
+		QueueToSpawn(PREFAB_Resume, { 0, 3 });
+		pResume = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	}
 
-	pMainMenu = nullptr;
-	QueueToSpawn(PREFAB_MainMenu, { 0, 0 });
-	pMainMenu = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	if (!pSave)
+	{
+		QueueToSpawn(PREFAB_Save, { 0, 1.5 });
+		pSave = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	}
 
-	pSave = nullptr;
-	QueueToSpawn(PREFAB_Save, { 0, -1.5 });
-	pSave = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	if (!pLoad)
+	{
+		QueueToSpawn(PREFAB_Load, { 0, 0 });
+		pLoad = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	}
 
-	pLoad = nullptr;
-	QueueToSpawn(PREFAB_Load, { 0, -3 });
-	pLoad = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	if (!pNew)
+	{
+		QueueToSpawn(PREFAB_New, { 0, -1.5 });
+		pNew = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	}
+
+	if (!pMainMenu)
+	{
+		QueueToSpawn(PREFAB_MainMenu, { 0, -3 });
+		pMainMenu = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
+	}
+
 
 	SpawnObjects();
 }
 
 SceneMessage Scene_Pause::Update(float deltaTime)
 {
-	SceneMessage msg{ SMID_Null, 0 };
+	SceneMessage msg{ SMID_Null };
 	if (!canUpdate && isVisible)
 	{
 		pCursor->SetLocation_percentage({ 100.f,100.f });
@@ -589,10 +651,17 @@ SceneMessage Scene_Pause::Update(float deltaTime)
 		if (pSave->IsPressed())
 		{
 			msg.id = SMID_Store;
+			msg.fileName = "save.scene";
 		}
 		if (pLoad->IsPressed())
 		{
 			msg.id = SMID_Load;
+			msg.fileName = "save.scene";
+		}
+		if (pNew->IsPressed())
+		{
+			msg.id = SMID_New;
+			msg.fileName = "empty.scene";
 		}
 
 
@@ -605,4 +674,103 @@ SceneMessage Scene_Pause::Update(float deltaTime)
 			pGameObject->Update(deltaTime);
 	}
 	return msg;
+}
+
+void Scene_Pause::WriteData(std::ostream& os)
+{
+	Scene::WriteData(os);
+
+	if (pResume)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pResume)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+	os << ',';
+
+	if (pMainMenu)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pMainMenu)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+	os << ',';
+
+	if (pSave)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pSave)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+	os << ',';
+
+	if (pLoad)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pLoad)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
+	os << ',';
+
+	if (pNew)
+	{
+		int i{ 0 };
+		for (const auto& pObject : vpGameObjects)
+		{
+			if (pObject == pNew)
+			{
+				os << i;
+				break;
+			}
+			++i;
+		}
+	}
+	else
+	{
+		os << -1;
+	}
 }

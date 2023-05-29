@@ -20,6 +20,7 @@ enum PrefabTag
 	PREFAB_MainMenu,
 	PREFAB_Save,
 	PREFAB_Load,
+	PREFAB_New,
 	PREFAB_Background,
 
 	PREFAB_COUNT

@@ -57,3 +57,22 @@ std::string ImageData::GetFilename()
 {
 	return m_filename;
 }
+
+int ImageData::GetAnimIndex(std::string name)
+{
+	int i{ 0 };
+	for (const auto& anim : m_vAnimRanges)
+	{
+		if (anim.name == name)
+		{
+			return i;
+		}
+		++i;
+	}
+	return -1;
+}
+
+std::string ImageData::GetAnimName(size_t index)
+{
+	return m_vAnimRanges.at(index).name;
+}

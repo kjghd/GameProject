@@ -22,6 +22,10 @@
 		<Animation name="off" range="0,0"/>
 		<Animation name="on" range="1,1"/>
 	</Texture>
+	<Texture location="New.png" count="1,2">
+		<Animation name="off" range="0,0"/>
+		<Animation name="on" range="1,1"/>
+	</Texture>
 	<Texture location="BG.png" count="2,2"/>
 	<Texture location="guy_sheet.png" count="8,4">
 		<Animation name="idle_front" range="0,0"/>
@@ -51,5 +55,11 @@
 		<Animation name="tileC" range="5,5"/>
 		<Animation name="tileD" range="6,6"/>
 		<Animation name="tileE" range="7,7"/>
+	</Texture>
+	<Texture location="field.png" count="4,2">
+		<Animation name="A" range="0,0"/>
+		<Animation name="B" range="1,1"/>
+		<Animation name="C" range="2,2"/>
+		<Animation name="D" range="3,3"/>
 	</Texture>
 </Textures>

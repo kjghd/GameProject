@@ -28,6 +28,7 @@ void PrefabList::Initialise()
 	prefabs[PREFAB_MainMenu] = new SO_Button(ImageDataList::Get("MainMenu.png"), SL_UI_Mid);
 	prefabs[PREFAB_Save] = new SO_Button(ImageDataList::Get("Save.png"), SL_UI_Mid);
 	prefabs[PREFAB_Load] = new SO_Button(ImageDataList::Get("Load.png"), SL_UI_Mid);
+	prefabs[PREFAB_New] = new SO_Button(ImageDataList::Get("New.png"), SL_UI_Mid);
 	prefabs[PREFAB_Background] = new ScreenObject(ImageDataList::Get("BG.png"), SL_UI_Back, { 1.3f,1.f }, { 0,0 }, 100.f);
 	prefabs[PREFAB_Cursor] = new ScreenObject(ImageDataList::Get("CursorBlinking.png"), SL_UI_Front, {1.f,1.f}, {0,0}, 400.f);
 }

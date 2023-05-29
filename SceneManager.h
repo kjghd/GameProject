@@ -19,9 +19,11 @@ class SceneManager
 	Camera defaultCamera;
 	ScreenObject* pCursor;
 
-	void LoadScene(size_t storeIndex);
-	void NewScene(size_t index);
-	void SaveScene();
+	void LoadScene(std::string filename);
+	//void NewScene(size_t index);
+	void NewScene(std::string filename);
+	void SaveScene(std::string filename);
+	void SaveScenePrefab(Scene* pScene, std::string filename);
 	void PopScene();
 
 	void FocusWorld();

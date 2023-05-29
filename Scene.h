@@ -30,9 +30,8 @@ enum SceneMessageID
 struct SceneMessage
 {
 	int id{ SMID_Null };
-	int indexStore{ 0 };  // Use until file loading works.
-	int indexPrefabs{ 0 }; // Use until file loading works.
-	//std::string fileName;
+	//int index;
+	std::string fileName;
 };
 
 class Scene : public FileWritable
@@ -101,15 +100,20 @@ public:
 
 class Scene_Pause : public Scene
 {
+protected:
 	SO_Button* pResume;
 	SO_Button* pMainMenu;
 	SO_Button* pSave;
 	SO_Button* pLoad;
+	SO_Button* pNew;
+
+	virtual void WriteData(std::ostream& os) override;
 
 public:
 
 	Scene_Pause(bool visible);
 	Scene_Pause(const Scene_Pause& scene);
+	Scene_Pause(std::istream& is);
 	virtual void Initialise() override;
 	virtual SceneMessage Update(float deltaTime) override;
 };

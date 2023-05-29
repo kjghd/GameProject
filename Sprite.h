@@ -42,8 +42,6 @@ protected:
 	bool invertedX;
 	bool invertedY;
 
-	//virtual void WriteData(std::ostream& os) override;
-
 public:
 	static float pixels_per_world_unit;
 	static float pixels_per_screen_unit;
@@ -72,10 +70,12 @@ public:
 	game::rect GetSourceRect();
 	int GetBitmapIndex();
 	int GetCurrentAnimation();
+	std::string GetAnimName();
 	bool CheckInvertedX();
 	bool CheckInvertedY();
 
-	void SetAnimation(int index);
+	//void SetAnimation(int index);
+	void SetAnimation(std::string name);
 	void FlipX();
 	void FlipY();
 

@@ -3,6 +3,7 @@
 #include <vector>
 
 
+
 class ImageData
 {
 private:
@@ -22,4 +23,6 @@ public:
 	int GetAnimEndFrame(size_t currentAnim);
 	bool MatchFilename(std::string);
 	std::string GetFilename();
+	int GetAnimIndex(std::string name);
+	std::string GetAnimName(size_t index);
 };

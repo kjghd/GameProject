@@ -48,22 +48,14 @@ void SceneManager::Initialise()
 {
 	pCursor = new ScreenObject(*dynamic_cast<ScreenObject*>(PrefabList::Get(PREFAB_Cursor)));
 
-	// Level 1
-	Scene_World* pLevel1{ new Scene_World(true) };
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 0,5 });
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 1,2 });
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 4,-6 });
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 3,5 });
-	pLevel1->QueueToSpawn(PREFAB_Mushroom, { 4,5 });
-	pScenePrefabs.push_back(pLevel1);
-
 	// Pause
-	Scene_Pause* pPause{ new Scene_Pause(false) };
-	pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
-	pScenePrefabs.push_back(pPause);
+	//Scene_Pause* pPause{ new Scene_Pause(false) };
+	//pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
+	//pPause->Initialise();
+	//SaveScenePrefab(pPause, "pause.scene");
 
 	// 
-	NewScene(0);
+	NewScene("empty.scene");
 	pFocused = pSceneStack.back();
 	pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 }
@@ -88,15 +80,9 @@ void SceneManager::Update(float deltaTime)
 			{
 			case SMID_Null: break;
 			case SMID_Pop: PopScene(); break;
-			case SMID_Store: SaveScene(); break;
-			case SMID_Load: {
-				while (!pSceneStack.empty())
-					PopScene();
-
-				LoadScene(sm.indexStore);
-				break;
-			}
-			case SMID_New: NewScene(sm.indexPrefabs);  break;
+			case SMID_Store: SaveScene(sm.fileName); break;
+			case SMID_Load: LoadScene(sm.fileName);  break;
+			case SMID_New: NewScene(sm.fileName);  break;
 			}
 		}
 	}
@@ -109,43 +95,62 @@ void SceneManager::Update(float deltaTime)
 		pCamera = &defaultCamera;
 }
 
-void SceneManager::LoadScene(size_t storeIndex)
+void SceneManager::LoadScene(std::string filename)
 {
-	std::ifstream fin("Data/Saves/TestScene.scene");
-	
+	std::ifstream fin("Data/Saves/" + filename);
+
 	if (FileWritable::GetNextValue(fin) == "SCWL")
 	{
+		while (!pSceneStack.empty())
+			PopScene();
+
 		pSceneStack.push_back(new Scene_World(fin));
 		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 	}
+
+	fin.close();
 
 
 	pSceneStack.back()->SetCursor(pCursor);
 	SetActive(pSceneStack.back());
 
 }
-void SceneManager::NewScene(size_t prefabIndex)
+void SceneManager::NewScene(std::string filename)
 {
-	if (dynamic_cast<Scene_World*>(pScenePrefabs.at(prefabIndex)))
+	std::ifstream fin("Data/Scenes/" + filename);
+
+	std::string tag{ FileWritable::GetNextValue(fin) };
+
+	if (tag == "SCWL")
 	{
-		pSceneStack.push_back(new Scene_World(*dynamic_cast<Scene_World*>(pScenePrefabs.at(prefabIndex))));
+		while (!pSceneStack.empty())
+			PopScene();
+
+		pSceneStack.push_back(new Scene_World(fin));
 		pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 	}
-	else if (dynamic_cast<Scene_Pause*>(pScenePrefabs.at(prefabIndex)))
+	else if (tag == "SCPS")
 	{
-		pSceneStack.push_back(new Scene_Pause(*dynamic_cast<Scene_Pause*>(pScenePrefabs.at(prefabIndex))));
+		pSceneStack.push_back(new Scene_Pause(fin));
 	}
-	else
-		pSceneStack.push_back(new Scene(*pScenePrefabs.at(prefabIndex)));
+
+	fin.close();
+
 
 	pSceneStack.back()->Initialise();
 	pSceneStack.back()->SetCursor(pCursor);
 	SetActive(pSceneStack.back());
 }
-void SceneManager::SaveScene()
+void SceneManager::SaveScene(std::string filename)
 {
-	std::ofstream fout("Data/Saves/TestScene.scene");
+	std::ofstream fout("Data/Saves/" + filename);
 	pMainScene->Write(fout);
+	fout.close();
+}
+void SceneManager::SaveScenePrefab(Scene* pScene, std::string filename)
+{
+	std::ofstream fout("Data/Scenes/" + filename);
+	pScene->Write(fout);
 	fout.close();
 }
 void SceneManager::PopScene()

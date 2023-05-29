@@ -7,8 +7,7 @@ WorldObject::WorldObject(
 	int sprite_layer,
 	game::float2 sprite_scale,
 	game::float2 sprite_offset,
-	float sprite_frameTime
-)
+	float sprite_frameTime)
 	:
 	GameObject(sprite_pImageData, sprite_layer, sprite_scale, sprite_offset, sprite_frameTime)
 {

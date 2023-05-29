@@ -74,8 +74,8 @@ void Player::Update(float deltaTime)
 
 		ApplyMovement(deltaTime);
 	}
-	else if(m_sprite.GetCurrentAnimation() != 3)
-		m_sprite.SetAnimation(3);
+	else if(m_sprite.GetAnimName() != "dead")
+		m_sprite.SetAnimation("dead");
 
 	m_camera.OffsetTo(m_sprite.GetLocation(), deltaTime);
 

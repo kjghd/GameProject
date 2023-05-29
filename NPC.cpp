@@ -92,8 +92,8 @@ void NPC::Update(float deltaTime)
 
 		ApplyMovement(deltaTime);
 	}
-	else if (m_sprite.GetCurrentAnimation() != 3)
-		m_sprite.SetAnimation(3);
+	else if (m_sprite.GetAnimName() != "dead")
+		m_sprite.SetAnimation("dead");
 
 	m_sprite.Update(deltaTime);
 	m_collider.Update();
