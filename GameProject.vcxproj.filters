@@ -31,6 +31,15 @@
     <Filter Include="Objects\Components\Source">
       <UniqueIdentifier>{466d5a9e-8dd8-4120-9371-de743b9f290b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{f9650ab7-e769-4b11-b96a-cbbd5f5327cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\Header">
+      <UniqueIdentifier>{fd33f696-cf0c-4091-b5a0-871f5fb49f12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\Source">
+      <UniqueIdentifier>{675719a4-e27c-4efe-9112-8e62e637e8d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -46,9 +55,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ball.cpp">
@@ -72,14 +78,8 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Objects\Components\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Prefabs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Objects\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageData.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NPC.cpp">
       <Filter>Objects\Source</Filter>
@@ -90,20 +90,35 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Objects\Source</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageDataList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FileWritable.cpp">
       <Filter>Objects\Source</Filter>
     </ClCompile>
     <ClCompile Include="SO_Button.cpp">
       <Filter>Objects\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scenes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene_World.cpp">
+      <Filter>Scenes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene_Pause.cpp">
+      <Filter>Scenes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageData.cpp">
+      <Filter>Objects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageDataList.cpp">
+      <Filter>Objects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageLoader.cpp">
+      <Filter>Objects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs.cpp">
+      <Filter>Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,9 +132,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataTypes.h">
@@ -146,17 +158,8 @@
     <ClInclude Include="Sprite.h">
       <Filter>Objects\Components\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Prefabs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PrefabTags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Objects\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageData.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NPC.h">
       <Filter>Objects\Header</Filter>
@@ -170,17 +173,35 @@
     <ClInclude Include="GameObject.h">
       <Filter>Objects\Header</Filter>
     </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageDataList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FileWritable.h">
       <Filter>Objects\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scenes\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene_World.h">
+      <Filter>Scenes\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene_Pause.h">
+      <Filter>Scenes\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabTags.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageData.h">
+      <Filter>Objects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageDataList.h">
+      <Filter>Objects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageLoader.h">
+      <Filter>Objects\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

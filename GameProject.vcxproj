@@ -156,6 +156,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ImageDataList.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Scene_Pause.cpp" />
+    <ClCompile Include="Scene_World.cpp" />
     <ClCompile Include="SO_Button.cpp" />
     <ClCompile Include="WorldObject.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -183,6 +185,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ImageDataList.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Scene_Pause.h" />
+    <ClInclude Include="Scene_World.h" />
     <ClInclude Include="SO_Button.h" />
     <ClInclude Include="WorldObject.h" />
     <ClInclude Include="Graphics.h" />

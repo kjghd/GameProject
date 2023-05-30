@@ -1,5 +1,7 @@
 #pragma once
 #include "Scene.h"
+#include "Scene_World.h"
+#include "Scene_Pause.h"
 #include "Input.h"
 #include <vector>
 
@@ -10,8 +12,6 @@ class ScreenObject;
 class SceneManager
 {
 	Scene_World* pMainScene;
-	static std::vector<Scene*> pScenePrefabs;	// Will be replaced with files.
-	static std::vector<Scene*> pSceneStore;	// Will be replaced with files.
 	std::vector<Scene*> pSceneStack;
 	std::vector<Scene*> deleteQueue;
 	Scene* pFocused;

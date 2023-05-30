@@ -14,9 +14,6 @@
 #include "Player.h"
 
 
-std::vector<Scene*> SceneManager::pScenePrefabs;
-std::vector<Scene*> SceneManager::pSceneStore;
-
 SceneManager::SceneManager()
 	:
 	pFocused(nullptr),
@@ -26,18 +23,6 @@ SceneManager::SceneManager()
 SceneManager::~SceneManager()
 {
 	for (auto& pScene : pSceneStack)
-	{
-		delete pScene;
-		pScene = nullptr;
-	}
-
-	for (auto& pScene : pScenePrefabs)
-	{
-		delete pScene;
-		pScene = nullptr;
-	}
-
-	for (auto& pScene : pSceneStore)
 	{
 		delete pScene;
 		pScene = nullptr;
@@ -68,7 +53,6 @@ void SceneManager::Update(float deltaTime)
 		deleteQueue.back() = nullptr;
 		deleteQueue.pop_back();
 	}
-
 
 	for (const auto& pScene : pSceneStack)
 	{
