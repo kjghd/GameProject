@@ -74,7 +74,7 @@ public:
 	bool CheckInvertedX();
 	bool CheckInvertedY();
 
-	//void SetAnimation(int index);
+	void SetFrame(int index);
 	void SetAnimation(std::string name);
 	void FlipX();
 	void FlipY();

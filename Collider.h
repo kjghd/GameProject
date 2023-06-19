@@ -10,7 +10,7 @@
 class Collider : public FileWritable
 {
 protected:
-	//virtual void WriteData(std::ostream& os) override;
+	static std::vector<Collider*> vpCollisionQueue;
 
 public:
 	WorldObject* pOwner;
@@ -33,12 +33,10 @@ public:
 
 	virtual void WriteData(std::ostream& os) override;
 
+
 };
 class Collider_Box : public Collider
 {
-protected:
-	//virtual void WriteData(std::ostream& os) override;
-
 public:
 	game::float2 size;
 
@@ -52,9 +50,6 @@ public:
 };
 class Collider_Circle : public Collider
 {
-protected:
-	//virtual void WriteData(std::ostream& os) override;
-
 public:
 	float radius;
 

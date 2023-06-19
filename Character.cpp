@@ -104,68 +104,34 @@ void Character::ApplyMovement(float deltaTime)
 		float x{ r > -l ? r : -l };
 		float y{ u > -d ? u : -d };
 
+		m_sprite.PlayForwards();
 
 		// Up
 		if (u > -d && (u >= x && x < y))
 		{
-			if (m_lookDirection.y > 0)
-			{
-				if (m_sprite.GetAnimName() != "move_back") m_sprite.SetAnimation("move_back");
-				m_sprite.PlayForwards();
-			}
-			else if (m_lookDirection.y < 0)
-			{
-				if (m_sprite.GetAnimName() != "move_front") m_sprite.SetAnimation("move_front");
-				m_sprite.PlayBackwards();
-			}
+			if (m_sprite.GetAnimName() != "move_back")
+				m_sprite.SetAnimation("move_back");
 		}
 
 		// Down
 		else if (u < -d && (d <= -x && x < y))
 		{
-			if (m_lookDirection.y < 0)
-			{
-				if (m_sprite.GetAnimName() != "move_front") m_sprite.SetAnimation("move_front");
-				m_sprite.PlayForwards();
-			}
-			else if (m_lookDirection.y > 0)
-			{
-				if (m_sprite.GetAnimName() != "move_back") m_sprite.SetAnimation("move_back");
-				m_sprite.PlayBackwards();
-			}
+			if (m_sprite.GetAnimName() != "move_front")
+				m_sprite.SetAnimation("move_front");
 		}
 
 		// Left
 		else if (r < -l && (l <= -y || x == y))
 		{
-			if (m_sprite.GetAnimName() != "move_side") m_sprite.SetAnimation("move_side");
-			if (m_lookDirection.x < 0)
-			{
-				if (!m_sprite.CheckInvertedX()) m_sprite.FlipX();
-				m_sprite.PlayForwards();
-			}
-			else if (m_lookDirection.x > 0)
-			{
-				if (m_sprite.CheckInvertedX()) m_sprite.FlipX();
-				m_sprite.PlayBackwards();
-			}
+			if (m_sprite.GetAnimName() != "move_left")
+				m_sprite.SetAnimation("move_left");
 		}
 
 		// Right
 		else if (r > -l && (r >= y || x == y))
 		{
-			if (m_sprite.GetAnimName() != "move_side") m_sprite.SetAnimation("move_side");
-			if (m_lookDirection.x > 0)
-			{
-				if (m_sprite.CheckInvertedX()) m_sprite.FlipX();
-				m_sprite.PlayForwards();
-
-			}
-			else if (m_lookDirection.x < 0)
-			{
-				if (!m_sprite.CheckInvertedX()) m_sprite.FlipX();
-				m_sprite.PlayBackwards();
-			}
+			if (m_sprite.GetAnimName() != "move_right")
+				m_sprite.SetAnimation("move_right");
 		}
 
 
@@ -189,24 +155,26 @@ void Character::ApplyMovement(float deltaTime)
 
 		// Up
 		if (u > -d && (u >= x && x < y) && m_sprite.GetAnimName() != "idle_back")
+		{
 			m_sprite.SetAnimation("idle_back");
+		}
 
 		// Down
 		else if (u < -d && (d <= -x && x < y) && m_sprite.GetAnimName() != "idle_front")
+		{
 			m_sprite.SetAnimation("idle_front");
+		}
 
 		// Left
-		else if (r < -l && (l <= -y || x == y) && m_sprite.GetAnimName() != "idle_side")
+		else if (r < -l && (l <= -y || x == y) && m_sprite.GetAnimName() != "idle_left")
 		{
-			m_sprite.SetAnimation("idle_side");
-			if (!m_sprite.CheckInvertedX()) m_sprite.FlipX();
+			m_sprite.SetAnimation("idle_left");
 		}
 
 		// Right
-		else if (r > -l && (r >= y || x == y) && m_sprite.GetAnimName() != "idle_side")
+		else if (r > -l && (r >= y || x == y) && m_sprite.GetAnimName() != "idle_right")
 		{
-			m_sprite.SetAnimation("idle_side");
-			if (m_sprite.CheckInvertedX()) m_sprite.FlipX();
+			m_sprite.SetAnimation("idle_right");
 		}
 	}
 	else if (m_sprite.GetAnimName() != "idle_front")

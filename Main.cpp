@@ -63,6 +63,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case 0x41: Input::SetOn(BTN_A); break;
 		case 0x44: Input::SetOn(BTN_D); break;
 		case 0x45: Input::SetOn(BTN_E); break;
+		case 0x46: Input::SetOn(BTN_F); break;
 		case 0x51: Input::SetOn(BTN_Q); break;
 		case 0x53: Input::SetOn(BTN_S); break;
 		case 0x57: Input::SetOn(BTN_W); break;
@@ -89,6 +90,7 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case 0x41: Input::SetOff(BTN_A); break;
 		case 0x44: Input::SetOff(BTN_D); break;
 		case 0x45: Input::SetOff(BTN_E); break;
+		case 0x46: Input::SetOff(BTN_F); break;
 		case 0x51: Input::SetOff(BTN_Q); break;
 		case 0x53: Input::SetOff(BTN_S); break;
 		case 0x57: Input::SetOff(BTN_W); break;
@@ -149,7 +151,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	Camera::m_screenResolution = { width,height };
 	ScreenObject::screenRes = { width, height };
 	ScreenObject::px_per_su = { 64.f };
-
 
 	g_timer.Start();
 

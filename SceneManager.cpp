@@ -17,15 +17,19 @@
 SceneManager::SceneManager()
 	:
 	pFocused(nullptr),
-	defaultCamera(nullptr)
+	defaultCamera(nullptr),
+	pause(true)
 {
 }
 SceneManager::~SceneManager()
 {
 	for (auto& pScene : pSceneStack)
 	{
-		delete pScene;
-		pScene = nullptr;
+		if (pScene != &pause)
+		{
+			delete pScene;
+			pScene = nullptr;
+		}
 	}
 }
 
@@ -34,14 +38,14 @@ void SceneManager::Initialise()
 	pCursor = new ScreenObject(*dynamic_cast<ScreenObject*>(PrefabList::Get(PREFAB_Cursor)));
 
 	// Pause
-	//Scene_Pause* pPause{ new Scene_Pause(false) };
-	//pPause->QueueToSpawn(PREFAB_Background, { 0,0 });
-	//pPause->Initialise();
-	//SaveScenePrefab(pPause, "pause.scene");
+	pause.Initialise();
+	pause.SetCursor(pCursor);
 
-	// 
-	NewScene("empty.scene");
-	pFocused = pSceneStack.back();
+	// Blank Scene
+	pSceneStack.push_back(new Scene_World(true));
+	pSceneStack.back()->Initialise();
+	pSceneStack.back()->SetCursor(pCursor);
+	SetActive(pSceneStack.back());
 	pMainScene = dynamic_cast<Scene_World*>(pSceneStack.back());
 }
 
@@ -64,9 +68,11 @@ void SceneManager::Update(float deltaTime)
 			{
 			case SMID_Null: break;
 			case SMID_Pop: PopScene(); break;
-			case SMID_Store: SaveScene(sm.fileName); break;
-			case SMID_Load: LoadScene(sm.fileName);  break;
-			case SMID_New: NewScene(sm.fileName);  break;
+			case SMID_Save: SaveScene(sm.fileName); break;
+			case SMID_Load: LoadScene(sm.fileName); break;
+			case SMID_New: NewScene(sm.fileName); break;
+			case SMID_Pause: Pause(); break;
+			case SMID_Play: Play(); break;
 			}
 		}
 	}
@@ -77,6 +83,17 @@ void SceneManager::Update(float deltaTime)
 		pCamera = pMainScene->GetCamera();
 	else
 		pCamera = &defaultCamera;
+}
+
+void SceneManager::Pause()
+{
+	pSceneStack.push_back(&pause);
+	SetActive(&pause);
+}
+void SceneManager::Play()
+{
+	pSceneStack.pop_back();
+	SetActive(pMainScene);
 }
 
 void SceneManager::LoadScene(std::string filename)

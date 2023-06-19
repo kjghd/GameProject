@@ -1,6 +1,6 @@
 #pragma once
 #include "ScreenObject.h"
-
+#include "Text.h"
 
 class SO_Button : public ScreenObject
 {
@@ -10,11 +10,13 @@ class SO_Button : public ScreenObject
 	void SetPressed();
 	void SetHovered();
 
+	Text m_text;
+
 protected:
 	virtual void WriteData(std::ostream& os) override;
 
 public:
-	SO_Button(ImageData* sprite_pImageData, int sprite_layer, game::float2 sprite_scale = { 1.f,1.f }, game::float2 sprite_offset = { 0,0 }, float sprite_frameTime = 0);
+	SO_Button(std::string text);
 	SO_Button(const SO_Button& button);
 	SO_Button(std::istream& is);
 

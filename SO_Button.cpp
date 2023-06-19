@@ -1,12 +1,14 @@
 #include "SO_Button.h"
 #include "Input.h"
+#include "ImageDataList.h"
 
 
-SO_Button::SO_Button(ImageData* pImageData, int layer, game::float2 scale, game::float2 offset, float frameTime)
+SO_Button::SO_Button(std::string text)
 	:
-	ScreenObject(pImageData, layer, scale, offset, frameTime),
+	ScreenObject(ImageDataList::Get("button.png"), SL_UI_Mid),
 	hovered(false),
-	pressed(false)
+	pressed(false),
+	m_text(this, text, .4f, 1.f, true)
 {
 	m_tag = "SOBT";
 }
@@ -14,7 +16,8 @@ SO_Button::SO_Button(const SO_Button& button)
 	:
 	ScreenObject(button),
 	hovered(false),
-	pressed(false)
+	pressed(false),
+	m_text(this, button.m_text)
 {
 	m_tag = "SOBT";
 }
@@ -22,7 +25,8 @@ SO_Button::SO_Button(std::istream& is)
 	:
 	ScreenObject(is),
 	hovered(FileWritable::GetNextValue(is) == "1" ? true : false),
-	pressed(FileWritable::GetNextValue(is) == "1" ? true : false)
+	pressed(FileWritable::GetNextValue(is) == "1" ? true : false),
+	m_text(nullptr, "", 1, 1, true) // Fix later.
 {
 	m_tag = "SOBT";
 }
@@ -41,6 +45,7 @@ void SO_Button::Update(float deltaTime)
 	SetPressed();
 
 	m_sprite.Update(deltaTime);
+	m_text.Update(deltaTime);
 }
 
 void SO_Button::SetHovered()

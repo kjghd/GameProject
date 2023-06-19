@@ -40,7 +40,7 @@ Scene_World::Scene_World(bool show)
 	:
 	Scene(show),
 	pCurrentCamera(nullptr),
-	current_prefab(PREFAB_Floor_ConcreteA),
+	current_prefab(PREFAB_Field),
 	pPlayer(nullptr),
 	pCursorBox(nullptr),
 	pPreview(nullptr)
@@ -51,7 +51,7 @@ Scene_World::Scene_World(const Scene_World& scene)
 	:
 	Scene(scene),
 	pCurrentCamera(nullptr),
-	current_prefab(PREFAB_Floor_ConcreteA),
+	current_prefab(scene.current_prefab),
 	pPlayer(nullptr),
 	pCursorBox(nullptr),
 	pPreview(nullptr)
@@ -108,9 +108,7 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 		if (Input::CheckPressed(BTN_ESC))
 		{
-			msg.id = SMID_New;
-			//msg.index = SCENE_Pause;
-			msg.fileName = "pause.scene";
+			msg.id = SMID_Pause;
 		}
 
 		if (Input::CheckPressed(BTN_RMB))
@@ -154,6 +152,8 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 		if (Input::CheckHeld(BTN_SHIFT))
 		{
+			std::srand(static_cast<unsigned int>(deltaTime));
+
 			pCursorBox->m_sprite.visible = true;
 
 			// Round mouse loc to whole unit.
@@ -169,7 +169,7 @@ SceneMessage Scene_World::Update(float deltaTime)
 
 			// Object spawn controls.
 			GameObject* pSpawn{ PrefabList::Get(current_prefab) };
-			if (Input::CheckHeld(BTN_LMB))
+			if (Input::CheckPressed(BTN_LMB))
 			{
 				bool canSpawn{ true };
 				for (auto& pGameObject : vpGameObjects)
@@ -183,7 +183,19 @@ SceneMessage Scene_World::Update(float deltaTime)
 				}
 
 				if (canSpawn)
+				{
 					QueueToSpawn(current_prefab, locRounded);
+					if (current_prefab == PREFAB_Field)
+					{
+						switch (std::rand() % 4)
+						{
+						case 0: vpSpawnQueue.back()->m_sprite.SetAnimation("A"); break;
+						case 1: vpSpawnQueue.back()->m_sprite.SetAnimation("B"); break;
+						case 2: vpSpawnQueue.back()->m_sprite.SetAnimation("C"); break;
+						case 3: vpSpawnQueue.back()->m_sprite.SetAnimation("D"); break;
+						}
+					}
+				}
 			}
 		}
 		else
@@ -192,8 +204,13 @@ SceneMessage Scene_World::Update(float deltaTime)
 		{
 			current_prefab = PREFAB_Mushroom;
 		}
-		if (Input::CheckPressed(BTN_2)) current_prefab = PREFAB_Floor_ConcreteA;
+		if (Input::CheckPressed(BTN_2)) current_prefab = PREFAB_Field;
 		if (Input::CheckPressed(BTN_3)) current_prefab = PREFAB_NPC;
+
+		if (Input::CheckPressed(BTN_F))
+		{
+			QueueToSpawn(PREFAB_TextBox);
+		}
 
 		Collision();
 

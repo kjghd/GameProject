@@ -73,6 +73,7 @@ Sprite::Sprite(GameObject* pOwner, std::istream& is)
 
 void Sprite::Update(float deltaTime)
 {
+	// Animation
 	if (active)
 	{
 		if (pImageData->GetAnimStartFrame(currentAnim) != pImageData->GetAnimEndFrame(currentAnim))
@@ -82,32 +83,37 @@ void Sprite::Update(float deltaTime)
 			{
 				frameTimeCurrent = 0;
 
+				// Set to start
 				if (currentFrame >= pImageData->GetAnimEndFrame(currentAnim) && direction == 1)
 					currentFrame = pImageData->GetAnimStartFrame(currentAnim);
 
+				// Set to end
 				else if (currentFrame <= pImageData->GetAnimStartFrame(currentAnim) && direction == -1)
 					currentFrame = pImageData->GetAnimEndFrame(currentAnim);
 
+				// Continue
 				else
 					currentFrame += direction;
 			}
 		}
 	}
 
+	// Render queue
 	if (visible) vpSpritesToRender.push_back(this);
 }
 
-void Sprite::Pause() { direction = 0; }
-void Sprite::PlayForwards() { direction = 1; }
-void Sprite::PlayBackwards() { direction = -1; }
+void Sprite::Pause() { active = false;  direction = 0; }
+void Sprite::PlayForwards() { active = true; direction = 1; }
+void Sprite::PlayBackwards() { active = true;  direction = -1; }
 
 
-//void Sprite::SetAnimation(int index)
-//{
-//	currentAnim = index;
-//	currentFrame = pImageData->GetAnimStartFrame(index);
-//	frameTimeCurrent = 0;
-//}
+void Sprite::SetFrame(int index)
+{
+	currentAnim = 0;
+	currentFrame = index;
+	frameTimeCurrent = 0;
+	Pause();
+}
 
 void Sprite::SetAnimation(std::string name)
 {

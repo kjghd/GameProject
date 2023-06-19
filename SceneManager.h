@@ -19,6 +19,11 @@ class SceneManager
 	Camera defaultCamera;
 	ScreenObject* pCursor;
 
+	Scene_Pause pause;
+
+	void Pause();
+	void Play();
+
 	void LoadScene(std::string filename);
 	//void NewScene(size_t index);
 	void NewScene(std::string filename);

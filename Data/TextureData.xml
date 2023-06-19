@@ -2,27 +2,7 @@
 	<Texture location="Error.png"/>
 	<Texture location="CursorBlinking.png" count="2,1"/>
 	<Texture location="TileSelection.png"/>
-	<Texture location="sprite_sheet.png" count="4,2">
-		<Animation name="numbers" range="0,3"/>
-		<Animation name="letters" range="4,7"/>
-	</Texture>
-	<Texture location="Resume.png" count="1,2">
-		<Animation name="off" range="0,0"/>
-		<Animation name="on" range="1,1"/>
-	</Texture>
-	<Texture location="MainMenu.png" count="1,2">
-		<Animation name="off" range="0,0"/>
-		<Animation name="on" range="1,1"/>
-	</Texture>
-	<Texture location="Save.png" count="1,2">
-		<Animation name="off" range="0,0"/>
-		<Animation name="on" range="1,1"/>
-	</Texture>
-	<Texture location="Load.png" count="1,2">
-		<Animation name="off" range="0,0"/>
-		<Animation name="on" range="1,1"/>
-	</Texture>
-	<Texture location="New.png" count="1,2">
+	<Texture location="button.png" count="1,2">
 		<Animation name="off" range="0,0"/>
 		<Animation name="on" range="1,1"/>
 	</Texture>
@@ -45,21 +25,28 @@
 		<Animation name="move_back" range="16,23"/>
 		<Animation name="move_side" range="24,31"/>
 	</Texture>
-	<Texture location="Mushroom.png"/>
-	<Texture location="shopping_floor.png" count="4,2">
-		<Animation name="concreteA" range="0,0"/>
-		<Animation name="concreteB" range="1,1"/>
-		<Animation name="concreteC" range="2,2"/>
-		<Animation name="concreteD" range="3,3"/>
-		<Animation name="tileA" range="4,4"/>
-		<Animation name="tileC" range="5,5"/>
-		<Animation name="tileD" range="6,6"/>
-		<Animation name="tileE" range="7,7"/>
+	<Texture location="human.png" count="16,5">
+		<Animation name="idle_front" range="0,0"/>
+		<Animation name="idle_back" range="1,1"/>
+		<Animation name="idle_left" range="2,2"/>
+		<Animation name="idle_right" range="3,3"/>
+		<Animation name="dead" range="4,4"/>
+		<Animation name="move_front" range="16,31"/>
+		<Animation name="move_back" range="32,47"/>
+		<Animation name="move_left" range="48,63"/>
+		<Animation name="move_right" range="64,79"/>
 	</Texture>
-	<Texture location="field.png" count="4,2">
+	<Texture location="Mushroom.png"/>
+	<Texture location="field.png" count="4,1">
 		<Animation name="A" range="0,0"/>
 		<Animation name="B" range="1,1"/>
 		<Animation name="C" range="2,2"/>
 		<Animation name="D" range="3,3"/>
 	</Texture>
+	<Texture location="font_32x48.png" count="16,8"/>
+
+	<Texture location="Fish.png"/>
+	<Texture location="Potato.png"/>
+	<Texture location="PotatoPlant.png"/>
+	<Texture location="FishAndChips.png"/>
 </Textures>

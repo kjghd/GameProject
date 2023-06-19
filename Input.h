@@ -18,6 +18,7 @@ enum Buttons
 	BTN_A,
 	BTN_D,
 	BTN_E,
+	BTN_F,
 	BTN_Q,
 	BTN_S,
 	BTN_W,

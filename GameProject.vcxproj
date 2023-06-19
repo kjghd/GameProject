@@ -151,6 +151,7 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="FileWritable.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -159,6 +160,8 @@
     <ClCompile Include="Scene_Pause.cpp" />
     <ClCompile Include="Scene_World.cpp" />
     <ClCompile Include="SO_Button.cpp" />
+    <ClCompile Include="SO_TextBox.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="WorldObject.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImageData.cpp" />
@@ -179,6 +182,7 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="DataTypes.h" />
     <ClInclude Include="FileWritable.h" />
     <ClInclude Include="ImageLoader.h" />
@@ -188,6 +192,8 @@
     <ClInclude Include="Scene_Pause.h" />
     <ClInclude Include="Scene_World.h" />
     <ClInclude Include="SO_Button.h" />
+    <ClInclude Include="SO_TextBox.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="WorldObject.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ImageData.h" />

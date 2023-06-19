@@ -30,10 +30,9 @@ void Renderer::Render()
 	{
 		Camera* pCamera{ m_pSceneController->GetCamera() };
 
-		/* sorting */
 		std::vector<Sprite*> vpUnsorted{ Sprite::vpSpritesToRender };
 
-		// Screen sorting.
+		// Sort Screen
 		std::vector<Sprite*> vpSOSorted;
 
 		bool worldOnly{ false };
@@ -58,7 +57,7 @@ void Renderer::Render()
 
 		std::sort(vpSOSorted.begin(), vpSOSorted.end(), Sprite::CompareLayer);
 
-		// World sorting.
+		// Sort World
 		std::vector<Sprite*> vpWOSorted;
 		while (!vpUnsorted.empty())
 		{
@@ -101,7 +100,7 @@ void Renderer::Render()
 		}
 
 
-		/* World Objects */
+		// Draw World
 		for (size_t i = SL_COUNT; i > 0; --i)
 			for (auto& pSprite : vpWOSorted)
 				if (pSprite->GetRenderLayer() == i)
@@ -118,7 +117,7 @@ void Renderer::Render()
 					float opacity{ 1.f };
 
 					m_pGraphics->DrawBitmapRegion(
-						D2D1::RectF(rect.l, rect.t, rect.r, rect.b),
+						D2D1::RectF((int)rect.l, (int)rect.t, (int)rect.r, (int)rect.b),
 						pSprite->GetBitmapIndex(),
 						D2D1::RectF(region.l, region.t, region.r, region.b),
 						opacity,
@@ -132,9 +131,7 @@ void Renderer::Render()
 					}
 				}
 
-
-		/* User Interface */
-
+		// Draw Screen
 		for (auto& pSprite : vpSOSorted)
 		{
 			game::float2 location{ pSprite->GetLocation() };
@@ -169,7 +166,7 @@ void Renderer::Render()
 		}
 	}
 	else
-		m_pGraphics->ClearScreen(1.f, 0, 0);
+		m_pGraphics->ClearScreen(1.f, 1.f, 0);
 
 	Sprite::vpSpritesToRender.clear();
 

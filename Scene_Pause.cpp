@@ -101,6 +101,7 @@ void Scene_Pause::Initialise()
 		pMainMenu = dynamic_cast<SO_Button*>(vpSpawnQueue.back());
 	}
 
+	QueueToSpawn(PREFAB_Background);
 
 	SpawnObjects();
 }
@@ -121,15 +122,15 @@ SceneMessage Scene_Pause::Update(float deltaTime)
 
 		if (Input::CheckPressed(BTN_ESC))
 		{
-			msg.id = SMID_Pop;
+			msg.id = SMID_Play;
 		}
 		if (pResume->IsPressed())
 		{
-			msg.id = SMID_Pop;
+			msg.id = SMID_Play;
 		}
 		if (pSave->IsPressed())
 		{
-			msg.id = SMID_Store;
+			msg.id = SMID_Save;
 			msg.fileName = "save.scene";
 		}
 		if (pLoad->IsPressed())

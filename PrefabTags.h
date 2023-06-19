@@ -5,14 +5,7 @@ enum PrefabTag
 {
 	PREFAB_Player,
 	PREFAB_NPC,
-	PREFAB_Floor_ConcreteA,
-	PREFAB_Floor_ConcreteB,
-	PREFAB_Floor_ConcreteC,
-	PREFAB_Floor_ConcreteD,
-	PREFAB_Floor_TileA,
-	PREFAB_Floor_TileB,
-	PREFAB_Floor_TileC,
-	PREFAB_Floor_TileD,
+	PREFAB_Field,
 	PREFAB_Mushroom,
 	PREFAB_Cursor,
 	PREFAB_Selection,
@@ -22,6 +15,7 @@ enum PrefabTag
 	PREFAB_Load,
 	PREFAB_New,
 	PREFAB_Background,
+	PREFAB_TextBox,
 
 	PREFAB_COUNT
 };

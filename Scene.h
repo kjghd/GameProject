@@ -20,9 +20,11 @@ enum SceneMessageID
 {
 	SMID_Null,	// Do nothing.
 	SMID_Pop,	// Remove without storing.
-	SMID_Store,	// Remove and store.
+	SMID_Save,	// Remove and store.
 	SMID_Load,	// Push from store.
-	SMID_New	// Push from prefabs.
+	SMID_New,	// Push from prefabs.
+	SMID_Pause,
+	SMID_Play
 };
 
 struct SceneMessage
